@@ -1,0 +1,114 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /*background-image: url('/media/bgd.jpeg');
+  background-size: 100%;*/
+  background-color: #3fa0fc;
+  margin-bottom: 78px;
+}
+
+.micon {
+  content: url('/media/mi.png');
+  display: block;
+  margin: 0 auto;
+}
+
+h6 > a {
+  color: #3fa0fc
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 48px;
+  line-height: 7px;
+  background-color: #EEE;
+}
+
+.footer a ~ a {
+  height: 7px;
+  position: relative;
+  top: 11px;
+}
+.nav-link {
+  /* color: #666666 */
+}
+.footer-link {
+  font-size: 14px
+}
+
+.cr-name {
+  position: relative;
+  font-size: 12px;
+  height: 0;
+  bottom: -22px;
+}
+
+.sig {
+  position: relative;
+  bottom: -16px;
+}
+
+.navbar {
+  background-color: #EEE
+}
+
+.card {
+  background-color: rgb(238,238,238)
+}
+
+.date {
+  color: #AAA;
+  font-size: 14px;
+}
+
+.footer a {
+  height: 32px;
+}
+
+.shadow {
+  box-shadow: 10px 10px 5px gray;
+}
+
+#particles {
+    position: absolute;
+    width: 100px;
+    height: 800px;
+    z-index: -1;
+}
+
+.static {
+  resize: none
+}
+
+.nostyle {
+  list-style-type: none;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: #337ab7
+}
+
+.article a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.message .message-delete {
+  visibility: hidden;
+}
+
+.preview-frame {
+  height: 60%;
+}
+
+.input-group-addon {
+    min-width: 100px;
+}
+
+.indent {
+    text-indent: 1.5rem;
+}

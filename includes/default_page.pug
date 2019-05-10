@@ -1,0 +1,42 @@
+mixin header()
+  a(href='/')
+    img.micon.rounded.img-fluid.mt-4
+
+mixin footer()
+  .footer
+    +icons
+    a.float-right.mr-2.pl-2.footer-link(href='/privatepolicy') Privacy
+    a.float-right.mr-2.pl-2.footer-link(href='/contact') Contact
+    a.float-right.mr-2.footer-link(href='/about') About
+    br
+    .text-center.cr-name &copy 2017 Angel Ruiz-Bates
+
+mixin navvy(index)
+  -
+      var pages = [ 'Marine Fish', 'Inverts', 'Corals', 'WYSIWYG', 'Food and Supplies', 'Auctions', 'Custom Orders'];
+      var urls = [ '/', '/inverts', '/coral', '/wysiwyg', '/food', '/auctions', '/customorder' ];  
+  nav.navbar.navbar-expand-xl.mb-4.mt-4(clas='navbar-light')
+    button.navbar-toggler.ml-auto.btn(type='button' data-toggle='collapse' data-target='#navcollapse')
+      span.navbar-toggler-icon
+    #navcollapse.collapse.navbar-collapse
+      ul.navbar-nav   
+        each i in [0, 1, 2, 3, 4, 5, 6]
+          li.nav-item: a.nav-link(href=urls[i])= pages[i]
+        if(loggedIn)
+          li.nav-item: a.nav-link(href='/logout')
+            i.fa.fa-sign-out.fa-lg
+        li.nav-item: a.nav-link(href='/admin') Admin
+      form.form-inline.ml-auto
+        input.form-control.mr-2(type='search' placeholder='Search')
+        button.btn.btn-outline-primary.mr-2(type='submit') Search
+      i.fa-2x.fas.fa-cart-plus
+                
+mixin icons
+  a.float-left.ml-1(href= 'https://github.com/angeljruiz')
+    i.fa-2x.fab.fa-github
+
+mixin row(size, offset)
+    .row
+        div(class='col-md-' + size class=offset==0? '' : 'offset-md-' + offset)
+            if block
+                block

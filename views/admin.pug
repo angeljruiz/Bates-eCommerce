@@ -1,0 +1,14 @@
+extends ../includes/layout.pug
+
+append resources
+  title Admin
+
+append body
+  .row
+    .col-md-10.mx-auto
+      .card
+          h1.card-header.text-center Admin
+          ul.list-group
+            .card
+              .card-body
+                a.btn.btn-primary(href='/addfish') Add fish

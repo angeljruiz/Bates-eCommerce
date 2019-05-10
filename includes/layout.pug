@@ -1,0 +1,33 @@
+doctype html
+html
+  head
+    block resources
+      meta(charset="utf-8")
+      meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+      link(href='../vendor/bootstrap.min.css' rel='stylesheet')
+      link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous")
+
+      link(href='../css/style.css' rel='stylesheet')
+      //- link(rel="icon" href="../media/icon.ico")
+      if (showTests)
+        link(href='../vendor/mocha.css')
+      script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js')
+      include ../includes/default_page
+  body
+    +header()
+    +navvy
+    .container-fluid
+      block body
+    +footer()
+    if (showTests)
+      #mocha(style='background-color: white')
+      script(src='../vendor/mocha.js')
+      script(src='../vendor/chai.js')
+      script.
+        mocha.ui('tdd')
+        var assert = chai.assert;
+      script(src='../QA/global-tests.js')
+      script mocha.run()
+    script(src='../js/setup.js')
+    script(src='../vendor/popper.min.js')
+    script(src='../vendor/bootstrap.min.js')

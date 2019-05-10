@@ -1,0 +1,40 @@
+extends ../includes/layout.pug
+
+append resources
+  title Login
+  form(action='/login' method='POST' id='login')
+    
+append body
+  .row
+    .col-md-4.mx-auto
+      .card
+        .card-header.text-center
+          i.fa.fa-sign-in.fa-lg.mr-1
+          h4.d-inline-block Login
+        .card-body
+          if (flash.incorrect || flash.notLogged)
+            .alert.alert-danger.text-center
+              = flash.incorrect || flash.notLogged
+          .form-group
+            .row.justify-content-center
+              .col-md-8
+                .input-group
+                  .input-group-addon Username
+                  input.form-control(type='text' name='username' form='login')
+          .form-group
+            .row.justify-content-center
+              .col-md-8
+                .input-group
+                  .input-group-addon Password
+                  input.form-control(type='password' name='password' form='login')
+          .form-group
+            .row.justify-content-center
+              .col-md-4
+                  input.form-control.btn.btn-primary.mb-2(type='submit' value='Login' form='login')
+                  //a(href='/auth/facebook') Login with Facebook
+          .col-md-8.mx-auto
+            hr      
+          .col-md-4.mx-auto.text-center(style='font-size: 15px')
+            span Need to 
+            a(href='/signup') register?
+            

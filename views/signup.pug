@@ -1,0 +1,42 @@
+extends ../includes/layout.pug
+
+append resources
+  title Signup
+  form(action='/new' method='POST' id='signup')
+append body
+  .col-md-4.mx-auto
+    .card.text-center
+      .card-header
+        i.fa.fa-user-plus.fa-lg.mr-1
+        h4.d-inline-block.mr-5 Sign up
+      .card-body
+        if (flash.taken || flash.incorrect)
+          .alert.alert-danger.text-center
+            = flash.taken || flash.incorrect
+        .form-group
+          .row.justify-content-center
+            .col-md-8
+              .input-group
+                .input-group-addon Username
+                input.form-control(type='text' name='username' form='signup')
+        .form-group
+          .row.justify-content-center
+            .col-md-8
+              .input-group
+                .input-group-addon Email
+                input.form-control(type='text' name='email' form='signup')
+        .form-group
+          .row.justify-content-center
+            .col-md-8
+              .input-group
+                .input-group-addon Password
+                input.form-control(type='password' name='password' form='signup')
+        .form-group
+          .row.justify-content-center
+            .col-md-4
+              input.form-control(type='submit' class='btn btn-primary' value='Register' form='signup')
+        .col-md-8.mx-auto
+          hr
+        .col-md-4.mx-auto.text-center(style='font-size: 15px')
+          span Have an 
+          a(href='/login') account?

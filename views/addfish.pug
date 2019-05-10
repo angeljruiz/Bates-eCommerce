@@ -1,0 +1,61 @@
+extends ../includes/layout.pug
+
+append resources
+  title Creator
+  script(src='vendor/dropzone.min.js')
+  link(href='vendor/dropzone.min.css' rel='stylesheet')
+  
+append body
+  .row
+    .col-md-8.mx-auto
+      form.dropzone#upload-zone(action='/upload' method='POST')
+      script.
+        Dropzone.options.uploadZone = {
+          paramName: 'media'
+        }
+      br
+  .row
+    .col-md-10.mx-auto
+      .card
+          .card-body
+            .form-group
+              form(action='/addfish' method='POST')
+                input(type='hidden' name='id' value=id || '-1')
+                .form-group
+                  h3 
+                    strong Fish Name
+                  input.form-control(type='text' name='name' placeholder='Enter name here' value= editing? name : "")
+                .form-group
+                  h3 
+                    strong Description
+                  textarea.form-control(name='desc' placeholder='Enter description here' value='')
+                .form-group
+                  h3 
+                    strong Price
+                  input.form-control(type='number' name='price' value='0')
+                .form-group
+                  h3 
+                    strong Minimum Gallons
+                  input.form-control(type='number' name='ming' value='0')
+                .form-group
+                  h3 
+                    strong Reef Safe?
+                  input(type='radio' id='reefsafe' name='rs' value='rs')
+                  label(for='reefsafe') Reef safe
+                  br
+                  input(type='radio' id='nrs' name='rs' value='nrs')
+                  label(for='nrs') Not reef safe
+                .form-group
+                  h3
+                    strong Aggressive?
+                  input(type='radio' id='aggr' name='ag' value='ag')
+                  label(for='aggr') Aggressive
+                  br
+                  input(type='radio' id='caggr' name='ag' value='cag')
+                  label(for='caggr') Aggressive to conspecifics
+                  br
+                  input(type='radio' id='naggr' name='ag' value='nag')
+                  label(for='naggr') Non-aggressive
+                input.btn.btn-primary(type='submit' value='Submit')
+                
+                
