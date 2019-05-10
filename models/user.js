@@ -5,19 +5,19 @@ var sync = require('async');
 
 class User {
     constructor(input, fn) {
-      this.localUsername = 0;
-      this.localEmail = 0;
-      this.localPassword = 0;
-      this.localId = -1;
+      this.username = 0;
+      this.email = 0;
+      this.password = 0;
+      this.id = -1;
       this.profilePicture = 0;
       this.messages = [];
       if (input) {
-        if (input.localUsername) {
-          this.localUsername = input.localUsername;
-        } else if (input.localEmail) {
-          this.localEmail = input.localEmail;
-        } else if (input.localId) {
-          this.localId = input.localId;
+        if (input.username) {
+          this.username = input.username;
+        } else if (input.email) {
+          this.email = input.email;
+        } else if (input.id) {
+          this.id = input.id;
         }
         return User.findOne(this, input.messages || false, fn);
       }
@@ -29,9 +29,9 @@ class User {
             if(error)
                 return fn(error);
             if(data) {
-                user.localUsername = data.username;
-                user.localPassword = data.password;
-                user.localId = data.id;
+                user.username = data.username;
+                user.password = data.password;
+                user.id = data.id;
                 if(data.pp) {
                     user.profilePicture = data.pp;
                 } else {
@@ -48,7 +48,7 @@ class User {
     pageify(req) {
       if (req.isAuthenticated())
         this.loggedIn = true;
-      if (req.query.id === req.user.localId)
+      if (req.query.id === req.user.id)
         this.owner = true;
       else
         this.owner = false;
@@ -74,23 +74,23 @@ class User {
     }
     loadMessages() {
       return new Promise( (resolve, reject) => {
-        db.loadMessages(this.localId, (data) => {
+        db.loadMessages(this.id, (data) => {
             this.messages = data;
             resolve();
         });
       });
     }
     saveMessage(message, fn) {
-        db.saveMessage(this.localId, message, fn);
+        db.saveMessage(this.id, message, fn);
     }
     generateHash(password) {
-        this.localPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+        this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
     }
     validPassword(password) {
-        return bcrypt.compareSync(password, this.localPassword);
+        return bcrypt.compareSync(password, this.password);
     }
     save(fn) {
-        db.createUser(this.localUsername, this.localEmail, this.localPassword, fn);
+        db.createUser(this.username, this.email, this.password, fn);
     }
 
 }

@@ -9,17 +9,17 @@ var User = require('../models/user.js');
 module.exports = function(passport) {
 
     passport.serializeUser(function(user, done) {
-        done(null, user.localId);
+        done(null, user.id);
     });
 
     passport.deserializeUser(function(id, done) {
-      new User({ localId: id, messages: false }, (err, user) => {
+      new User({ id: id, messages: false }, (err, user) => {
         return done(null, user);
       });
     });
 
     passport.use('signup', new LocalStrategy( { passReqToCallback: true }, (req, username, password, done) => {
-        new User({ localUsername: username }, (err, user) => {
+        new User({ username: username }, (err, user) => {
             if(err)
                 return done(err);
             if(user) {
@@ -27,8 +27,8 @@ module.exports = function(passport) {
                 return done(null, false);
               }
             var newUser = new User();
-            newUser.localUsername = username;
-            newUser.localEmail = req.body.email;
+            newUser.username = username;
+            newUser.email = req.body.email;
             newUser.generateHash(password);
             newUser.save(() => {
                 console.log('user created');
@@ -37,7 +37,7 @@ module.exports = function(passport) {
         });
     }));
     passport.use('login', new LocalStrategy( { passReqToCallback: true }, (req, username, password, done) => {
-      new User({ localUsername: username }, (err, user) => {
+      new User({ username: username }, (err, user) => {
           if(err)
               return done(err);
           if(!user || !user.validPassword(password)) {

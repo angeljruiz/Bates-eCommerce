@@ -21,7 +21,7 @@ module.exports = (app, db, passport) => {
   });
 
   app.post('/upload', upload.any(), (req, res) => {
-    if (req.isAuthenticated() && req.user.localUsername === 'angel') {
+    if (req.isAuthenticated() && req.user.username === 'angel') {
       fs.readFile(req.files[0].path, (err, data) => {
         if (err)
           return console.error('error reading file', err);
@@ -42,14 +42,14 @@ module.exports = (app, db, passport) => {
   });
 
   app.post('/createart', (req, res) => {
-    if (req.isAuthenticated() && req.user.localUsername === 'angel') {
+    if (req.isAuthenticated() && req.user.username === 'angel') {
       db.createart({ title: req.body.title, desc: req.body.description, thumbnail: req.body.thumbnail, data: req.body.data, id: req.body.id, date: req.body.date, author: req.body.author });
     }
     res.redirect('/creator')
   });
 
   app.post('/new', mw.validateInfo, passport.authenticate('signup', { session: true, failureRedirect: '/signup' }), (req, res) => {
-    new User({ localUsername: req.user.localUsername }, (err, user) => {
+    new User({ username: req.user.username }, (err, user) => {
       req.login(user, function(err) {
         if (err)
           console.log(err);

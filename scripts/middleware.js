@@ -2,7 +2,7 @@ module.exports = {
 
   isLoggedOn: (req, res, next) => {
     if(req.isAuthenticated()) {
-      if (req.path === '/user' && req.query.id === req.user.localId)
+      if (req.path === '/user' && req.query.id === req.user.id)
         return res.redirect('/');
       return next();
     }

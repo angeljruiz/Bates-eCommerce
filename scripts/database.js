@@ -39,12 +39,12 @@ class Database {
             else
                 return fn(false, false);
         };
-        if (user.localId !== -1) {
-          pool.query('SELECT * FROM users WHERE id = ($1)', [user.localId], temp);
-        } else if (user.localUsername !== 0) {
-          pool.query('SELECT * FROM users WHERE username = ($1)', [user.localUsername], temp);
-        } else if (user.localEmail !== 0) {
-          pool.query('SELECT * FROM users WHERE email = ($1)', [user.localEmail], temp);
+        if (user.id !== -1) {
+          pool.query('SELECT * FROM users WHERE id = ($1)', [user.id], temp);
+        } else if (user.username !== 0) {
+          pool.query('SELECT * FROM users WHERE username = ($1)', [user.username], temp);
+        } else if (user.email !== 0) {
+          pool.query('SELECT * FROM users WHERE email = ($1)', [user.email], temp);
         }
 
     }
