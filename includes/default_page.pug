@@ -24,7 +24,7 @@ mixin navvy(index)
           li.nav-item: a.nav-link(href=urls[i])= pages[i]
         if(loggedIn)
           li.nav-item: a.nav-link(href='/logout')
-            i.fa.fa-sign-out.fa-lg
+            i.fa-2x.fas.fa-sign-out-alt
         li.nav-item: a.nav-link(href='/admin') Admin
       form.form-inline.ml-auto
         input.form-control.mr-2(type='search' placeholder='Search')

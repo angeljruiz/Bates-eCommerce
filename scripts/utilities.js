@@ -5,14 +5,11 @@ var fs = require('fs');
 var mw = require('./middleware.js');
 var User = require('../models/user.js');
 
-const hn = /(primefactor)/;
 
 module.exports = (app, db, passport) => {
 
   app.use( (req, res, next) => {
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
-    res.locals.primeFactor = hn.test(req.hostname);
-    // res.locals.primeFactor = true;
     next();
   });
 
@@ -90,9 +87,5 @@ module.exports = (app, db, passport) => {
       res.send(temp);
     });
   });
-
-  app.get('/auth/facebook', passport.authenticate('facebook'));
-
-  app.get('/auth/facebook/return', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }));
 
 }

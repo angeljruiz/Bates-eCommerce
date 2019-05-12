@@ -11,7 +11,6 @@ module.exports = {
   },
 
   validateInfo: (req, res, next) => {
-    console.log(req.body);
     if (req.body.username === '' || req.body.password === '' || req.body.email === '') {
       req.res.flash('incorrect', 'Invalid username, email, or password');
       if (req.originalUrl === '/login')
