@@ -10,7 +10,6 @@ class User {
       this.password = 0;
       this.id = -1;
       this.profilePicture = 0;
-      this.messages = [];
       if (input) {
         if (input.username) {
           this.username = input.username;
@@ -19,12 +18,12 @@ class User {
         } else if (input.id) {
           this.id = input.id;
         }
-        return User.findOne(this, input.messages || false, fn);
+        return User.findOne(this, fn);
       }
     }
-    static findOne(id, messages, fn) {
+    static findOne(id, fn) {
         let user = new User();
-        let lMessages, lPictures = false;
+        let lPictures = false;
         db.selectUser(id, (error, data) => {
             if(error)
                 return fn(error);
@@ -37,7 +36,7 @@ class User {
                 } else {
                   lPictures = 'media/df.png';
                 }
-                user.loadData({ path: lPictures, messages: messages }).then( () => {
+                user.loadData({ path: lPictures }).then( () => {
                   return fn(null, user);
                 });
             } else {
@@ -58,8 +57,6 @@ class User {
       let stack = [];
       if (input.path)
         stack.push(this.loadPicture(input.path));
-      if (input.messages)
-        stack.push(this.loadMessages());
       return Promise.all(stack, fn);
     }
     loadPicture(pic) {
@@ -71,17 +68,6 @@ class User {
             resolve();
         });
       });
-    }
-    loadMessages() {
-      return new Promise( (resolve, reject) => {
-        db.loadMessages(this.id, (data) => {
-            this.messages = data;
-            resolve();
-        });
-      });
-    }
-    saveMessage(message, fn) {
-        db.saveMessage(this.id, message, fn);
     }
     generateHash(password) {
         this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);

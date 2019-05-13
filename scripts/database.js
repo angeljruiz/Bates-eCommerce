@@ -123,6 +123,16 @@ class Database {
           pool.query('INSERT INTO articles (title, description, thumbnail, data, date) VALUES ($1, $2, $3, $4, $5)', [input.title, input.desc, input.thumbnail, input.data, input.date], func);
       }
     }
+    addfish(input) {
+      console.log(input);
+      if (input.id && input.name && input.desc && input.price && input.ming && input.rs && input.ag) {
+        let func = (err, res) => {
+          if(err)
+              return console.error('error running query', err);
+        }
+        pool.query('INSERT INTO marinefish (id, name, description, aggr, price, reefs, ming) VALUES ($1, $2, $3, $4, $5, $6, $7)', [input.id, input.name, input.desc, input.ag, input.price, input.rs, input.ming], func);
+      }
+    }
     listarticles(fn) {
       let articles = [];
       pool.query('SELECT * FROM articles ORDER BY id DESC', (err, res) => {

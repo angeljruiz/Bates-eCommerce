@@ -1,7 +1,7 @@
 extends ../includes/layout.pug
 
 append resources
-  title Creator
+  title Add stock
   script(src='vendor/dropzone.min.js')
   link(href='vendor/dropzone.min.css' rel='stylesheet')
   
@@ -20,10 +20,9 @@ append body
           .card-body
             .form-group
               form(action='/addfish' method='POST')
-                input(type='hidden' name='id' value=id || '-1')
                 .form-group
                   h3 
-                    strong Fish Name
+                    strong Fish name
                   input.form-control(type='text' name='name' placeholder='Enter name here' value= editing? name : "")
                 .form-group
                   h3 
@@ -31,19 +30,31 @@ append body
                   textarea.form-control(name='desc' placeholder='Enter description here' value='')
                 .form-group
                   h3 
+                    strong ID
+                  input.form-control(type='number' name='id' value='-1')
+                .form-group
+                  h3 
                     strong Price
                   input.form-control(type='number' name='price' value='0')
                 .form-group
                   h3 
-                    strong Minimum Gallons
+                    strong Minimum gallons
                   input.form-control(type='number' name='ming' value='0')
                 .form-group
                   h3 
-                    strong Reef Safe?
-                  input(type='radio' id='reefsafe' name='rs' value='rs')
+                    strong In stock?
+                  input(type='radio' id='instock' name='is' value='true')
+                  label(for='instock') In stock
+                  br
+                  input(type='radio' id='nis' name='is' value='false')
+                  label(for='nis') Out of stock
+                .form-group
+                  h3 
+                    strong Reef safe?
+                  input(type='radio' id='reefsafe' name='rs' value='true')
                   label(for='reefsafe') Reef safe
                   br
-                  input(type='radio' id='nrs' name='rs' value='nrs')
+                  input(type='radio' id='nrs' name='rs' value='false')
                   label(for='nrs') Not reef safe
                 .form-group
                   h3

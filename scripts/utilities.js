@@ -38,6 +38,12 @@ module.exports = (app, db, passport) => {
     });
   });
 
+  app.post('/addfish', (req, res) => {
+    if (req.isAuthenticated() && req.user.username === 'angel') {
+      db.addfish(req.body);
+    }
+    res.redirect('/addfish');
+  });
   app.post('/createart', (req, res) => {
     if (req.isAuthenticated() && req.user.username === 'angel') {
       db.createart({ title: req.body.title, desc: req.body.description, thumbnail: req.body.thumbnail, data: req.body.data, id: req.body.id, date: req.body.date, author: req.body.author });
