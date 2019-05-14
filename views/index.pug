@@ -1,7 +1,13 @@
 extends ../includes/layout.pug
 
 append resources
-  title Login
-  form(action='/login' method='POST' id='login')
-
+  title Shark Reef Exotics
 append body
+  .row
+    .card-group
+      each fish in fishes
+        .card.ml-4(style='width: 18rem')
+          img.card-img-top(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
+          .card-body
+            h5.card-title= fish.name
+      

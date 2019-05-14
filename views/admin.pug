@@ -12,3 +12,8 @@ append body
             .card
               .card-body
                 a.btn.btn-primary(href='/addfish') Add fish
+      each fish in fishes
+        .card
+          a(href='/editfish/' + fish.id)
+            .card-body
+              h5.card-title= fish.name

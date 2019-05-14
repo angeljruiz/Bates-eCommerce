@@ -2,8 +2,8 @@ extends ../includes/layout.pug
 
 append resources
   title Add stock
-  script(src='vendor/dropzone.min.js')
-  link(href='vendor/dropzone.min.css' rel='stylesheet')
+  script(src='../vendor/dropzone.min.js')
+  link(href='../vendor/dropzone.min.css' rel='stylesheet')
   
 append body
   .row
@@ -20,6 +20,7 @@ append body
           .card-body
             .form-group
               form(action='/addfish' method='POST')
+                input(type='hidden' name='editing' value=editing? 'true' : 'false')
                 .form-group
                   h3 
                     strong Fish name
@@ -27,46 +28,43 @@ append body
                 .form-group
                   h3 
                     strong Description
-                  textarea.form-control(name='desc' placeholder='Enter description here' value='')
+                  textarea.form-control(name='desc' placeholder='Enter description here')= editing? description : ""
                 .form-group
                   h3 
                     strong ID
-                  input.form-control(type='number' name='id' value='-1')
+                  input.form-control(type='number' name='id' value=editing? id : "-1")
                 .form-group
                   h3 
                     strong Price
-                  input.form-control(type='number' name='price' value='0')
+                  input.form-control(type='number' name='price' value=editing? price : "0")
                 .form-group
                   h3 
                     strong Minimum gallons
-                  input.form-control(type='number' name='ming' value='0')
+                  input.form-control(type='number' name='ming' value=editing? ming : "0")
                 .form-group
                   h3 
-                    strong In stock?
-                  input(type='radio' id='instock' name='is' value='true')
-                  label(for='instock') In stock
-                  br
-                  input(type='radio' id='nis' name='is' value='false')
-                  label(for='nis') Out of stock
+                    strong Quantity
+                  input.form-control(type='number' name='quantity' value=quantity)
                 .form-group
                   h3 
                     strong Reef safe?
-                  input(type='radio' id='reefsafe' name='rs' value='true')
+                  input(type='radio' id='reefsafe' name='rs' value='true' checked=rs? true : false)
                   label(for='reefsafe') Reef safe
                   br
-                  input(type='radio' id='nrs' name='rs' value='false')
+                  input(type='radio' id='nrs' name='rs' value='false' checked=rs? false : true)
                   label(for='nrs') Not reef safe
                 .form-group
                   h3
                     strong Aggressive?
-                  input(type='radio' id='aggr' name='ag' value='ag')
+                  input(type='radio' id='aggr' name='ag' value='ag' checked=aggr === 'ag' ? true : false)
                   label(for='aggr') Aggressive
                   br
-                  input(type='radio' id='caggr' name='ag' value='cag')
+                  input(type='radio' id='caggr' name='ag' value='cag' checked=aggr === 'cag' ? true : false)
                   label(for='caggr') Aggressive to conspecifics
                   br
-                  input(type='radio' id='naggr' name='ag' value='nag')
+                  input(type='radio' id='naggr' name='ag' value='nag' checked=aggr === 'nag' ? true : false)
                   label(for='naggr') Non-aggressive
-                input.btn.btn-primary(type='submit' value='Submit')
+                input.btn.btn-primary.mr-2(type='submit' value='Submit')
+                a.btn.btn-danger(href='/deletefish/' + id) Delete
                 
                 

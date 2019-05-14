@@ -124,14 +124,57 @@ class Database {
       }
     }
     addfish(input) {
-      console.log(input);
-      if (input.id && input.name && input.desc && input.price && input.ming && input.rs && input.ag) {
+      if (input.id && input.name && input.desc && input.price && input.ming) {
         let func = (err, res) => {
           if(err)
               return console.error('error running query', err);
         }
-        pool.query('INSERT INTO marinefish (id, name, description, aggr, price, reefs, ming) VALUES ($1, $2, $3, $4, $5, $6, $7)', [input.id, input.name, input.desc, input.ag, input.price, input.rs, input.ming], func);
+        if (input.editing) {
+          pool.query('UPDATE marinefish SET (name, description, aggr, price, reefs, ming, quantity) = ($1, $2, $3, $4, $5, $6, $7) WHERE id = ($8)', [input.name, input.desc, input.ag, input.price, input.rs, input.ming, input.quantity, input.id], func);
+        }
+        else {
+          pool.query('INSERT INTO marinefish (id, name, description, aggr, price, reefs, ming, quantity) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [input.id, input.name, input.desc, input.ag, input.price, input.rs, input.ming, input.quantity], func);
+        }
       }
+    }
+    getfishes(level, fn) {
+      let fishes = [];
+      let query ='';
+      if (level === 1)
+        query = "SELECT id, name, description, price FROM marinefish WHERE quantity >= '1'"
+      else if (level === 3)
+        query = "SELECT id, name FROM marinefish"
+
+      pool.query(query, (err, res) => {
+        if (err)
+          return console.error('error running query', err);
+        if (level === 1)
+          for (let i=0; i<res.rows.length; i++) {
+            fishes.push({ id: res.rows[i].id, name: res.rows[i].name, description: res.rows[i].description, price: res.rows[i].price});
+          }
+        else {
+          for (let i=0; i<res.rows.length; i++) {
+            fishes.push({ id: res.rows[i].id, name: res.rows[i].name});
+          }
+        }
+        return fn(fishes);
+      });
+    }
+    getfish(id, fn) {
+      let fish = {};
+      pool.query('SELECT * FROM marinefish WHERE id = ($1)', [id], (err, res) => {
+        if (err)
+          return console.error('error running query', err);
+        fish.id = res.rows[0].id;
+        fish.name = res.rows[0].name
+        fish.description = res.rows[0].description
+        fish.price = res.rows[0].price;
+        fish.ming = res.rows[0].ming;
+        fish.quantity = res.rows[0].quantity;
+        fish.rs = res.rows[0].reefs;
+        fish.aggr = res.rows[0].aggr;
+        return fn(fish);
+      });
     }
     listarticles(fn) {
       let articles = [];

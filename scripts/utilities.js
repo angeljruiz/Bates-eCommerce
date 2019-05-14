@@ -29,20 +29,39 @@ module.exports = (app, db, passport) => {
     }
   });
 
-  app.get('/media/:id', (req, res) => {
-    db.loadMedia(req.params.id, (err, data) => {
-      if (err)
-        return console.error('error retrieving file', err);
-      res.write(data, 'binary');
-      res.end(null, 'binary');
-    });
+  // app.get('/media/:id', (req, res) => {
+  //   db.loadMedia(req.params.id, (err, data) => {
+  //     if (err)
+  //       return console.error('error retrieving file', err);
+  //     res.write(data, 'binary');
+  //     res.end(null, 'binary');
+  //   });
+  // });
+
+  app.get('/image/:id/:num', (req, res) => {
+    res.sendFile(path.join(__dirname, "../media/" + req.params.id + "-" + req.params.num + ".jpg"));
   });
 
   app.post('/addfish', (req, res) => {
     if (req.isAuthenticated() && req.user.username === 'angel') {
       db.addfish(req.body);
     }
-    res.redirect('/addfish');
+    res.redirect('/');
+  });
+
+  app.get('/editfish/:id', (req, res) => {
+    res.locals.editing = true;
+    if (req.isAuthenticated() && req.user.username === 'angel') {
+      db.getfish(req.params.id, (fish) => {
+        res.render('addfish', fish);
+      });
+    }
+  });
+
+  app.get('/getfish', (req, res) => {
+    db.getfishes(1, (fishes) => {
+      res.send(fishes);
+    })
   });
   app.post('/createart', (req, res) => {
     if (req.isAuthenticated() && req.user.username === 'angel') {

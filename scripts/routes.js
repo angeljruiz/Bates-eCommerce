@@ -16,11 +16,17 @@ module.exports = (app, db, passport) => {
       new User({ id: req.user.id }, (err, user) => {
         user.loggedIn = true;
         user.owner = true;
-        res.render('index');
       });
-    } else {
-      res.redirect('/index');
     }
+    db.getfishes(1, (fishes) => {
+      res.render('index', { fishes: fishes });
+    });
+  });
+
+  app.get('/admin', (req, res) => {
+    db.getfishes(3, (fishes) => {
+      res.render('admin', { fishes: fishes });
+    });
   });
 
   app.get('/list', (req, res) => {
