@@ -2,10 +2,10 @@ class Pager {
   constructor() {
     this.loggedIn = false;
     this.owner = false;
+    this.cart = [];
   }
 
-  update(req) {
-    this.path = 'clickwithit.us' + req.path;
+  update(req, cart) {
     if (req.isAuthenticated())
       this.loggedIn = true;
     else
@@ -22,10 +22,14 @@ class Pager {
       this.user = 0;
       this.owner = false;
     }
+    if (cart)
+      this.cart = cart;
     if (req.path === '/')
       this.owner = true;
-    for (let prop in this)
-      req.res.locals[prop] = this[prop];
+    let keys = Object.keys(this);
+    Object.entries(this).forEach(entries => {
+      req.res.locals[entries[0]] = entries[1];
+    })
   }
 }
 

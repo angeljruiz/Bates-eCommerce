@@ -9,34 +9,50 @@ mixin footer()
     a.float-right.mr-2.pl-2.footer-link(href='/contact') Contact
     a.float-right.mr-2.footer-link(href='/about') About
     br
-    .text-center.cr-name &copy 2017 Angel Ruiz-Bates
+    .text-center.cr-name &copy 2017-2019 Angel Ruiz-Bates
 
 mixin navvy(index)
   -
       var pages = [ 'Marine Fish', 'Inverts', 'Corals', 'WYSIWYG', 'Food and Supplies', 'Auctions', 'Custom Orders'];
       var urls = [ '/', '/inverts', '/coral', '/wysiwyg', '/food', '/auctions', '/customorder' ];  
-  nav.navbar.navbar-expand-xl.mb-4.mt-4(clas='navbar-light')
-    button.navbar-toggler.ml-auto.btn(type='button' data-toggle='collapse' data-target='#navcollapse')
+  nav.navbar.navbar-light.navbar-expand-lg.my-4
+    a.navbar-brand(href='/') Shark Reef
+    button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navcollapse')
       span.navbar-toggler-icon
     #navcollapse.collapse.navbar-collapse
-      ul.navbar-nav   
+      ul.nav.mr-auto 
         each i in [0, 1, 2, 3, 4, 5, 6]
-          li.nav-item: a.nav-link(href=urls[i])= pages[i]
+          if(i==0)
+            li.nav-item: a.nav-link.active(href=urls[i])= pages[i]
+          else
+            li.nav-item: a.nav-link(href=urls[i])= pages[i]
         if(loggedIn)
           li.nav-item: a.nav-link(href='/logout')
             i.fa-2x.fas.fa-sign-out-alt
-        li.nav-item: a.nav-link(href='/admin') Admin
-      form.form-inline.ml-auto
-        input.form-control.mr-2(type='search' placeholder='Search')
-        button.btn.btn-outline-primary.mr-2(type='submit') Search
-      i.fa-2x.fas.fa-cart-plus
-                
+        if(aauth)
+          li.nav-item: a.nav-link(href='/admin') Admin
+      .btn-group.dropdown.mr-2
+        button.btn.btn-info.dropdown-toggle(type='button' id='dropdownMenuButton' data-toggle='dropdown') Cart
+        .dropdown-menu.mt-4
+          each item, index in cart.items
+            a.dropdown-item(href='/wefoijwefioj')
+              .row
+                .col-xs
+                  img.dropdown-img(src='../media/' + item.id + '-1.jpg')
+                .col-xs.ml-2
+                  h6= item.name
+                  span #{cart.amount[index]} x $#{item.price}
+          hr.mx-3
+          .row 
+            span.mx-auto Total: $#{cart.total}
+          .row 
+            a.btn.btn-warning.mx-auto.mt-1(href='/checkout') Checkout
+      .navbar-nav
+        form.form-inline
+          input.form-control.mr-2.my-1(type='search' placeholder='Search')
+          button.btn.btn-outline-primary.mr-2.my-1(type='submit') Search
+            
+                    
 mixin icons
   a.float-left.ml-1(href= 'https://github.com/angeljruiz')
     i.fa-2x.fab.fa-github
-
-mixin row(size, offset)
-    .row
-        div(class='col-md-' + size class=offset==0? '' : 'offset-md-' + offset)
-            if block
-                block

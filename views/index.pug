@@ -5,9 +5,18 @@ append resources
 append body
   .row
     .card-group
-      each fish in fishes
-        .card.ml-4(style='width: 18rem')
-          img.card-img-top(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
-          .card-body
-            h5.card-title= fish.name
-      
+      each fish, index in fishes
+        .col-sm-3
+          if (index == 0)
+            .card.padded.row.mx-4
+              img.card-img-top(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
+              .card-body
+                h5.card-title= fish.name
+                  badge.badge-primary.badge-pill= '$' + fish.price
+          else
+            .card.padded-row.mr-2
+              img.card-img-top(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
+              .card-body
+                h5.card-title= fish.name
+                  badge.badge-primary.badge-pill= '$' + fish.price
+          

@@ -176,27 +176,19 @@ class Database {
         return fn(fish);
       });
     }
-    listarticles(fn) {
-      let articles = [];
-      pool.query('SELECT * FROM articles ORDER BY id DESC', (err, res) => {
-          if(err)
-              return console.error('error running query', err);
-          for (let i=0; i<res.rows.length; i++) {
-            articles.push({ title: res.rows[i].title, desc: res.rows[i].description, thumbnail: res.rows[i].thumbnail, id: res.rows[i].id });
-          }
-          return fn(articles);
+
+    getfishc(id, fn) {
+      let fish = {};
+      pool.query('SELECT id, name, price FROM marinefish WHERE id = ($1)', [id], (err, res) => {
+        if (err)
+          return console.error('error running query', err);
+        fish.id = res.rows[0].id;
+        fish.name = res.rows[0].name
+        fish.price = res.rows[0].price;
+        return fn(fish);
       });
     }
-    loadArticle(id, fn) {
-      pool.query('SELECT * FROM articles WHERE id = ($1)', [id], (err, res) => {
-        if(err)
-            return console.error('error running query', err);
-          if (fn && res.rows[0])
-            fn({title: res.rows[0].title, body: res.rows[0].data, description: res.rows[0].description, thumbnail: res.rows[0].thumbnail, id: res.rows[0].id, date: res.rows[0].date, author: res.rows[0].author || '-1'});
-          else
-            fn();
-      })
-    }
+
 }
 
 module.exports = new Database;

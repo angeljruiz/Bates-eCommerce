@@ -3,10 +3,21 @@ var upload = multer({ dest: 'uploads/' });
 var path = require('path');
 var fs = require('fs');
 var mw = require('./middleware.js');
+var pager = require('../scripts/pager.js');
 var User = require('../models/user.js');
+var Cart = require('../scripts/cart.js');
 
 
 module.exports = (app, db, passport) => {
+
+  app.use((req, res, next) => {
+    if (!req.session.cart) {
+      req.session.cart = new Cart;
+    }
+    Cart.getTotal(req.session.cart);
+    pager.update(req, req.session.cart);
+    next();
+  });
 
   app.use( (req, res, next) => {
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
@@ -29,14 +40,13 @@ module.exports = (app, db, passport) => {
     }
   });
 
-  // app.get('/media/:id', (req, res) => {
-  //   db.loadMedia(req.params.id, (err, data) => {
-  //     if (err)
-  //       return console.error('error retrieving file', err);
-  //     res.write(data, 'binary');
-  //     res.end(null, 'binary');
-  //   });
-  // });
+  app.get('/addtocart/:id/:amount', (req, res) => {
+    db.getfishc(req.params.id, (fish) => {
+      Cart.addItem(req.session.cart, fish, req.params.amount);
+      req.session.save();
+    });
+    res.redirect('/');
+  });
 
   app.get('/image/:id/:num', (req, res) => {
     res.sendFile(path.join(__dirname, "../media/" + req.params.id + "-" + req.params.num + ".jpg"));
@@ -49,6 +59,12 @@ module.exports = (app, db, passport) => {
     res.redirect('/');
   });
 
+  app.get('/getfish', (req, res) => {
+    db.getfishes(1, (fishes) => {
+      res.send(fishes);
+    })
+  });
+
   app.get('/editfish/:id', (req, res) => {
     res.locals.editing = true;
     if (req.isAuthenticated() && req.user.username === 'angel') {
@@ -58,11 +74,6 @@ module.exports = (app, db, passport) => {
     }
   });
 
-  app.get('/getfish', (req, res) => {
-    db.getfishes(1, (fishes) => {
-      res.send(fishes);
-    })
-  });
   app.post('/createart', (req, res) => {
     if (req.isAuthenticated() && req.user.username === 'angel') {
       db.createart({ title: req.body.title, desc: req.body.description, thumbnail: req.body.thumbnail, data: req.body.data, id: req.body.id, date: req.body.date, author: req.body.author });
@@ -104,13 +115,6 @@ module.exports = (app, db, passport) => {
           res.redirect('/');
         });
       }
-  });
-
-  app.get('/getUsers', (req, res) => {
-    db.loadUsers( users => {
-      let temp = JSON.stringify(users);
-      res.send(temp);
-    });
   });
 
 }

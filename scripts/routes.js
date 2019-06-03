@@ -1,15 +1,9 @@
 var mailer = require('nodemailer');
 var crypto = require('crypto');
-var pager = require('../scripts/pager.js');
 var User = require('../models/user.js');
 var mw = require('./middleware.js');
 
 module.exports = (app, db, passport) => {
-
-  app.use((req, res, next) => {
-    pager.update(req);
-    next();
-  });
 
   app.get('/', (req, res) => {
     if(req.isAuthenticated()) {
@@ -18,15 +12,20 @@ module.exports = (app, db, passport) => {
         user.owner = true;
       });
     }
+    console.log(req.session.cart);
     db.getfishes(1, (fishes) => {
       res.render('index', { fishes: fishes });
     });
   });
 
   app.get('/admin', (req, res) => {
-    db.getfishes(3, (fishes) => {
-      res.render('admin', { fishes: fishes });
-    });
+    if (res.locals.aauth) {
+      db.getfishes(3, (fishes) => {
+        res.render('admin', { fishes: fishes });
+      });
+    } else {
+      res.redirect('/');
+    }
   });
 
   app.get('/list', (req, res) => {

@@ -1,0 +1,18 @@
+extends ../includes/layout.pug
+
+append resources
+  title Articles
+  
+append body
+  .row
+    .col-md-10.mx-auto
+      .card
+          h1.card-header.text-center Articles
+          ul.list-group
+          each article in articles
+            .card.article
+              a(href='/article/' + article.id)
+                .card-body
+                  img(src='/media/' + article.thumbnail width=208 height=128) 
+                  strong.ml-2= article.title
+                  .text-center.mb-3= article.desc
