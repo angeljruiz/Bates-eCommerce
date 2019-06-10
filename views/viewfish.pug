@@ -1,0 +1,18 @@
+extends ../includes/layout.pug
+
+append resources
+  title Shark Reef Exotics
+append body
+  .col-md-4.ml-auto 
+    img.rounded.img-fluid(src='../media/' + id + '-1.jpg')
+  .col-md-4.mr-auto
+    .card
+      .card-title
+        h2= name
+        br
+        h4.text-muted $#{price}
+        br
+        .col-xs-5.col-lg-3
+          a.btn.btn-primary(href='/addtocart/' + id + '/1') Add to cart
+            
+append footer

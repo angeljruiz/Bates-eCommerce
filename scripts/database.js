@@ -15,177 +15,78 @@ module.exports.connect = function (callback) {
 
 
 class Database {
-    constructor() {
-        this.users = [];
-        this.messages = [];
-    }
-    loadUsers(fn) {
-        this.users = [];
-        pool.query('SELECT * FROM users', (err, res) => {
-            if(err)
-                return console.error('error running query', err);
-            for(let i=0;i<res.rows.length;i++)
-                this.users.push({ name: res.rows[i].username, id: res.rows[i].id });
-            fn(this.users);
+    getData( model, attrs, pk, fn) {
+      let c = new model;
+      let d = [];
+      let p = 0;
+      let keys = Object.keys(c);
+      let attributes = '';
+      let query;
+      if (attrs == 'all') {
+        attributes = '*';
+      } else {
+        attrs.forEach( (item, index) => {
+          attributes += item;
+          if (index < attrs.length-1)
+            attributes += ', ';
         });
-    }
-    selectUser(user, fn) {
-        let temp = (err, res) => {
-            if(err) {
-                return fn(err);
-            }
-            if(res.rows.length > 0)
-                return fn(false, { username: res.rows[0].username, password: res.rows[0].password, id: res.rows[0].id, pp: res.rows[0].pp });
-            else
-                return fn(false, false);
-        };
-        if (user.id !== -1) {
-          pool.query('SELECT * FROM users WHERE id = ($1)', [user.id], temp);
-        } else if (user.username !== 0) {
-          pool.query('SELECT * FROM users WHERE username = ($1)', [user.username], temp);
-        } else if (user.email !== 0) {
-          pool.query('SELECT * FROM users WHERE email = ($1)', [user.email], temp);
-        }
-
-    }
-    loadPassword(id) {
-      return new Promise( (resolve, reject) => {
-        pool.query('SELECT password FROM users WHERE id = ($1)', [id], (err, res) => {
-          if (err)
-            return reject(err);
-          resolve(res.rows[0].password);
-        });
-      });
-    }
-    deleteUser(id, fn) {
-        pool.query('DELETE FROM users WHERE id = ($1)', [id], (err, res) => {
-            if(err)
-                return fn(err);
-
-            return fn(true);
-        });
-    }
-    createUser(username, email, password, fn) {
-        if(username  === '' || password === '' || email === '') {
-            return res.send('bad username or pass');
-        }
-        pool.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3)', [username, email, password], function(err) {
-            if(err) {
-                return console.error('error running query', err);
-            }
-            if (fn)
-              fn();
-        });
-    }
-    loadMessages(oid, fn) {
-      this.messages = [];
-      pool.query('SELECT * FROM messages WHERE oid = ($1) ORDER BY id DESC', [oid], (err, res) => {
-        if(err)
-          return console.error('error running query', err);
-        for(let i=0;i<res.rows.length;i++)
-          this.messages.push({ id: res.rows[i].id, text: res.rows[i].message });
-        return fn(this.messages);
-      });
-    }
-    saveMessage(oid, message, fn) {
-      pool.query('INSERT INTO messages (message, oid) VALUES ($1, $2)', [message, oid], (err, res) => {
-          if(err)
-              return console.error('error running query', err);
-          fn();
-      });
-    }
-    uploadMedia(filename, data, fn) {
-      pool.query('INSERT INTO media (filename, data) VALUES ($1, $2)', [filename, data], (err, res) => {
-        if (err)
-          return console.error('Error running query', err);
-        if (fn)
-          fn();
-      });
-    }
-    loadMedia(filename, fn) {
-      pool.query('SELECT data FROM media WHERE filename = ($1)', [filename], (err, res) => {
-        if (err)
-          return console.error('Error running query', err);
-        if (fn)
-          if (res.rows[0])
-            fn(null, res.rows[0].data);
-      });
-    }
-    createart(input) {
-      if (input.title && input.desc && input.thumbnail) {
-        let func = (err, res) => {
-          if(err)
-              return console.error('error running query', err);
-        }
-        if (input.id !== '-1')
-          pool.query('UPDATE articles SET (title, description, thumbnail, data, date, author) = ($1, $2, $3, $4, $5, $6) WHERE id = ($7)', [input.title, input.desc, input.thumbnail, input.data, input.date, input.author, input.id], func);
-        else
-          pool.query('INSERT INTO articles (title, description, thumbnail, data, date) VALUES ($1, $2, $3, $4, $5)', [input.title, input.desc, input.thumbnail, input.data, input.date], func);
       }
-    }
-    addfish(input) {
-      if (input.id && input.name && input.desc && input.price && input.ming) {
-        let func = (err, res) => {
-          if(err)
-              return console.error('error running query', err);
-        }
-        if (input.editing) {
-          pool.query('UPDATE marinefish SET (name, description, aggr, price, reefs, ming, quantity) = ($1, $2, $3, $4, $5, $6, $7) WHERE id = ($8)', [input.name, input.desc, input.ag, input.price, input.rs, input.ming, input.quantity, input.id], func);
-        }
-        else {
-          pool.query('INSERT INTO marinefish (id, name, description, aggr, price, reefs, ming, quantity) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [input.id, input.name, input.desc, input.ag, input.price, input.rs, input.ming, input.quantity], func);
-        }
-      }
-    }
-    getfishes(level, fn) {
-      let fishes = [];
-      let query ='';
-      if (level === 1)
-        query = "SELECT id, name, description, price FROM marinefish WHERE quantity >= '1'"
-      else if (level === 3)
-        query = "SELECT id, name FROM marinefish"
-
+      query = 'SELECT ' + attributes + ' FROM ' + c.constructor.name + (pk == 'all'? '' : ' WHERE ' + pk[0] + ' = \'' + pk[1] + '\'');
       pool.query(query, (err, res) => {
-        if (err)
-          return console.error('error running query', err);
-        if (level === 1)
-          for (let i=0; i<res.rows.length; i++) {
-            fishes.push({ id: res.rows[i].id, name: res.rows[i].name, description: res.rows[i].description, price: res.rows[i].price});
-          }
-        else {
-          for (let i=0; i<res.rows.length; i++) {
-            fishes.push({ id: res.rows[i].id, name: res.rows[i].name});
-          }
+        let rtr = function(item, index) {
+          c[item] = res.rows[0][item];
         }
-        return fn(fishes);
-      });
-    }
-    getfish(id, fn) {
-      let fish = {};
-      pool.query('SELECT * FROM marinefish WHERE id = ($1)', [id], (err, res) => {
         if (err)
           return console.error('error running query', err);
-        fish.id = res.rows[0].id;
-        fish.name = res.rows[0].name
-        fish.description = res.rows[0].description
-        fish.price = res.rows[0].price;
-        fish.ming = res.rows[0].ming;
-        fish.quantity = res.rows[0].quantity;
-        fish.rs = res.rows[0].reefs;
-        fish.aggr = res.rows[0].aggr;
-        return fn(fish);
+        if (res.rows.length == 1) {
+          if (attrs == 'all')
+            keys.forEach ( rtr );
+          else
+            attrs.forEach( rtr );
+        } else if (res.rows.length > 1) {
+          res.rows.forEach( (item, index) => {
+            d.push(new model);
+            keys.forEach ( (key) => {
+              d[p][key] = res.rows[index][key];
+            });
+            p++;
+          });
+        } else return fn(false);
+        if (res.rows.length == 1)
+          return fn(c);
+        else if (res.rows.length >= 1)
+          return fn(d);
       });
     }
-
-    getfishc(id, fn) {
-      let fish = {};
-      pool.query('SELECT id, name, price FROM marinefish WHERE id = ($1)', [id], (err, res) => {
+    saveData(model, attrs, pk, input, fn) {
+      let c = new model;
+      let attributes = '';
+      let data = '';
+      let query;
+      attrs.forEach( (item, index) => {
+        attributes += item;
+        if (index < attrs.length-1)
+          attributes += ', ';
+      });
+      input.forEach ( (item, index) => {
+        data += "'" + item + "'";
+        if (index < input.length-1)
+          data += ', ';
+      });
+      query = (pk == false? 'INSERT INTO ' : 'UPDATE ') + c.constructor.name + (pk == false? ' (': ' SET (') + attributes + (pk == false? ') VALUES (' : ') = (') + data + (pk != false? ') WHERE ' + pk[0] + ' = ' + pk[1] : ')');
+      pool.query(query, (err) => {
         if (err)
           return console.error('error running query', err);
-        fish.id = res.rows[0].id;
-        fish.name = res.rows[0].name
-        fish.price = res.rows[0].price;
-        return fn(fish);
+        return fn();
+      });
+    }
+    deleteData(model, pk, fn) {
+      let c = new model;
+      let query = 'DELETE FROM ' + c.constructor.name + ' WHERE ' + pk[0] + ' = ' + pk[1];
+      pool.query(query, (err) => {
+        if(err)
+            return console.error('error running query', err);
+        return fn();
       });
     }
 

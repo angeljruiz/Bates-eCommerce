@@ -12,7 +12,7 @@ var pgSession = require('connect-pg-simple')(session);
 var app = express();
 
 
-require('./scripts/passport.js')(passport);
+require('./scripts/passport.js')(passport, db);
 
 app.use(bp.urlencoded({extended: true}));
 app.use(bp.json());
@@ -26,7 +26,7 @@ app.use(session({
   name: 'Sharkreefcookies',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 1 day
 }));
 app.use(passport.initialize());
 app.use(passport.session());

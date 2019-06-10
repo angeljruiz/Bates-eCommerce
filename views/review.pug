@@ -1,0 +1,30 @@
+extends ../includes/layout.pug
+
+append resources
+  title Shark Reef Exotics
+    
+append body
+  .col-xs-12.col-lg-6
+    .card
+      .card-title Review Your Order
+  .col-xs-12.col-md-4.mr-auto 
+    .card
+      .card-header Your Order 
+        small.text-muted Pickup in store only!
+      .card-body
+        .row
+          .col-6.text-left
+            span.font-weight-bold Subtotal:
+            br 
+            span Sales tax:
+          .col-6.text-right
+            span.font-weight-bold $#{cart.total}
+            br
+            span $#{(cart.total*.086).toFixed(2)}
+        hr
+        .row 
+          .col-6.text-left
+            strong Total
+          .col-6.text-right.font-weight-bold= (cart.total*1.086).toFixed(2)
+        a(href='/checkout')
+          button.btn.btn-primary.form-control.mt-2 Checkout

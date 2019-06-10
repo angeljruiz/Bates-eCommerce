@@ -2,42 +2,29 @@ extends ../includes/layout.pug
 
 append resources
   title Shark Reef Exotics
+
 append body
-  .row 
-    .col-md-7.ml-auto 
-      .card
-        br
-        h5.ml-4 Your Cart
-        br
-        .row.text-muted 
-          .col-md-5
-            .properties.ml-4 Item
-          .col-md-1.ml-2
-            .properties Quantity
-          .col-md-1
-            .properties Price
-          .col-md-1
-            .properties Subtotal
-          .col-md-1.ml-3
-            .properties Delete
-        hr.mx-4
-        each item, index in cart.items
-          .card-body
-            .row
-              .col-md-1.ml-2
-                img.checkout-img(src='../media/' + item.id + '-1.jpg')
-              .col-md-4.mt-3
-                h6= item.name
-              .col-md-1.mt-3
-                span #{cart.amount[index]}
-              .col-md-1.mt-3
-                span $#{item.price}
-              .col-md-1.mt-3.ml-2
-                span $#{item.price*cart.amount[index]}
-          if(index < cart.items.length - 1)
-            hr.mx-4
-    .col-md-3.mr-auto
-      .card(style='height: 25rem')
-        br
-        span.ml-4 Your Order
-        hr.mx-4
+  .col-xs-12.col-lg-4.mb-2.ml-auto
+    .card
+      .card-header 
+        i.fas.fa-user-plus
+          span  New Customers
+      .card-body
+        a(href='/asguest')
+          button.btn.btn-primary.form-control Checkout as Guest
+
+  .col-xs-12.col-lg-4.my-auto.mr-auto
+    .card
+      .card-header 
+        i.fas.fa-user-plus
+          span  Returning Customers
+      .card-body 
+        form
+          .form-group
+            label(for='em') Email
+            input#em.form-control(type='text' placeholder='Email')
+          .form-group
+            label(for='pw') Password
+            input#pw.form-control(type='password' placeholder='Password')
+          a
+            button.btn.btn-primary.form-control Login

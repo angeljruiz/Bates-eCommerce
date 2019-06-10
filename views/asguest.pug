@@ -1,0 +1,48 @@
+extends ../includes/layout.pug
+
+append resources
+  title Shark Reef Exotics
+    
+append body
+  .col-xs-12.col-lg-6.ml-auto.mb-2
+    .card
+      .card-header Customer Info
+      .card-body 
+        form#ag(action='/asguest' method='POST')
+          if (flash.incorrect)
+            .alert.alert-danger.text-center
+              = flash.incorrect
+          .form-row
+            .form-group.col-6
+              label(for='fn') First Name
+              input#fn.form-control(type='text' name='fn' placeholder='First Name')
+            .form-group.col-6
+              label(for='ln') Last Name
+              input#ln.form-control(type='text' name='ln' placeholder='Last Name')
+          .form-group
+            label(for='pn') Phone Number
+            input#pn.form-control(type='text' name='pn' placeholder='Phone Number')  
+          .form-group
+            label(for='em') Email
+            input#em.form-control(type='text' name='em' placeholder='Email')
+          input.btn.btn-primary.form-control(type='submit' action='/asguest' method='POST' value='Continue')   
+  .col-xs-12.col-lg-4.mr-auto
+    .card
+      .card-header Your Order 
+        small.text-muted Pickup in store only!
+      .card-body
+        .row
+          .col-6.text-left
+            span.font-weight-bold Subtotal:
+            br 
+            span Sales tax:
+          .col-6.text-right
+            span.font-weight-bold $#{cart.total}
+            br
+            span $#{(cart.total*.086).toFixed(2)}
+        hr
+        .row.mb-2
+          .col-6.text-left
+            strong Total
+          .col-6.text-right.font-weight-bold= (cart.total*1.086).toFixed(2)
+        input.btn.btn-primary.form-control(type='submit' action='/asguest' method='POST' value='Review & Checkout' form='ag')   

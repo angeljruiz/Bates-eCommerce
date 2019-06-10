@@ -3,20 +3,13 @@ extends ../includes/layout.pug
 append resources
   title Shark Reef Exotics
 append body
-  .row
-    .card-group
-      each fish, index in fishes
-        .col-sm-3
-          if (index == 0)
-            .card.padded.row.mx-4
+  .card-group
+    each fish, index in fishes
+      .col-sm-3
+        .product
+          a(href='/viewfish=' + fish.id)
+            .card.padded.row.mx-4.mb-2
               img.card-img-top(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
               .card-body
-                h5.card-title= fish.name
-                  badge.badge-primary.badge-pill= '$' + fish.price
-          else
-            .card.padded-row.mr-2
-              img.card-img-top(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
-              .card-body
-                h5.card-title= fish.name
-                  badge.badge-primary.badge-pill= '$' + fish.price
-          
+                h3.card-title= fish.name
+                .text-muted $#{fish.price}

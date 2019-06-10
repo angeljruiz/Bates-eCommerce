@@ -21,6 +21,15 @@ module.exports = {
     return next();
   },
 
+  validInfo: (req, res, next) => {
+    if (req.body.em === '' || req.body.fn === '' || req.body.ln === '' || req.body.pn === '') {
+      req.res.flash('incorrect', 'Please fill out the entire form');
+      return res.redirect('/asguest');
+    } else {
+      return next();
+    }
+  },
+
   async: generator => {
     let iterator = generator();
 
@@ -41,7 +50,7 @@ module.exports = {
   },
 
   formatDate: date => {
-    let monthNames = [
+    let months = [
       "January", "February", "March",
       "April", "May", "June", "July",
       "August", "September", "October",
@@ -53,12 +62,12 @@ module.exports = {
     let year = date.getFullYear();
     let hours = date.getHours();
     let minutes = date.getMinutes();
-    let c = hours >= 12 ? 'Pm' : 'Am';
+    let c = hours >= 12 ? 'PM' : 'AM';
     minutes = minutes < 10 ? '0' + minutes : minutes;
     hours = hours % 12;
     hours = hours === 0? 12 : hours;
     let time = hours + ':' + minutes;
 
-    return monthNames[monthIndex] + ' ' + day + ' at ' + time + ' ' + c;
+    return months[monthIndex] + ' ' + day + ' at ' + time + ' ' + c;
   }
 }

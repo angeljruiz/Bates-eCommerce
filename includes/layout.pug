@@ -18,7 +18,8 @@ html
     .container-fluid
       +header()
       +navvy
-      block body
+      .row
+        block body
   //- +footer()
   if (showTests)
     #mocha(style='background-color: white')
@@ -32,3 +33,6 @@ html
     script(src='../js/setup.js')
     script(src='../vendor/popper.min.js')
     script(src='../vendor/bootstrap.min.js')
+    
+footer
+  block footer

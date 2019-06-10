@@ -5,7 +5,9 @@ var fs = require('fs');
 var mw = require('./middleware.js');
 var pager = require('../scripts/pager.js');
 var User = require('../models/user.js');
-var Cart = require('../scripts/cart.js');
+var Order = require('../models/order.js');
+var MF = require('../models/marinefish.js');
+var Cart = require('../models/cart.js');
 
 
 module.exports = (app, db, passport) => {
@@ -41,11 +43,16 @@ module.exports = (app, db, passport) => {
   });
 
   app.get('/addtocart/:id/:amount', (req, res) => {
-    db.getfishc(req.params.id, (fish) => {
-      Cart.addItem(req.session.cart, fish, req.params.amount);
+    db.getData(MF, ['name', 'id', 'price'], ['id', req.params.id], (fish) => {
+      Cart.addItem(req.session.cart, fish, parseInt(req.params.amount));
       req.session.save();
     });
     res.redirect('/');
+  });
+
+  app.get('/remove/:id/:amount', (req, res) => {
+    Cart.removeItem(req.session.cart, req.params.id, req.params.amount);
+    res.redirect('/cart');
   });
 
   app.get('/image/:id/:num', (req, res) => {
@@ -54,32 +61,14 @@ module.exports = (app, db, passport) => {
 
   app.post('/addfish', (req, res) => {
     if (req.isAuthenticated() && req.user.username === 'angel') {
-      db.addfish(req.body);
+      let edit = req.body.editing;
+      delete req.body.editing;
+      db.saveData(MF, Object.keys(req.body), (edit == true? ['id', req.body.id] : false), Object.values(req.body), () => {
+      });
     }
     res.redirect('/');
   });
 
-  app.get('/getfish', (req, res) => {
-    db.getfishes(1, (fishes) => {
-      res.send(fishes);
-    })
-  });
-
-  app.get('/editfish/:id', (req, res) => {
-    res.locals.editing = true;
-    if (req.isAuthenticated() && req.user.username === 'angel') {
-      db.getfish(req.params.id, (fish) => {
-        res.render('addfish', fish);
-      });
-    }
-  });
-
-  app.post('/createart', (req, res) => {
-    if (req.isAuthenticated() && req.user.username === 'angel') {
-      db.createart({ title: req.body.title, desc: req.body.description, thumbnail: req.body.thumbnail, data: req.body.data, id: req.body.id, date: req.body.date, author: req.body.author });
-    }
-    res.redirect('/creator')
-  });
 
   app.post('/new', mw.validateInfo, passport.authenticate('signup', { session: true, failureRedirect: '/signup' }), (req, res) => {
     new User({ username: req.user.username }, (err, user) => {
@@ -91,6 +80,11 @@ module.exports = (app, db, passport) => {
     });
   });
 
+  app.get('/deletefish=:id', (req, res) => {
+      db.deleteData(MF, ['id', req.params.id,], ()=> {
+          res.redirect('/admin');
+      });
+  });
   app.get('/delete/:id', (req, res) => {
       db.deleteUser(req.params.id, ()=> {
           res.redirect('/list');
@@ -98,6 +92,15 @@ module.exports = (app, db, passport) => {
   });
 
   app.post('/login', mw.validateInfo, passport.authenticate('login', { session: true, successRedirect : '/', failureRedirect : '/login' }));
+
+  app.post('/asguest', mw.validInfo, (req, res) => {
+    req.body.date = mw.formatDate(new Date());
+    let order = new Order(req.body, req.session.cart, req.sessionID);
+    req.session.cart.cid = order.cid;
+    Order.save(order, req.session.cart, () => {
+      res.redirect('/review');
+    });
+  });
 
   app.get('/logout', (req, res) => {
      req.logout();
@@ -107,14 +110,5 @@ module.exports = (app, db, passport) => {
      }, 1000);
   });
 
-  app.post('/saveMessage', (req, res) => {
-      if(req.isAuthenticated()) {
-        req.user.loggedIn = true;
-        req.user.owner = true;
-        req.user.saveMessage(req.body.message, () => {
-          res.redirect('/');
-        });
-      }
-  });
 
 }

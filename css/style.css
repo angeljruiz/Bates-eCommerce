@@ -9,12 +9,86 @@ body {
   margin-bottom: 78px;
 }
 
+.container-fluid {
+  padding: 0px;
+}
+
+.row {
+  margin: auto;
+}
 .dropdown-item {
+  padding: .5rem;
   min-width: 15rem;
 }
 
 .padded-row {
   padding-bottom: 2rem;
+}
+
+
+@media all and (max-width: 575.98px) {
+
+    /* Force table to not be like tables anymore */
+	#cart-table table,
+	#cart-table thead,
+	#cart-table tbody,
+	#cart-table th,
+	#cart-table td,
+	#cart-table tr {
+		display: block;
+	}
+
+  #cart-table td .cin {
+    display: table-cell;
+  }
+
+	/* Hide table headers (but not display: none;, for accessibility) */
+	#cart-table thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+	#cart-table td {
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 50%;
+		white-space: normal;
+		text-align:left;
+	}
+
+  #cart-table .cst {
+    visibility: hidden;
+    display: none;
+  }
+
+	#cart-table td:before {
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		padding-right: 10px;
+		white-space: nowrap;
+		text-align:left;
+		font-weight: bold;
+	}
+
+	/*
+	Label the data
+	*/
+	#cart-table td:before { content: attr(data-title); }
+
+}
+
+.cin {
+  float: left;
+}
+
+.clear {
+  clear: both;
 }
 
 .checkout-card {
@@ -25,10 +99,15 @@ body {
   width: 50px;
   height: 50px;
 }
-
+@media (max-width: 575.98px) {
+  .checkout-img {
+    width: 128px;
+    height: 128px;
+  }
+}
 .checkout-img {
-  width: 75px;
-  height: 75px;
+  max-width: 150px;
+  max-height: 150px;
 }
 .micon {
   content: url('/media/mi.png');
@@ -81,6 +160,10 @@ h6 > a {
   background-color: rgb(238,238,238)
 }
 
+.product-img {
+  max-height: 400px;
+}
+
 .date {
   color: #AAA;
   font-size: 14px;
@@ -102,7 +185,7 @@ h6 > a {
   list-style-type: none;
 }
 
-.article a {
+.product a {
   color: inherit;
   text-decoration: none;
 }

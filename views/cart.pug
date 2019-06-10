@@ -1,0 +1,54 @@
+extends ../includes/layout.pug
+
+append resources
+  title Shark Reef Exotics
+append body
+  .col-xs-12.col-md-8.col-lg-6.ml-auto
+    .card.mb-2
+      .card-header Your Cart
+      .card-body
+        .table-responsive#cart-table
+          table.table.cart-table
+            thead
+              tr.text-center.small.text-muted
+                th.text-left Item
+                //- th &nbsp;
+                th Amount
+                th Price
+                th Total
+            tbody
+              each item, index in cart.items
+                tr.text-center
+                  td.text-left.px-1.cin
+                    a(href='/viewfish=' + item.id)
+                      img.checkout-img.img-fluid.img-thumbnail(src='../media/' + item.id + '-1.jpg')
+                  td.px-0.text-left.cin
+                    a(href='/viewfish=' + item.id): h6.mb-0= item.name
+                    a(href='/remove/' + item.id + '/all'): small.text-muted remove 
+                  td.clear(data-title='Amount:')
+                    span #{cart.amount[index]}
+                  td(data-title='Price:')
+                    span $#{item.price}
+                  td.cst(data-title='Total:')
+                    span $#{(item.price*cart.amount[index]).toFixed(2)}
+  .col-xs-12.col-md-4.mr-auto 
+    .card
+      .card-header Your Order 
+        small.text-muted Pickup in store only!
+      .card-body
+        .row
+          .col-6.text-left
+            span.font-weight-bold Subtotal:
+            br 
+            span Sales tax:
+          .col-6.text-right
+            span.font-weight-bold $#{cart.total}
+            br
+            span $#{(cart.total*.086).toFixed(2)}
+        hr
+        .row 
+          .col-6.text-left
+            strong Total
+          .col-6.text-right.font-weight-bold= (cart.total*1.086).toFixed(2)
+        a(href='/checkout')
+          button.btn.btn-primary.form-control.mt-3 Continue
