@@ -25,7 +25,9 @@ append body
           .form-group
             label(for='em') Email
             input#em.form-control(type='text' name='em' placeholder='Email')
-          input.btn.btn-primary.form-control(type='submit' action='/asguest' method='POST' value='Continue')   
+          .form-group
+            label(for='em') Pickup Date
+            input#pd.form-control(type='date' name='pd')
   .col-xs-12.col-lg-4.mr-auto
     .card
       .card-header Your Order 

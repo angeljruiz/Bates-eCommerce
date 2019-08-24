@@ -4,14 +4,14 @@ let db = require('../scripts/database.js');
 
 class users {
     constructor(input, fn) {
+      if (input)
+        return db.getData(users, 'all', input, fn);
       this.username = 0;
       this.email = 0;
       this.password = 0;
       this.id = -1;
       this.pp = 0;
-      if (input)
-        return db.getData(users, 'all', input, fn);
-      else if (fn)
+      if (fn)
         return fn(this);
     }
     pageify(req) {

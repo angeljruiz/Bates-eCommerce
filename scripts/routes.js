@@ -1,43 +1,45 @@
-var mailer = require('nodemailer');
-var crypto = require('crypto');
 var User = require('../models/user.js');
 var MF = require('../models/marinefish.js');
 var Order = require('../models/order.js');
+var Product = require('../models/product.js');
+
 var mw = require('./middleware.js');
+
 
 module.exports = (app, db, passport) => {
 
   app.get('/', (req, res) => {
-    if(req.isAuthenticated()) {
-      new User( ['id', req.user.id], (user, err) => {
-        user.loggedIn = true;
-        user.owner = true;
-      });
-    }
-    db.getData(MF, ['id', 'price', 'name'], 'all', (fish) => {
+    db.getData(Product, ['id', 'price', 'name'], 'all', (fish) => {
       res.render('index', { fishes: fish });
     });
   });
 
   app.get('/admin', (req, res) => {
     if (res.locals.aauth) {
-      db.getData(MF, ['id', 'name'], 'all', (fishes) => {
+      db.getData(Product, ['id', 'name'], 'all', (fishes) => {
         res.render('admin', { fishes: fishes });
       });
-    } else {
+    } else
       res.redirect('/');
-    }
   });
 
   app.get('/review', (req, res) => {
-    db.getData(Order, 'all', ['cid', req.session.cart.cid], (order) => {
-      res.render('review', order);
+    Order.getOrder(req.session.cart.cid, (order) => {
+      if (order) {
+        order.pn = mw.formatNumber(order.pn);
+        res.render('review', order);
+      } else return res.redirect('/');
     });
   });
 
+  app.get('/checkout', (req, res) => {
+    if (req.session.cart.cid != -1)
+      return res.redirect('/review');
+    else return res.render('checkout');
+  });
+
   app.get('/viewfish=:id', (req, res) => {
-    db.getData(MF, 'all', ['id', req.params.id], (fish)=> {
-      console.log(fish);
+    MF.getProduct(req.params.id, (fish)=> {
       res.render('viewfish', fish);
     });
   });
@@ -45,33 +47,10 @@ module.exports = (app, db, passport) => {
   app.get('/editfish/:id', (req, res) => {
     res.locals.editing = true;
     if (req.isAuthenticated() && req.user.username === 'angel') {
-      db.getData(MF, 'all', ['id', req.params.id], (fish) => {
+      MF.getProduct(req.params.id, (fish) => {
         res.render('addfish', fish);
       });
     }
-  });
-
-  app.get('/editor/:id', (req, res) => {
-    res.locals.editing = true;
-    if (!req.isAuthenticated() || req.user.username !== 'angel')
-      return res.redirect('/');
-    db.loadArticle(req.params.id, data => {
-      if (data)
-        for (let prop in data)
-          res.locals[prop] = data[prop];
-      res.locals.id = req.params.id;
-      if (res.locals.date === '-1')
-        res.locals.date = mw.formatDate(new Date());
-      res.render('creator');
-    });
-  });
-
-  app.get('/user', mw.isLoggedOn, (req, res) => {
-    new User( ['id', req.query.id], (user, err) => {
-      if(err)
-        return console.log(err);
-      res.render('user', user.pageify(req));
-    });
   });
 
 };

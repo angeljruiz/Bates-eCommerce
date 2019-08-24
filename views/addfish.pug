@@ -2,17 +2,8 @@ extends ../includes/layout.pug
 
 append resources
   title Add stock
-  script(src='../vendor/dropzone.min.js')
-  link(href='../vendor/dropzone.min.css' rel='stylesheet')
   
 append body
-  .col-md-8.mx-auto
-    form.dropzone#upload-zone(action='/upload' method='POST')
-    script.
-      Dropzone.options.uploadZone = {
-        paramName: 'media'
-      }
-    br
   .col-md-10.mx-auto
     .card
         .card-body
@@ -42,7 +33,7 @@ append body
               .form-group
                 h3 
                   strong Quantity
-                input.form-control(type='number' name='quantity' value=quantity)
+                input.form-control(type='number' name='quantity' value=quantity || '1')
               .form-group
                 h3 
                   strong Reef safe?
@@ -54,7 +45,7 @@ append body
               .form-group
                 h3
                   strong Aggressive?
-                input(type='radio' id='aggr' name='ag' value='ag' checked=ag === 'ag' ? true : false)
+                input(type='radio' id='aggr' name='ag' value='ag' checked=ag === 'ag ' ? true : false)
                 label(for='aggr') Aggressive
                 br
                 input(type='radio' id='caggr' name='ag' value='cag' checked=ag === 'cag' ? true : false)

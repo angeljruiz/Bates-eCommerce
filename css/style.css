@@ -3,8 +3,6 @@ html {
   min-height: 100%;
 }
 body {
-  /*background-image: url('/media/bgd.jpeg');
-  background-size: 100%;*/
   background-color: #3fa0fc;
   margin-bottom: 78px;
 }
@@ -83,6 +81,55 @@ body {
 
 }
 
+.qty-input { /* Dominic Kolbe Codepen */
+  border: 1px solid black;
+  height: 40px;
+  display: inline-block;
+  align-items: center;
+	justify-content: center;
+  width: 106px;
+}
+.qty-input i {
+  cursor: pointer;
+  font-family: serif;
+  height: 38px;
+  position: relative;
+  float: left;
+  line-height: 40px;
+  text-align: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  transition: all 150ms ease-out;
+  width: 30px;
+}
+.qty-input i:active {
+  background-color: #007bff;
+}
+.qty-input input {
+  border: 0px solid;
+  float: left;
+  font-size: 24px;
+  height: 38px;
+  text-align: center;
+  outline: none;
+  width: 44px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+
+.btn-outline-secondary:hover {
+  background-color: #007bff;
+}
+
 .cin {
   float: left;
 }
@@ -96,8 +143,18 @@ body {
 }
 
 .dropdown-img {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  max-height: 50px;
+}
+
+@media (min-width: 575.98px) {
+  .dropdown-img {
+    width: 75px;
+  }
+}
+
+.thumb-img:active{
+  background-color: black;
 }
 @media (max-width: 575.98px) {
   .checkout-img {
@@ -133,9 +190,7 @@ h6 > a {
   position: relative;
   top: 11px;
 }
-.nav-link {
-  /* color: #666666 */
-}
+
 .footer-link {
   font-size: 14px
 }
@@ -153,15 +208,12 @@ h6 > a {
 }
 
 .navbar {
-  background-color: #EEE
+  background-color: #e3f2fd;
 }
 
 .card {
   background-color: rgb(238,238,238)
-}
-
-.product-img {
-  max-height: 400px;
+  border: none;
 }
 
 .date {
@@ -173,31 +225,87 @@ h6 > a {
   height: 32px;
 }
 
-.shadow {
-  box-shadow: 10px 10px 5px gray;
-}
-
-.static {
-  resize: none
-}
-
-.nostyle {
-  list-style-type: none;
-}
-
 .product a {
   color: inherit;
   text-decoration: none;
 }
 
-.preview-frame {
-  height: 60%;
+.slides {
+  display: none;
 }
 
-.input-group-addon {
-    min-width: 100px;
+.slide-img {
+  max-width: 100%;
 }
 
-.indent {
-    text-indent: 1.5rem;
+/* Add a pointer when hovering over the thumbnail images */
+.cursor {
+  cursor: pointer;
+}
+
+/* Next & previous buttons */
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 47%;
+  width: auto;
+  padding: 16px;
+  margin-top: -50px;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover,
+.next:hover {
+  background-color: rgba(244, 244, 244, 0.2);
+}
+
+/* Container for image text */
+.caption-container {
+  text-align: center;
+  background-color: #222;
+  padding: 2px 16px;
+  color: white;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Six columns side by side */
+.column {
+  float: left;
+  width: 16.66%;
+}
+
+@media (min-width: 992px) {
+  .img-thumbnail {
+    min-height: 75px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .img-thumbnail {
+    min-height: 60px;
+  }
+}
+
+
+.active,
+.demo:hover {
+  opacity: 1;
 }

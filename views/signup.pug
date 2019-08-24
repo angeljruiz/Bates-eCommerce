@@ -10,9 +10,9 @@ append body
         i.fa.fa-user-plus.fa-lg.mr-1
         h4.d-inline-block.mr-5 Sign up
       .card-body
-        if (flash.taken || flash.incorrect)
+        if (flash.length > 1)
           .alert.alert-danger.text-center
-            = flash.taken || flash.incorrect
+            = flash
         .form-group
           .row.justify-content-center
             .col-md-8
@@ -38,5 +38,6 @@ append body
         .col-md-8.mx-auto
           hr
         .col-md-4.mx-auto.text-center(style='font-size: 15px')
-          span Have an 
-          a(href='/login') account?
+          .row
+            span.mr-1 Have an 
+            a(href='/login') account?

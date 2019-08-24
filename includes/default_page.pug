@@ -23,17 +23,17 @@ mixin navvy(index)
       #navcollapse.collapse.navbar-collapse
         ul.nav.mr-auto 
           each i in [0, 1, 2, 3, 4, 5, 6]
-            if(i==0)
+            if (i==0)
               li.nav-item: a.nav-link.active(href=urls[i])= pages[i]
             else
               li.nav-item: a.nav-link(href=urls[i])= pages[i]
-          if(loggedIn)
+          if (loggedIn)
             li.nav-item: a.nav-link(href='/logout')
               i.fa-2x.fas.fa-sign-out-alt
-          if(aauth)
+          if (aauth)
             li.nav-item: a.nav-link(href='/admin') Admin
-        .btn-group.dropdown.mr-2
-          button.btn.btn-info.dropdown-toggle(type='button' id='dropdownMenuButton' data-toggle='dropdown') Cart
+        .btn-group.dropdown.mr-auto
+          button.btn.btn-outline-info.dropdown-toggle(type='button' id='dropdownMenuButton' data-toggle='dropdown') Cart
           .dropdown-menu.mt-4.pt-0.pb-2
             each item, index in cart.items
               a.dropdown-item(href='/viewfish=' + item.id)
@@ -43,15 +43,14 @@ mixin navvy(index)
                   .col-xs.ml-2
                     h6= item.name
                     span #{cart.amount[index]} x $#{item.price}
-            hr.mx-3
             .row 
               span.mx-auto Total: $#{cart.total}
             .row 
-              a.btn.btn-warning.mx-auto.mt-1(href='/cart') View Cart
-        .navbar-nav
-          form.form-inline
-            input.form-control.mr-2.my-1(type='search' placeholder='Search')
-            button.btn.btn-outline-primary.mr-2.my-1(type='submit') Search
+              a.btn.btn-outline-primary.mx-auto.mt-1(href='/cart') View Cart
+        //- .navbar-nav
+        //-   form.form-inline
+        //-     input.form-control.mr-2.my-1(type='search' placeholder='Search')
+        //-     button.btn.btn-outline-primary.mr-2.my-1(type='submit') Search
               
                     
 mixin icons

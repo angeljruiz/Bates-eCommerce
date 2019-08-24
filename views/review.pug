@@ -4,12 +4,29 @@ append resources
   title Shark Reef Exotics
     
 append body
-  .col-xs-12.col-lg-6
+  .col-xs-12.col-lg-6.ml-auto.mb-2
     .card
-      .card-title Review Your Order
-  .col-xs-12.col-md-4.mr-auto 
-    .card
-      .card-header Your Order 
+      .card-header Review Your Order
+      .card-body
+        if (flash.length > 0)
+          .alert.alert-primary.text-center
+            = flash
+        .row
+          .col-6
+            h6 Customer Info
+            span=fn + ' ' + ln
+            br
+            span=pn
+          .col-6
+            h6 Order Info
+            span.font-weight-bold.small Pickup Date: 
+            p=pd
+            span.font-weight-bold.small Order Date: 
+            p=date
+            
+  .col-xs-12.col-lg-4.order-xs-12.mr-auto 
+    .card#order-card
+      .card-header Order 
         small.text-muted Pickup in store only!
       .card-body
         .row
@@ -26,5 +43,34 @@ append body
           .col-6.text-left
             strong Total
           .col-6.text-right.font-weight-bold= (cart.total*1.086).toFixed(2)
-        a(href='/checkout')
-          button.btn.btn-primary.form-control.mt-2 Checkout
+        if (processing)
+          a(href='/placeorder')
+            button.btn.btn-outline-primary.form-control.mt-2 Place Order
+  .col-xs-12.col-lg-6.order-xs-1.ml-auto.mt-2
+    .card#item-card
+      .card-header Items
+      .card-body
+        table.table#cart-table
+          thead
+            tr.text-center.small.text-muted
+              th.text-left Item
+              //- th &nbsp;
+              th Amount
+              th Price
+              th Total
+          tbody
+            each item, index in cart.items
+              tr.text-center
+                td.text-left.px-1.cin
+                  a(href='/viewfish=' + item.id)
+                    img.checkout-img.img-fluid.img-thumbnail(src='../media/' + item.id + '-1.jpg')
+                td.px-0.text-left.cin
+                  a(href='/viewfish=' + item.id): h6.mb-0= item.name
+                  a(href='/remove/' + item.id + '/all'): small.text-muted remove 
+                td.clear(data-title='Amount:')
+                  span=cart.amount[index]
+                td(data-title='Price:')
+                  span= '$' + item.price
+                td.cst(data-title='Total:')
+                  span $#{(item.price*cart.amount[index]).toFixed(2)}
+  .col-xs-12.col-lg-4.mr-auto 

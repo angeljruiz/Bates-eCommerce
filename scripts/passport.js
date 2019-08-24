@@ -5,7 +5,6 @@
 var LocalStrategy = require('passport-local').Strategy;
 var User = require('../models/user.js');
 
-
 module.exports = function(passport, db) {
 
     passport.serializeUser(function(user, done) {
@@ -20,10 +19,10 @@ module.exports = function(passport, db) {
 
     passport.use('signup', new LocalStrategy( { passReqToCallback: true }, (req, username, password, done) => {
         new User( ['username', username ], (user, err) => {
-            if(err)
+            if (err)
                 return done(err);
-            if(user) {
-                req.res.flash('taken', 'Username already taken');
+            if (user) {
+                req.flash('taken', 'Username already taken');
                 return done(null, false);
             }
             var newUser = new User();
@@ -38,10 +37,10 @@ module.exports = function(passport, db) {
     }));
     passport.use('login', new LocalStrategy( { passReqToCallback: true }, (req, username, password, done) => {
       new User( ['username', username ], (user, err) => {
-          if(err)
+          if (err)
               return done(err);
-          if(!user || !user.validPassword(password)) {
-              req.res.flash('incorrect', 'Invalid username or password');
+          if (!user || !user.validPassword(password)) {
+              req.flash('incorrect', 'Invalid username or password');
               return done(null, false);
           }
 

@@ -1,7 +1,7 @@
 module.exports = {
 
   isLoggedOn: (req, res, next) => {
-    if(req.isAuthenticated()) {
+    if (req.isAuthenticated()) {
       if (req.path === '/user' && req.query.id === req.user.id)
         return res.redirect('/');
       return next();
@@ -30,23 +30,8 @@ module.exports = {
     }
   },
 
-  async: generator => {
-    let iterator = generator();
-
-    function handle(iteratorResult) {
-      if (iteratorResult.done) { return; }
-
-      const iteratorValue = iteratorResult.value;
-
-      if (iteratorValue instanceof Promise) {
-        iteratorValue.then(res => handle(iterator.next(res))).catch(err => iterator.throw(err));
-      }
-    }
-    try {
-      handle(iterator.next());
-    } catch(e) {
-      iterator.throw(e);
-    }
+  formatNumber: num => {
+    return (num.slice(0,3) + '-' + num.slice(3,6) + '-' + num.slice(6,10));
   },
 
   formatDate: date => {

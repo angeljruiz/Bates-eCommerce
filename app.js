@@ -1,8 +1,8 @@
 "use strict";
 
 var express = require('express');
+var flash = require('connect-flash-plus');
 var session = require('express-session');
-var flash = require('express-flash-2');
 var bp = require('body-parser');
 var passport = require('passport');
 var morgan = require('morgan');
@@ -16,6 +16,7 @@ require('./scripts/passport.js')(passport, db);
 
 app.use(bp.urlencoded({extended: true}));
 app.use(bp.json());
+app.use(flash());
 app.use(express.static(__dirname));
 app.use(morgan('dev'));
 app.use(session({
@@ -30,7 +31,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
 app.set('view engine', 'pug');
 app.set('views', './views');
 app.locals.pretty = true;

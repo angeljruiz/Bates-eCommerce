@@ -3,8 +3,8 @@ let MF = require('../models/marinefish.js');
 let Cart = require('../models/cart.js');
 
 class orders {
-  constructor(input, cart, sid, fn) {
-    if (input && cart && sid) {
+  constructor(input, sid) {
+    if (input && sid) {
       this.fn = input.fn;
       this.ln = input.ln;
       this.pn = input.pn;
@@ -12,15 +12,19 @@ class orders {
       this.date = input.date;
       this.processing = true;
       this.sid = sid;
-      this.cid = sid.slice(-5) + '-' + this.date.slice(-7, -3);
+      this.pd = input.pd;
+      this.finalized = false;
+      this.cid = sid.slice(-5) + '-' + this.date.slice(-8, -3);
     } else {
-      this.fn = this.ln = this.pn = this.em = this.date = this.processing = this.sid = this.cid = -1;
+      this.fn = this.ln = this.pn = this.em = this.date = this.processing = this.sid = this.cid = this.pd = this.finalized = -1;
     }
     return this;
   }
 
   static save(order, cart, fn) {
-    db.saveData(orders, Object.keys(order), false, Object.values(order), (err) => {
+    let edit = order.edit;
+    delete order.edit;
+    db.saveData(orders, Object.keys(order), edit? ['cid', cart.cid] : false, Object.values(order), (err) => {
       let items = [];
       if (err) {
         return console.error('error saving order');
@@ -30,10 +34,33 @@ class orders {
         items.push(cart.amount[index]);
       });
       items = '{' + items + '}';
-      db.saveData(Cart, ['cid', 'items'], false, [cart.cid, items], () => {
-        return fn();
+      db.saveData(Cart, ['cid', 'items'], edit? ['cid', cart.cid] : false, [cart.cid, items], () => {
+        if (fn)
+          return fn();
       });
     });
+  }
+
+  static getOrder(cid, fn) {
+    db.getData(orders, 'all', ['cid', cid], (order) => {
+      if (!order) {
+        if (fn)
+          return fn(false);
+        else return false;
+      }
+      Cart.getCart(cid, (cart) => {
+        if (!cart)
+          return fn(order);
+        order.cart = cart;
+        Cart.getTotal(order.cart);
+        return fn(order);
+      });
+    });
+  }
+
+  static submit(order, fn) {
+    order.processing = false;
+    db.saveData(orders, ['processing'], ['cid', order.cid], [false], fn);
   }
 
 }

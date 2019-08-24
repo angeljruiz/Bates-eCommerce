@@ -3,16 +3,33 @@ extends ../includes/layout.pug
 append resources
   title Shark Reef Exotics
 append body
-  .col-md-4.ml-auto 
-    img.rounded.img-fluid(src='../media/' + id + '-1.jpg')
+  input#hid(type='hidden' value=id)
+  .col-md-4.ml-auto
+    //- img.rounded.img-fluid(src='../media/' + id + '-1.jpg')
+    .slides
+      img.slide-img.rounded(src='../media/' + id + '-1.jpg')
+    .slides
+      img.slide-img.rounded(src='../media/' + id + '-2.jpg')
+    a.prev(onclick='move(-1)') &#10094;
+    a.next.mr-3(onclick='move(1)') &#10095;
+    .row.mb-1
+      .column
+        img.img-thumbnail.cursor.thumb-img(src='../media/' + id + '-1.jpg' style='width:100%' onclick='currentSlide(1)')
+      .column
+        img.img-thumbnail.cursor.thumb-img(src='../media/' + id + '-2.jpg' style='width:100%' onclick='currentSlide(2)')
+
   .col-md-4.mr-auto
     .card
-      .card-title
-        h2= name
+      .ml-3
+        .card-title.mt-3: h2= name
+          h4.text-muted $#{price}
         br
-        h4.text-muted $#{price}
-        br
-        .col-xs-5.col-lg-3
-          a.btn.btn-primary(href='/addtocart/' + id + '/1') Add to cart
+        .row.mb-3
+          .qty-input.mr-3
+            i.less -
+            input(type="number" value="1")
+            i.more +
+          a.btn.btn-primary#atc(href='/addtocart/' + id + '/1') Add to cart
             
 append footer
+  script(src='../js/counter.js')

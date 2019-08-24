@@ -11,9 +11,9 @@ append body
         i.fa.fa-sign-in.fa-lg.mr-1
         h4.d-inline-block Login
       .card-body
-        if (flash.incorrect || flash.notLogged)
+        if (flash.length > 0)
           .alert.alert-danger.text-center
-            = flash.incorrect || flash.notLogged
+            = flash
         .form-group
           .row.justify-content-center
             .col-md-8
