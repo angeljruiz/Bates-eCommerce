@@ -27,7 +27,6 @@ append body
   .col-xs-12.col-lg-4.order-xs-12.mr-auto 
     .card#order-card
       .card-header Order 
-        small.text-muted Pickup in store only!
       .card-body
         .row
           .col-6.text-left
@@ -47,7 +46,7 @@ append body
           a(href='/placeorder')
             button.btn.btn-outline-primary.form-control.mt-2 Place Order
   .col-xs-12.col-lg-6.order-xs-1.ml-auto.mt-2
-    .card#item-card
+    .card#item-card.mb-3
       .card-header Items
       .card-body
         table.table#cart-table
@@ -62,11 +61,12 @@ append body
             each item, index in cart.items
               tr.text-center
                 td.text-left.px-1.cin
-                  a(href='/viewfish=' + item.id)
+                  a(href='/viewproduct=' + item.id)
                     img.checkout-img.img-fluid.img-thumbnail(src='../media/' + item.id + '-1.jpg')
                 td.px-0.text-left.cin
-                  a(href='/viewfish=' + item.id): h6.mb-0= item.name
-                  a(href='/remove/' + item.id + '/all'): small.text-muted remove 
+                  a(href='/viewproduct=' + item.id): h6.mb-0= item.name
+                  if (processing)
+                    a(href='/remove/' + item.id + '/all'): small.text-muted remove 
                 td.clear(data-title='Amount:')
                   span=cart.amount[index]
                 td(data-title='Price:')

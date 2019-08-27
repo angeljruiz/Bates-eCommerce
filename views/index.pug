@@ -7,16 +7,6 @@ append body
     each fish, index in fishes
       .col-xs-12.col-md-3
         .product
-          a(href='/viewfish=' + fish.id)
+          a(href='/viewproduct=' + fish.id)
             .card.mx-2.mb-4(style='border: none')
               img.card-img.rounded(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
-              .card-img-overlay.text-white.text-right.mb-3
-                br
-                br
-                br
-                br
-                br
-                br
-                br
-                br
-                h5 $#{fish.price}

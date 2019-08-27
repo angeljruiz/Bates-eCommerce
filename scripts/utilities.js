@@ -1,5 +1,3 @@
-var multer = require('multer');
-var upload = multer({ dest: 'uploads/' });
 var path = require('path');
 var fs = require('fs');
 var mw = require('./middleware.js');
@@ -20,18 +18,6 @@ module.exports = (app, db, passport) => {
     Cart.getTotal(req.session.cart);
     pager.update(req, req.session.cart);
     next();
-  });
-
-  app.post('/upload', upload.any(), (req, res) => {
-    if (req.isAuthenticated() && req.user.username === 'angel') {
-      fs.readFile(req.files[0].path, (err, data) => {
-        if (err)
-          return console.error('error reading file', err);
-        db.uploadMedia(req.files[0].originalname, data, () => {
-          fs.unlink(req.files[0].path);
-        });
-      });
-    }
   });
 
   app.get('/addtocart/:id/:amount', (req, res) => {
@@ -97,7 +83,7 @@ module.exports = (app, db, passport) => {
       if (order) {
         order.pn = mw.formatNumber(order.pn);
         Order.submit(order, () => {
-          req.flash('thankyou', 'Thank you! We\'re preparing your new fish now');
+          req.flash('thankyou', 'Thank you! We\'ll be shipping your order soon');
           req.session.cart = 0;
           pager.update(req, req.session.cart);
           res.render('review', order);

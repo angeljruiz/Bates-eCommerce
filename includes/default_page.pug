@@ -1,52 +1,56 @@
 mixin header()
   a(href='/')
-    img.micon.rounded.img-fluid.mt-4
+    img.micon.rounded.img-fluid
 
 mixin footer()
   .footer
-    +icons
-    a.float-right.mr-2.pl-2.footer-link(href='/privatepolicy') Privacy
-    a.float-right.mr-2.pl-2.footer-link(href='/contact') Contact
-    a.float-right.mr-2.footer-link(href='/about') About
-    br
-    .text-center.cr-name &copy 2017-2019 Angel Ruiz-Bates
+    .row
+      .ml-auto
+        a.mr-2.footer-link(href='/about') About
+        a.mr-2.pl-2.footer-link(href='/contact') Contact
+        a.mr-2.pl-2.footer-link(href='/privatepolicy') Privacy
+    .row
+      .cr-name.mx-auto &copy 2019 Monsoon Glass
 
 mixin navvy(index)
   -
       var pages = [ 'Marine Fish', 'Inverts', 'Corals', 'WYSIWYG', 'Food and Supplies', 'Auctions', 'Custom Orders'];
       var urls = [ '/', '/inverts', '/coral', '/wysiwyg', '/food', '/auctions', '/customorder' ];  
   col-xs-12
-    nav.navbar.navbar-light.navbar-expand-lg.my-4
-      a.navbar-brand(href='/') Shark Reef
-      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navcollapse')
+    .topheader.d-flex
+      .btn-group.ml-auto.mt-1
+        button.btn.btn-outline-light.rounded(data-toggle='dropdown')
+          i.fa-lg.fas.fa-shopping-cart
+        .dropdown-menu.dropdown-menu-right.mt-4.pt-0.pb-2
+          each item, index in cart.items
+            a.dropdown-item(href='/viewproduct=' + item.id)
+              .row
+                .col-xs
+                  img.dropdown-img.img-thumbnail(src='../media/' + item.id + '-1.jpg')
+                .col-xs.ml-2.cart-dropdown
+                  h6= item.name
+                  span $#{(cart.amount[index]*item.price).toFixed(2)}
+            .dropdown-divider
+          .row 
+            span.mx-auto Total: $#{cart.total}
+          .row 
+              a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
+        if (loggedIn)
+          a.btn.btn-outline-light.rounded.ml-1(href='/logout')
+            i.fa-lg.fas.fa-sign-out-alt
+        if (!loggedIn)
+          a.btn.btn-outline-light.rounded.ml-1(href='/login')
+            i.fa-lg.fas.fa-user
+    nav.navbar.navbar-dark.navbar-expand-lg.mb-4.pt-0
+      button.navbar-toggler.ml-auto.mt-2(type='button' data-toggle='collapse' data-target='#navcollapse')
         span.navbar-toggler-icon
       #navcollapse.collapse.navbar-collapse
-        ul.nav.mr-auto 
-          each i in [0, 1, 2, 3, 4, 5, 6]
-            if (i==0)
-              li.nav-item: a.nav-link.active(href=urls[i])= pages[i]
-            else
-              li.nav-item: a.nav-link(href=urls[i])= pages[i]
-          if (loggedIn)
-            li.nav-item: a.nav-link(href='/logout')
-              i.fa-2x.fas.fa-sign-out-alt
-          if (aauth)
-            li.nav-item: a.nav-link(href='/admin') Admin
-        .btn-group.dropdown.mr-auto
-          button.btn.btn-outline-info.dropdown-toggle(type='button' id='dropdownMenuButton' data-toggle='dropdown') Cart
-          .dropdown-menu.mt-4.pt-0.pb-2
-            each item, index in cart.items
-              a.dropdown-item(href='/viewfish=' + item.id)
-                .row
-                  .col-xs
-                    img.dropdown-img.img-thumbnail(src='../media/' + item.id + '-1.jpg')
-                  .col-xs.ml-2
-                    h6= item.name
-                    span #{cart.amount[index]} x $#{item.price}
-            .row 
-              span.mx-auto Total: $#{cart.total}
-            .row 
-              a.btn.btn-outline-primary.mx-auto.mt-1(href='/cart') View Cart
+        .row
+          ul.nav.mx-auto 
+            each i in [0, 1, 2, 3, 4, 5, 6]
+              li.nav-item: a.nav-link.pt-0(href=urls[i])= pages[i]
+            if (aauth)
+              li.nav-item: a.nav-link.pt-0(href='/admin') Admin
         //- .navbar-nav
         //-   form.form-inline
         //-     input.form-control.mr-2.my-1(type='search' placeholder='Search')

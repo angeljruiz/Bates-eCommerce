@@ -13,7 +13,7 @@ class cart {
     cart.items.forEach( (product, index) => {
       if (product.id == item.id) {
         f = true;
-        cart.amount[index] = amount;
+        cart.amount[index] += amount;
       }
     });
     if (!f) {
@@ -67,12 +67,14 @@ class cart {
     let c = new cart;
     c.cid = cid;
     db.getData(cart, 'all', ['cid', cid], (ct) => {
-      let len = ct.items.length;
-      for(let i=1;i<len;i+=4) {
-        Product.getProduct(ct.items[i], (product) => {
+      if (ct.items.length == 2) return fn(false);
+      let items = ct.items.slice(1,-1).split(',');
+      let len = items.length != 2? items.length/2 : items.length;
+      for(let i=0;i<len-1;i++) {
+        Product.getProduct(items[i*2], (product) => {
           c.items.push(product);
-          c.amount.push(ct.items[i+2]);
-          if (i == len-4)
+          c.amount.push(items[i*2+1]);
+          if (i == len-2)
             return fn(c);
         });
       }

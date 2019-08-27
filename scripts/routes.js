@@ -38,9 +38,9 @@ module.exports = (app, db, passport) => {
     else return res.render('checkout');
   });
 
-  app.get('/viewfish=:id', (req, res) => {
+  app.get('/viewproduct=:id', (req, res) => {
     MF.getProduct(req.params.id, (fish)=> {
-      res.render('viewfish', fish);
+      res.render('viewproduct', fish);
     });
   });
 

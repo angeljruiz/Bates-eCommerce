@@ -3,7 +3,7 @@ html {
   min-height: 100%;
 }
 body {
-  background-color: #3fa0fc;
+  background-color: rgb(250,250,250);
   margin-bottom: 78px;
 }
 
@@ -14,18 +14,33 @@ body {
 .row {
   margin: auto;
 }
+
 .dropdown-item {
   padding: .5rem;
   min-width: 15rem;
 }
 
-.padded-row {
-  padding-bottom: 2rem;
+.dropdown-menu {
+  background-color: rgb(230,230,230);
 }
 
+.cart-dropdown {
+  color: black;
+}
+
+.btn-outline-light {
+  border: none;
+}
+
+.btn-outline-dark.viewcart {
+  color: black;
+}
+
+.btn-outline-dark.viewcart:hover {
+  color: white;
+}
 
 @media all and (max-width: 575.98px) {
-
     /* Force table to not be like tables anymore */
 	#cart-table table,
 	#cart-table thead,
@@ -130,16 +145,19 @@ input[type=number]::-webkit-outer-spin-button {
   background-color: #007bff;
 }
 
-.cin {
-  float: left;
-}
-
 .clear {
   clear: both;
 }
 
-.checkout-card {
-  border: none;
+.less {
+  position: relative;
+  bottom: 1px;
+  right: 1px;
+}
+
+.more {
+  position: relative;
+  bottom: 1px;
 }
 
 .dropdown-img {
@@ -182,10 +200,11 @@ h6 > a {
   width: 100%;
   height: 48px;
   line-height: 7px;
-  background-color: #EEE;
+  background-color: #232f3e;
 }
 
-.footer a ~ a {
+.footer a {
+  color: white;
   height: 7px;
   position: relative;
   top: 11px;
@@ -197,8 +216,8 @@ h6 > a {
 
 .cr-name {
   position: relative;
+  color: white;
   font-size: 12px;
-  height: 0;
   bottom: -22px;
 }
 
@@ -208,21 +227,23 @@ h6 > a {
 }
 
 .navbar {
-  background-color: #e3f2fd;
+  background-color: #232f3e;
+}
+
+.topheader {
+  background-color: #232f3e;
+}
+
+.navbar a {
+  color: white;
+}
+
+.navlink {
+  line-height: 1.5rem;
 }
 
 .card {
-  background-color: rgb(238,238,238)
   border: none;
-}
-
-.date {
-  color: #AAA;
-  font-size: 14px;
-}
-
-.footer a {
-  height: 32px;
 }
 
 .product a {
@@ -232,6 +253,7 @@ h6 > a {
 
 .slides {
   display: none;
+  transition-duration: 500ms;
 }
 
 .slide-img {
@@ -293,17 +315,25 @@ h6 > a {
 }
 
 @media (min-width: 992px) {
-  .img-thumbnail {
+  .thumb-img {
     min-height: 75px;
+    min-width: 90px;
+  }
+  .slide-img {
+    height: 400px;
+    width: 600px;
   }
 }
 
 @media (max-width: 575.98px) {
-  .img-thumbnail {
+  .thumb-img {
     min-height: 60px;
+    min-width: 70px;
+  }
+  .slide-img {
+    min-height: 275px;
   }
 }
-
 
 .active,
 .demo:hover {

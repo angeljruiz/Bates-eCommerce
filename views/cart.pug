@@ -5,7 +5,7 @@ append resources
 append body
   .col-xs-12.col-md-8.col-lg-6.ml-auto
     .card.mb-2
-      .card-header Your Cart
+      .card-header Cart
       .card-body
         .table-responsive#cart-table
           table.table.cart-table
@@ -20,10 +20,10 @@ append body
               each item, index in cart.items
                 tr.text-center
                   td.text-left.px-1.cin
-                    a(href='/viewfish=' + item.id)
+                    a(href='/viewproduct=' + item.id)
                       img.checkout-img.img-fluid.img-thumbnail(src='../media/' + item.id + '-1.jpg')
                   td.px-0.text-left.cin
-                    a(href='/viewfish=' + item.id): h6.mb-0= item.name
+                    a(href='/viewproduct=' + item.id): h6.mb-0= item.name
                     a(href='/remove/' + item.id + '/all'): small.text-muted remove 
                   td.clear(data-title='Amount:')
                     span #{cart.amount[index]}
@@ -32,9 +32,8 @@ append body
                   td.cst(data-title='Total:')
                     span $#{(item.price*cart.amount[index]).toFixed(2)}
   .col-xs-12.col-md-4.mr-auto 
-    .card
-      .card-header Your Order 
-        small.text-muted Pickup in store only!
+    .card.mb-3
+      .card-header Order 
       .card-body
         .row
           .col-6.text-left

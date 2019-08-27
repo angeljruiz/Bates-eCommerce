@@ -12,11 +12,11 @@ append body
       img.slide-img.rounded(src='../media/' + id + '-2.jpg')
     a.prev(onclick='move(-1)') &#10094;
     a.next.mr-3(onclick='move(1)') &#10095;
-    .row.mb-1
+    .row.my-1
+      .column.mr-3
+        img.demo.thumb-img.rounded(src='../media/' + id + '-1.jpg' style='width:100%' onclick='currentSlide(1)')
       .column
-        img.img-thumbnail.cursor.thumb-img(src='../media/' + id + '-1.jpg' style='width:100%' onclick='currentSlide(1)')
-      .column
-        img.img-thumbnail.cursor.thumb-img(src='../media/' + id + '-2.jpg' style='width:100%' onclick='currentSlide(2)')
+        img.demo.thumb-img.rounded(src='../media/' + id + '-2.jpg' style='width:100%' onclick='currentSlide(2)')
 
   .col-md-4.mr-auto
     .card
@@ -25,10 +25,10 @@ append body
           h4.text-muted $#{price}
         br
         .row.mb-3
-          .qty-input.mr-3
-            i.less -
-            input(type="number" value="1")
-            i.more +
+          .qty-input.mr-3.rounded
+            i.less.rounded -
+            input(type="number" value="1" readonly)
+            i.more.rounded +
           a.btn.btn-primary#atc(href='/addtocart/' + id + '/1') Add to cart
             
 append footer
