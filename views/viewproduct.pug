@@ -5,19 +5,19 @@ append resources
 append body
   input#hid(type='hidden' value=id)
   .col-md-4.ml-auto
-    //- img.rounded.img-fluid(src='../media/' + id + '-1.jpg')
-    .slides
-      img.slide-img.rounded(src='../media/' + id + '-1.jpg')
-    .slides
-      img.slide-img.rounded(src='../media/' + id + '-2.jpg')
+    - var i = 0;
+    while i < pics
+      - i++;
+      .slides
+        img.slide-img.rounded(src='../media/' + id + '-' + i + '.jpg')
     a.prev(onclick='move(-1)') &#10094;
     a.next.mr-3(onclick='move(1)') &#10095;
     .row.my-1
-      .column.mr-3
-        img.demo.thumb-img.rounded(src='../media/' + id + '-1.jpg' style='width:100%' onclick='currentSlide(1)')
-      .column
-        img.demo.thumb-img.rounded(src='../media/' + id + '-2.jpg' style='width:100%' onclick='currentSlide(2)')
-
+      - i = 0;
+      while i < pics
+        - i++;
+        .column.mr-3
+          img.demo.thumb-img.rounded(src='../media/' + id + '-' + i + '.jpg' style='width:100%' onclick='currentSlide(' + i + ')')
   .col-md-4.mr-auto
     .card
       .ml-3

@@ -3,6 +3,8 @@ var MF = require('../models/marinefish.js');
 var Order = require('../models/order.js');
 var Product = require('../models/product.js');
 
+var fs = require('fs');
+
 var mw = require('./middleware.js');
 
 
@@ -39,7 +41,12 @@ module.exports = (app, db, passport) => {
   });
 
   app.get('/viewproduct=:id', (req, res) => {
+    let pics = 0;
+    while (fs.existsSync('media/' + req.params.id + '-' + (pics+1) + '.jpg')) {
+      pics++;
+    }
     MF.getProduct(req.params.id, (fish)=> {
+      fish.pics = pics;
       res.render('viewproduct', fish);
     });
   });

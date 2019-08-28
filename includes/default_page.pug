@@ -18,8 +18,8 @@ mixin navvy(index)
       var urls = [ '/', '/inverts', '/coral', '/wysiwyg', '/food', '/auctions', '/customorder' ];  
   col-xs-12
     .topheader.d-flex
-      .btn-group.ml-auto.mt-1
-        button.btn.btn-outline-light.rounded(data-toggle='dropdown')
+      .btn-group.ml-auto.mt-1.nav-buttons
+        button.btn.btn-outline-light.rounded.nav-button(data-toggle='dropdown')
           i.fa-lg.fas.fa-shopping-cart
         .dropdown-menu.dropdown-menu-right.mt-4.pt-0.pb-2
           each item, index in cart.items
@@ -36,13 +36,13 @@ mixin navvy(index)
           .row 
               a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
         if (loggedIn)
-          a.btn.btn-outline-light.rounded.ml-1(href='/logout')
+          a.btn.btn-outline-light.nav-button.rounded.ml-1(href='/logout')
             i.fa-lg.fas.fa-sign-out-alt
         if (!loggedIn)
-          a.btn.btn-outline-light.rounded.ml-1(href='/login')
+          a.btn.btn-outline-light.nav-button.rounded.ml-1(href='/login')
             i.fa-lg.fas.fa-user
-    nav.navbar.navbar-dark.navbar-expand-lg.mb-4.pt-0
-      button.navbar-toggler.ml-auto.mt-2(type='button' data-toggle='collapse' data-target='#navcollapse')
+    nav.navbar.navbar-dark.navbar-expand-lg.mb-4
+      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navcollapse')
         span.navbar-toggler-icon
       #navcollapse.collapse.navbar-collapse
         .row

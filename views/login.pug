@@ -18,13 +18,15 @@ append body
           .row.justify-content-center
             .col-md-8
               .input-group
-                .input-group-addon Username
+                .input-group-prepend
+                  span.input-group-text Username
                 input.form-control(type='text' name='username' form='login')
         .form-group
           .row.justify-content-center
             .col-md-8
               .input-group
-                .input-group-addon Password
+                .input-group-prepend
+                  span.input-group-text Password
                 input.form-control(type='password' name='password' form='login')
         .form-group
           .row.justify-content-center
