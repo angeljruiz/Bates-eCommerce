@@ -14,8 +14,8 @@ mixin footer()
 
 mixin navvy(index)
   -
-      var pages = [ 'Marine Fish', 'Inverts', 'Corals', 'WYSIWYG', 'Food and Supplies', 'Auctions', 'Custom Orders'];
-      var urls = [ '/', '/inverts', '/coral', '/wysiwyg', '/food', '/auctions', '/customorder' ];  
+      var pages = [ 'Home', 'these', 'dont', 'do', 'jack'];
+      var urls = [ '/', '/inverts', '/coral', '/wysiwyg', '/food'];  
   col-xs-12
     .topheader.d-flex
       .btn-group.ml-auto.mt-1.nav-buttons
@@ -47,8 +47,8 @@ mixin navvy(index)
       #navcollapse.collapse.navbar-collapse
         .row
           ul.nav.mx-auto 
-            each i in [0, 1, 2, 3, 4, 5, 6]
-              li.nav-item: a.nav-link.pt-0(href=urls[i])= pages[i]
+            each i in [0, 1, 2, 3, 4]
+              li.nav-item: a.nav-link.pt-0(href=urls[0])= pages[i]
             if (aauth)
               li.nav-item: a.nav-link.pt-0(href='/admin') Admin
         //- .navbar-nav
