@@ -7,8 +7,8 @@ append body
     .card.mb-2
       .card-header Cart
       .card-body
-        .table-responsive#cart-table
-          table.table.cart-table
+        .table-responsive#mobile-table
+          table.table.mobile-table
             thead
               tr.text-center.small.text-muted
                 th.text-left Item
@@ -19,10 +19,10 @@ append body
             tbody
               each item, index in cart.items
                 tr.text-center
-                  td.text-left.px-1
+                  td.text-left.px-1.float-left
                     a(href='/viewproduct=' + item.id)
                       img.checkout-img.img-fluid.img-thumbnail(src='../media/' + item.id + '-1.jpg')
-                  td.px-0.text-left
+                  td.px-0.text-left.float-left
                     a(href='/viewproduct=' + item.id): h6.mb-0= item.name
                     a(href='/remove/' + item.id + '/all'): small.text-muted remove 
                   td.clear(data-title='Amount:')
