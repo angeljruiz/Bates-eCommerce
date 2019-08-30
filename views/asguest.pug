@@ -38,12 +38,12 @@ append body
             br 
             span Sales tax:
           .col-6.text-right
-            span.font-weight-bold $#{cart.total}
+            span.font-weight-bold $#{cart.subtotal}
             br
-            span $#{(cart.total*.086).toFixed(2)}
+            span $#{(cart.subtotal*.086).toFixed(2)}
         hr
         .row.mb-2
           .col-6.text-left
             strong Total
-          .col-6.text-right.font-weight-bold= (cart.total*1.086).toFixed(2)
+          .col-6.text-right.font-weight-bold= (cart.subtotal*1.086).toFixed(2)
         input.btn.btn-primary.form-control(type='submit' action='/asguest' method='POST' value='Review & Checkout' form='ag')   

@@ -4,7 +4,7 @@ class cart {
   constructor() {
     this.items = [];
     this.amount = [];
-    this.total = 0;
+    this.subtotal = 0;
     this.cid = -1;
   }
 
@@ -60,8 +60,11 @@ class cart {
     let total = 0;
     for(let i=0;i<cart.items.length;i++)
       total += cart.items[i].price * 1 * cart.amount[i];
-    cart.total = total.toFixed(2);
-  }
+    cart.subtotal = total.toFixed(2);
+    cart.salestax = 0;
+    cart.shipping = cart.subtotal > 0? 6.99 : 0.00;
+    cart.total = (parseFloat(cart.subtotal) + parseFloat(cart.salestax) + cart.shipping).toFixed(2);
+}
 
   static getCart(cid, fn) {
     let c = new cart;
@@ -69,12 +72,12 @@ class cart {
     db.getData(cart, 'all', ['cid', cid], (ct) => {
       if (ct.items.length == 2) return fn(false);
       let items = ct.items.slice(1,-1).split(',');
-      let len = items.length != 2? items.length/2 : items.length;
-      for(let i=0;i<len-1;i++) {
+      let len = items.length != 2? items.length/2 : items.length-1;
+      for(let i=0;i<len;i++) {
         Product.getProduct(items[i*2], (product) => {
           c.items.push(product);
           c.amount.push(items[i*2+1]);
-          if (i == len-2)
+          if (i == len-1)
             return fn(c);
         });
       }

@@ -45,17 +45,11 @@ mixin navvy(index)
       button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navcollapse')
         span.navbar-toggler-icon
       #navcollapse.collapse.navbar-collapse
-        .row
-          ul.nav.mx-auto 
-            each i in [0, 1, 2, 3, 4]
-              li.nav-item: a.nav-link.pt-0(href=urls[0])= pages[i]
-            if (aauth)
-              li.nav-item: a.nav-link.pt-0(href='/admin') Admin
-        //- .navbar-nav
-        //-   form.form-inline
-        //-     input.form-control.mr-2.my-1(type='search' placeholder='Search')
-        //-     button.btn.btn-outline-primary.mr-2.my-1(type='submit') Search
-              
+        ul.navbar-nav.mx-auto
+          each i in [0, 1, 2, 3, 4]
+            li.nav-item: a.nav-link.pt-0(href=urls[0])= pages[i]
+          if (aauth)
+            li.nav-item: a.nav-link.pt-0(href='/admin') Admin
                     
 mixin icons
   a.float-left.ml-1(href= 'https://github.com/angeljruiz')

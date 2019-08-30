@@ -7,7 +7,6 @@ var fs = require('fs');
 
 var mw = require('./middleware.js');
 
-
 module.exports = (app, db, passport) => {
 
   app.get('/', (req, res) => {
@@ -25,11 +24,11 @@ module.exports = (app, db, passport) => {
       res.redirect('/');
   });
 
-  app.get('/review', (req, res) => {
-    Order.getOrder(req.session.cart.cid, (order) => {
+  app.get('/thankyou', (req, res) => {
+    Order.getOrder(req.query.oid, (order) => {
       if (order) {
-        order.pn = mw.formatNumber(order.pn);
-        res.render('review', order);
+        console.log(order);
+        res.render('thankyou', order);
       } else return res.redirect('/');
     });
   });

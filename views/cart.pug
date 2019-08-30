@@ -2,6 +2,7 @@ extends ../includes/layout.pug
 
 append resources
   title Shark Reef Exotics
+  form(action='/create_payment' method='post' id='paymentform')
 append body
   .col-xs-12.col-md-8.col-lg-6.ml-auto
     .card.mb-2
@@ -12,7 +13,6 @@ append body
             thead
               tr.text-center.small.text-muted
                 th.text-left Item
-                //- th &nbsp;
                 th Amount
                 th Price
                 th Total
@@ -39,15 +39,18 @@ append body
           .col-6.text-left
             span.font-weight-bold Subtotal:
             br 
-            span Sales tax:
+            //- span Sales tax:
+            //- br
+            span Shipping:
           .col-6.text-right
-            span.font-weight-bold $#{cart.total}
+            span.font-weight-bold $#{cart.subtotal}
             br
-            span $#{(cart.total*.086).toFixed(2)}
+            //- span $#{cart.salestax}
+            //- br
+            span $#{cart.shipping}
         hr
         .row 
           .col-6.text-left
             strong Total
-          .col-6.text-right.font-weight-bold= (cart.total*1.086).toFixed(2)
-        a(href='/checkout')
-          button.btn.btn-outline-primary.form-control.mt-3 Continue
+          .col-6.text-right.font-weight-bold= cart.total
+        input.btn.btn-outline-primary.form-control.mt-2(type='submit' value='Checkout' form='paymentform')

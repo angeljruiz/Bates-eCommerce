@@ -12,17 +12,20 @@ append body
           .alert.alert-primary.text-center
             = flash
         .row
-          .col-6
+          .col-xs-12.col-lg-6.mb-4
             h6 Customer Info
             span=fn + ' ' + ln
             br
             span=pn
-          .col-6
+            br
+            h6 Shipping
+            span= shipped != 'false'? shipped : 'Not yet shipped.'
+          .col-xs-12.col-lg-6
             h6 Order Info
-            span.font-weight-bold.small Pickup Date: 
-            p=pd
             span.font-weight-bold.small Order Date: 
             p=date
+            span.font-weight-bold.small Order Confirmation: 
+            p=cid
             
   .col-xs-12.col-lg-4.order-xs-12.mr-auto 
     .card#order-card
@@ -32,19 +35,16 @@ append body
           .col-6.text-left
             span.font-weight-bold Subtotal:
             br 
-            span Sales tax:
+            span Shipping:
           .col-6.text-right
-            span.font-weight-bold $#{cart.total}
+            span.font-weight-bold $#{cart.subtotal}
             br
-            span $#{(cart.total*.086).toFixed(2)}
+            span $#{cart.shipping}
         hr
         .row 
           .col-6.text-left
             strong Total
-          .col-6.text-right.font-weight-bold= (cart.total*1.086).toFixed(2)
-        if (processing)
-          a(href='/placeorder')
-            button.btn.btn-outline-primary.form-control.mt-2 Place Order
+          .col-6.text-right.font-weight-bold $#{cart.total}
   .col-xs-12.col-lg-6.order-xs-1.ml-auto.mt-2
     .card#item-card.mb-3
       .card-header Items

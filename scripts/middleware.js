@@ -22,7 +22,7 @@ module.exports = {
   },
 
   validInfo: (req, res, next) => {
-    if (req.body.em === '' || req.body.fn === '' || req.body.ln === '' || req.body.pn === '') {
+    if (req.body.fn === '' || req.body.ln === '') {
       req.res.flash('incorrect', 'Please fill out the entire form');
       return res.redirect('/asguest');
     } else {

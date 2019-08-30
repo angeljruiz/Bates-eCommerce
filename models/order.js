@@ -3,20 +3,21 @@ let MF = require('../models/marinefish.js');
 let Cart = require('../models/cart.js');
 
 class orders {
-  constructor(input, sid) {
-    if (input && sid) {
+  constructor(input) {
+    if (input) {
       this.fn = input.fn;
       this.ln = input.ln;
-      this.pn = input.pn;
-      this.em = input.em;
       this.date = input.date;
-      this.processing = true;
-      this.sid = sid;
-      this.pd = input.pd;
-      this.finalized = false;
-      this.cid = sid.slice(-5) + '-' + this.date.slice(-8, -3);
+      this.processing = input.processing || true;
+      this.line1 = input.line1 || '';
+      this.city = input.city || '';
+      this.state = input.state || ''
+      this.postal_code = input.postal_code || 0;
+      this.shipped = input.shipped || false;
+      this.finalized = input.finalized || false;
+      this.cid = input.cid;
     } else {
-      this.fn = this.ln = this.pn = this.em = this.date = this.processing = this.sid = this.cid = this.pd = this.finalized = -1;
+      this.fn = this.ln = this.date = this.processing = this.line1 = this.city = this.state = this.shipped = this.postal_code = this.cid = this.finalized = -1;
     }
     return this;
   }
@@ -24,7 +25,7 @@ class orders {
   static save(order, cart, fn) {
     let edit = order.edit;
     delete order.edit;
-    db.saveData(orders, Object.keys(order), edit? ['cid', cart.cid] : false, Object.values(order), (err) => {
+    db.saveData(orders, Object.keys(order), edit? ['cid', order.cid] : false, Object.values(order), (err) => {
       let items = [];
       if (err) {
         return console.error('error saving order');
@@ -34,7 +35,7 @@ class orders {
         items.push(cart.amount[index]);
       });
       items = '{' + items + '}';
-      db.saveData(Cart, ['cid', 'items'], edit? ['cid', cart.cid] : false, [cart.cid, items], () => {
+      db.saveData(Cart, ['cid', 'items'], edit? ['cid', order.cid] : false, [order.cid, items], () => {
         if (fn)
           return fn();
       });
