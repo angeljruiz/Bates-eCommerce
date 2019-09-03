@@ -9,7 +9,11 @@ append body
     while i < pics
       - i++;
       .slides
+        if quantity == 0
+          .sold-out.d-inline-block.px-2.py-2.rounded
+            span: h6.mb-0 Sold Out
         img.slide-img.rounded(src='../media/' + id + '-' + i + '.jpg')
+
     a.prev(onclick='move(-1)') &#10094;
     a.next.mr-3(onclick='move(1)') &#10095;
     .row.my-1
@@ -20,16 +24,16 @@ append body
           img.demo.thumb-img.rounded(src='../media/' + id + '-' + i + '.jpg' style='width:100%' onclick='currentSlide(' + i + ')')
   .col-md-4.mr-auto
     .card
-      .ml-3
-        .card-title.mt-3: h2= name
-          h4.text-muted $#{price}
-        br
-        .row.mb-3
-          //- .qty-input.mr-3.rounded
-          //-   i.less.rounded -
-          //-   input(type="number" value="1" readonly)
-          //-   i.more.rounded +
-          a.btn.btn-outline-primary.form-control#atc(href='/addtocart/' + id + '/1') Add to cart    
-          
+      .card-header.mt-3: h2= name
+        h4.text-muted $#{price}
+      .card-body
+        .row
+          if quantity > 0
+            .qty-input.mr-3.rounded.mb-3
+              i.less.rounded -
+              input(type="number" value="1" readonly)
+              i.more.rounded +
+            a.btn.btn-outline-primary.form-control#atc(href='/addtocart/' + id + '/1') Add to cart    
+            
 append footer
   script(src='../js/counter.js')

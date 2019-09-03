@@ -1,4 +1,3 @@
-let db = require('../scripts/database.js');
 let Product = require('../models/product.js');
 
 class marinefish extends Product {
@@ -18,21 +17,6 @@ class marinefish extends Product {
     this.ming = fish.ming;
 
     return this;
-  }
-  save(fn) {
-    let edit = this.edit;
-    super.save( () => {
-      let pk = false;
-      if (edit)
-        pk = ['id', this.id];
-
-      db.saveData(marinefish, ['id', 'ag', 'rs', 'ming'], pk, [this.id, this.ag, this.rs, this.ming], fn);
-    });
-  }
-  static getProduct(id, fn) {
-    db.getData(marinefish, 'all', ['id', id], (fish) => {
-      return fn(fish);
-    });
   }
   static variables() { return ['ag', 'rs', 'ming']; }
 

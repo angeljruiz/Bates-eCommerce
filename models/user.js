@@ -1,18 +1,24 @@
 let fs = require('fs');
 let bcrypt = require('bcrypt-nodejs');
-let db = require('../scripts/database.js');
 
-class users {
-    constructor(input, fn) {
-      if (input)
-        return db.getData(users, 'all', input, fn);
+let Persistent = require('../scripts/persistent.js');
+
+class users extends Persistent {
+    constructor(input) {
+      super();
+      if (input) {
+        this.username = input.username || 0;
+        this.email = input.email || 0;
+        this.password = input.password || 0;
+        this.id = input.id || -1;
+        this.pp = input.pp || 0;
+      }
       this.username = 0;
       this.email = 0;
       this.password = 0;
       this.id = -1;
       this.pp = 0;
-      if (fn)
-        return fn(this);
+      return this;
     }
     pageify(req) {
       if (req.isAuthenticated())

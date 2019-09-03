@@ -1,11 +1,20 @@
-let db = require('../scripts/database.js');
-let Product = require('../models/product.js');
-class cart {
-  constructor() {
+let Persistent = require('../scripts/persistent.js');
+let Product = require('./product.js');
+
+class cart extends Persistent {
+  constructor(input) {
+    super();
+    if (!input) {
     this.items = [];
     this.amount = [];
     this.subtotal = 0;
     this.cid = -1;
+  } else {
+    this.items = input.items;
+    this.amount = input.amount;
+    this.cid = input.cid;
+  }
+  return this;
   }
 
   static addItem(cart, item, amount, Order, rtr) {
@@ -29,13 +38,6 @@ class cart {
         Order.save(order, cart, rtr);
       });
     } else return rtr();
-  }
-
-  static getItems(cart, fn) {
-    let items = [];
-    cart.items.forEach( (item) => {
-      db.getData(MF, ['id', ''])
-    });
   }
 
   static removeItem(cart, item, amount, Order, rtr) {
@@ -64,17 +66,17 @@ class cart {
     cart.salestax = 0;
     cart.shipping = cart.subtotal > 0? 6.99 : 0.00;
     cart.total = (parseFloat(cart.subtotal) + parseFloat(cart.salestax) + cart.shipping).toFixed(2);
-}
+  }
 
   static getCart(cid, fn) {
     let c = new cart;
     c.cid = cid;
-    db.getData(cart, 'all', ['cid', cid], (ct) => {
-      if (ct.items.length == 2) return fn(false);
+    cart.retrieve(['cid', cid], false, ct => {
+      if (!ct || ct.items.length == 2) return fn(false);
       let items = ct.items.slice(1,-1).split(',');
       let len = items.length != 2? items.length/2 : items.length-1;
       for(let i=0;i<len;i++) {
-        Product.getProduct(items[i*2], (product) => {
+        Product.retrieve(['id', items[i*2]], false, product => {
           c.items.push(product);
           c.amount.push(items[i*2+1]);
           if (i == len-1)
@@ -82,6 +84,16 @@ class cart {
         });
       }
     });
+  }
+
+  save(fn) {
+    let items = [];
+    this.items.forEach( (item, index) => {
+      items.push(item.id);
+      items.push(this.amount[index]);
+    });
+    items = '{' + items + '}';
+    super.save({items:items, cid: this.cid}, fn);
   }
 
 }

@@ -12,7 +12,7 @@ var pgSession = require('connect-pg-simple')(session);
 var app = express();
 
 
-require('./scripts/passport.js')(passport, db);
+require('./scripts/passport.js')(passport);
 
 app.use(bp.urlencoded({extended: true}));
 app.use(bp.json());
@@ -27,7 +27,7 @@ app.use(session({
   name: 'Sharkreefcookies',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 1 day
+  cookie: { maxAge: 1 * 30 * 60 * 1000 } // 30 minutes
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -35,8 +35,8 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 app.locals.pretty = true;
 
-require('./scripts/utilities.js')(app, db, passport);
-require('./scripts/routes.js')(app, db, passport);
+require('./scripts/utilities.js')(app, passport);
+require('./scripts/routes.js')(app, passport);
 var mw = require('./scripts/middleware.js')
 
 var autoViews = {};
@@ -46,8 +46,6 @@ app.use( (req, res, next) => {
   let path = req.path.toLowerCase();
   if (reg.test(path) && req.isAuthenticated())
     return res.redirect('/');
-  if (path === '/creator')
-    res.locals.date = mw.formatDate(new Date());
   if (autoViews[path]) return res.render(autoViews[path]);
   if (fs.existsSync(__dirname + '/views' + path + '.pug')) {
     autoViews[path] = path.replace(/^\//, '');

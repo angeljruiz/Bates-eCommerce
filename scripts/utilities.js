@@ -2,21 +2,26 @@ var path = require('path');
 var fs = require('fs');
 var mw = require('./middleware.js');
 var pager = require('../scripts/pager.js');
+
 var User = require('../models/user.js');
 var Order = require('../models/order.js');
 var MF = require('../models/marinefish.js');
 var Cart = require('../models/cart.js');
 var Product = require('../models/product.js');
+var Session = require('../models/session.js');
+var Locker = require('../scripts/locker.js');
+
 
 var paypal = require('paypal-rest-sdk');
 
+// Sandbox PayPal API
 var CLIENT =
   'AXzOBjvJZPijajZquxOlRANdVqWPgu80U2FnuF9jvclxK3aE4WrjDWlYrbGcUXT22JzPiCrY4Ya11iSp';
 var SECRET =
   'AXzOBjvJZPijajZquxOlRANdVqWPgu80U2FnuF9jvclxK3aE4WrjDWlYrbGcUXT22JzPiCrY4Ya11iSp';
 
 paypal.configure({
-  'mode': 'sandbox', //sandbox or live
+  'mode': 'sandbox',
   'client_id': 'AXzOBjvJZPijajZquxOlRANdVqWPgu80U2FnuF9jvclxK3aE4WrjDWlYrbGcUXT22JzPiCrY4Ya11iSp',
   'client_secret': 'EPw5ghxA3qyPYTUXbXOhMLk7EaSZFIyAxFKHcIWy-dW82KZrSOFNZSXLbSmtH9EkKueDkP6S-eMXp6AR'
 });
@@ -61,12 +66,20 @@ function saveOrder(payment, cart, rtr) {
     line1: shipping.line1,
     postal_code: shipping.postal_code
   }
-  Order.save(order, cart, rtr);
+  order = new Order(order);
+  order.save(false, () => {
+    cart.cid = order.cid;
+    cart.save(rtr);
+  });
 }
 
-
-module.exports = (app, db, passport) => {
-
+module.exports = (app, passport) => {
+  // Session.retrieve(false, false, session => {
+  //   session.forEach( (sess) => {
+  //     sess.delete();
+  //   });
+  // });
+  Locker.removeLocks();
   app.use((req, res, next) => {
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
     if (!req.session.cart) {
@@ -78,7 +91,7 @@ module.exports = (app, db, passport) => {
   });
 
   app.get('/addtocart/:id/:amount', (req, res) => {
-    db.getData(Product, ['name', 'id', 'price', 'description'], ['id', req.params.id], (product) => {
+    Product.retrieve(['id', req.params.id], ['name', 'id', 'price', 'description'], product => {
       let rtr = () => {
         req.session.save();
         res.redirect('/');
@@ -89,9 +102,29 @@ module.exports = (app, db, passport) => {
 
   app.get('/remove/:id/:amount', (req, res) => {
     let rtr = () => {
-      res.redirect('/');
+      res.redirect(req.header('Referer'));
     }
     Cart.removeItem(req.session.cart, req.params.id, req.params.amount, Order, rtr);
+  });
+
+  app.get('/deleteorder', (req, res) => {
+    if (res.locals.aauth) {
+      Order.delete(['cid', req.query.cid], () => {
+        res.redirect('/admin');
+      });
+    }
+  });
+
+  app.get('/setshipping', (req, res) => {
+    if (res.locals.aauth) {
+      Order.retrieve(['cid', req.query.cid], order => {
+          order.shipped = req.query.tracking;
+          delete order.cart;
+          order.save(false, () => {
+            return res.redirect(req.header('Referer'));
+          });
+      });
+    } else res.redirect('/');
   });
 
   app.post('/addfish', (req, res) => {
@@ -99,7 +132,7 @@ module.exports = (app, db, passport) => {
       let c = new MF(req.body);
       c.edit = (req.body.editing == 'true');
       delete req.body.editing;
-      c.save( () => {
+      c.save(false, () => {
         res.redirect('/');
       });
     }
@@ -107,40 +140,46 @@ module.exports = (app, db, passport) => {
 
   app.post('/create_payment', (req, res) => {
     var create_payment_json = {
-        "intent": "sale",
-        "payer": {
-            "payment_method": "paypal"
-        },
-        "redirect_urls": {
-            "return_url": "http://192.168.0.7/execute_payment",
-            "cancel_url": "http://localhost/cart"
-        },
-        "transactions": [{
-            "item_list": itemList(req.session.cart),
-            "amount": {
-                "currency": "USD",
-                "total": String(req.session.cart.total),
-                "details": {
-                  "subtotal": String(req.session.cart.subtotal),
-                  "shipping": String(req.session.cart.shipping)
-                }
-            },
-            "description": "Hand made, custom glass."
-        }]
+      "intent": "sale",
+      "payer": {
+          "payment_method": "paypal"
+      },
+      "redirect_urls": {
+          "return_url": "http://localhost/execute_payment",
+          "cancel_url": "http://localhost/cancel_payment"
+      },
+      "transactions": [{
+          "item_list": itemList(req.session.cart),
+          "amount": {
+              "currency": "USD",
+              "total": String(req.session.cart.total),
+              "details": {
+                "subtotal": String(req.session.cart.subtotal),
+                "shipping": String(req.session.cart.shipping)
+              }
+          },
+          "description": "Hand made, custom glass."
+      }]
     };
-    paypal.payment.create(create_payment_json, function (error, payment) {
-    if (error) {
-      console.log(error.response);
-      throw error;
-    } else {
-        for (let i=0;i<payment.links.length;i++) {
-          if (payment.links[i].rel === 'approval_url') {
-            res.redirect(payment.links[i].href);
+    console.log('@@@@');
+    Locker.lockResources(req.session.cart, req.sessionID, locked => {
+      console.log(locked);
+      if (locked) {
+        paypal.payment.create(create_payment_json, function (error, payment) {
+          if (error) {
+            console.log(error.response);
+            throw error;
+          } else {
+            for (let i=0;i<payment.links.length;i++) {
+              if (payment.links[i].rel === 'approval_url') {
+                res.redirect(payment.links[i].href);
+              }
+            }
           }
-        }
-    }
+        });
+      } else return res.redirect('/cart');
+    });
   });
-});
 
   app.get('/execute_payment', (req, res) => {
     const payerId = req.query.PayerID;
@@ -159,7 +198,7 @@ module.exports = (app, db, passport) => {
         console.log(err.response);
         throw err;
       } else {
-        saveOrder(payment, req.session.cart, () => {
+        saveOrder(payment, new Cart(req.session.cart), () => {
           req.session.cart = 0;
           pager.update(req, req.session.cart);
           req.flash('thankyou', 'Thank you! We\'ll be shipping your order soon');
@@ -167,6 +206,10 @@ module.exports = (app, db, passport) => {
         });
       }
     });
+  });
+
+  app.get('/cancel_payment', (req, res) => {
+    res.redirect('/cart');
   });
 
   app.post('/new', mw.validateInfo, passport.authenticate('signup', { session: true, failureRedirect: '/signup' }), (req, res) => {
@@ -180,9 +223,9 @@ module.exports = (app, db, passport) => {
     });
   });
 
-  app.get('/deletefish=:id', (req, res) => {
-    db.deleteData(MF, ['id', req.params.id,]);
-    db.deleteData(Product, ['id', req.params.id,]);
+  app.get('/deleteproduct=:id', (req, res) => {
+    let t = new MF({id: req.params.id});
+    t.delete();
     res.redirect('/admin');
   });
 
@@ -212,7 +255,6 @@ module.exports = (app, db, passport) => {
     });
   });
 
-
   app.get('/logout', (req, res) => {
      req.logout();
      req.user = 0;
@@ -220,6 +262,5 @@ module.exports = (app, db, passport) => {
        res.redirect('/');
      }, 1000);
   });
-
 
 }

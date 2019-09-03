@@ -31,6 +31,28 @@ body {
   background-color: #007bff;
 }
 
+.sold-out {
+  /* width: 50px;
+  height: 25px; */
+  background-color: rgba(0,0,0,.6);
+  position: relative;
+  top: 55px;
+  font-weight: bold;
+  color: rgba(248,248,248,.8);
+}
+
+@media (max-width: 575.98px) {
+  .sold-out {
+    left: 250px;
+  }
+}
+
+@media (min-width: 992px) {
+  .sold-out {
+    left: 380px;
+  }
+}
+
 .qty-input { /* Dominic Kolbe Codepen */
   border: 1px solid black;
   height: 40px;
@@ -184,7 +206,7 @@ h6 > a {
   }
   .slide-img {
     height: 400px;
-    width: 600px;
+    width: 500px;
   }
 }
 

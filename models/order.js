@@ -1,9 +1,9 @@
-let db = require('../scripts/database.js');
-let MF = require('../models/marinefish.js');
+let Persistent = require('../scripts/persistent.js');
 let Cart = require('../models/cart.js');
 
-class orders {
+class orders extends Persistent {
   constructor(input) {
+    super();
     if (input) {
       this.fn = input.fn;
       this.ln = input.ln;
@@ -22,34 +22,14 @@ class orders {
     return this;
   }
 
-  static save(order, cart, fn) {
-    let edit = order.edit;
-    delete order.edit;
-    db.saveData(orders, Object.keys(order), edit? ['cid', order.cid] : false, Object.values(order), (err) => {
-      let items = [];
-      if (err) {
-        return console.error('error saving order');
-      }
-      cart.items.forEach( (item, index) => {
-        items.push(item.id);
-        items.push(cart.amount[index]);
-      });
-      items = '{' + items + '}';
-      db.saveData(Cart, ['cid', 'items'], edit? ['cid', order.cid] : false, [order.cid, items], () => {
-        if (fn)
-          return fn();
-      });
-    });
-  }
-
-  static getOrder(cid, fn) {
-    db.getData(orders, 'all', ['cid', cid], (order) => {
+  static retrieve(pk, fn) {
+    super.retrieve(pk, false, order => {
       if (!order) {
         if (fn)
           return fn(false);
         else return false;
       }
-      Cart.getCart(cid, (cart) => {
+      Cart.getCart(order.cid, cart => {
         if (!cart)
           return fn(order);
         order.cart = cart;
@@ -59,10 +39,7 @@ class orders {
     });
   }
 
-  static submit(order, fn) {
-    order.processing = false;
-    db.saveData(orders, ['processing'], ['cid', order.cid], [false], fn);
-  }
+  publicKey() { return ['cid', this.cid]; }
 
 }
 

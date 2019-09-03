@@ -25,7 +25,7 @@ append body
             span.font-weight-bold.small Order Date: 
             p=date
             span.font-weight-bold.small Order Confirmation: 
-            p=cid
+            p#cid=cid
             
   .col-xs-12.col-lg-4.order-xs-12.mr-auto 
     .card#order-card
@@ -65,12 +65,35 @@ append body
                     img.checkout-img.img-fluid.img-thumbnail(src='../media/' + item.id + '-1.jpg')
                 td.px-0.text-left.float-left
                   a(href='/viewproduct=' + item.id): h6.mb-0= item.name
-                  if (processing)
-                    a(href='/remove/' + item.id + '/all'): small.text-muted remove 
                 td.clear(data-title='Amount:')
                   span=cart.amount[index]
                 td(data-title='Price:')
                   span= '$' + item.price
                 td.cst(data-title='Total:')
                   span $#{(item.price*cart.amount[index]).toFixed(2)}
-  .col-xs-12.col-lg-4.mr-auto 
+  .col-xs-12.col-lg-4.mr-auto
+    if aauth
+      .card
+        .card-header Admin
+        .card-body
+          h6 Shipping Address
+          span= line1 + ', ' + city + ' ' + state + ' ' + postal_code
+          .input-group.mt-3.mb-3
+            input#track.form-control(type='text' placeholder='Tracking Number')
+            .input-group-append
+              button.btn.btn-primary(onclick='ship()') Update
+          button.btn.btn-danger(onclick='deleteorder()') Delete
+append footer
+  if aauth
+    script.
+      function deleteorder() {
+        var cid = $('#cid').html();
+        if (confirm('Delete this order?'))
+          location.replace('/deleteorder?cid=' + cid)
+      }
+      
+      function ship() {
+        var tracking = $('#track').val();
+        var cid = $('#cid').html();
+        location.replace('/setshipping?cid=' + cid + '&tracking=' + tracking);
+      }

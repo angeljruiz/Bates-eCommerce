@@ -52,5 +52,8 @@ append body
         .row 
           .col-6.text-left
             strong Total
-          .col-6.text-right.font-weight-bold= cart.total
-        input.btn.btn-outline-primary.form-control.mt-2(type='submit' value='Checkout' form='paymentform')
+          .col-6.text-right.font-weight-bold= '$' + cart.total
+        if cart.items.length != 0
+          input.btn.btn-outline-primary.form-control.mt-2(type='submit' value='Checkout' form='paymentform')
+        else 
+          a.btn.btn-outline-primary.form-control.mt-2(href='/') Continue Shopping

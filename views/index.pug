@@ -4,9 +4,16 @@ append resources
   title Shark Reef Exotics
 append body
   .card-group
-    each fish, index in fishes
+    if fishes.length
+      each fish, index in fishes
+        .col-xs-12.col-md-3
+          .product
+            a(href='/viewproduct=' + fish.id)
+              .card.mx-2.mb-4(style='border: none')
+                img.card-img.rounded(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
+    else
       .col-xs-12.col-md-3
         .product
-          a(href='/viewproduct=' + fish.id)
+          a(href='/viewproduct=' + fishs.id)
             .card.mx-2.mb-4(style='border: none')
-              img.card-img.rounded(src='../media/' + fish.id + '-1.jpg' style='height: 15rem')
+              img.card-img.rounded(src='../media/' + fishs.id + '-1.jpg' style='height: 15rem')

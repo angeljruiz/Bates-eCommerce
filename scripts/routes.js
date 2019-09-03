@@ -7,17 +7,17 @@ var fs = require('fs');
 
 var mw = require('./middleware.js');
 
-module.exports = (app, db, passport) => {
+module.exports = (app, passport) => {
 
   app.get('/', (req, res) => {
-    db.getData(Product, ['id', 'price', 'name'], 'all', (fish) => {
+    Product.retrieve(false, ['id', 'price', 'name'], fish => {
       res.render('index', { fishes: fish });
     });
   });
 
   app.get('/admin', (req, res) => {
     if (res.locals.aauth) {
-      db.getData(Product, ['id', 'name'], 'all', (fishes) => {
+      Product.retrieve(false, ['id', 'name'], fishes => {
         res.render('admin', { fishes: fishes });
       });
     } else
@@ -25,11 +25,17 @@ module.exports = (app, db, passport) => {
   });
 
   app.get('/thankyou', (req, res) => {
-    Order.getOrder(req.query.oid, (order) => {
+    Order.retrieve(['cid', req.query.oid], order => {
       if (order) {
-        console.log(order);
         res.render('thankyou', order);
       } else return res.redirect('/');
+    });
+  });
+
+  app.get('/orders', (req, res) => {
+    if (!res.locals.aauth) return res.redirect('/');
+    Order.retrieve(['finalized', true], orders => {
+        res.render('orders', { orders: orders });
     });
   });
 
@@ -44,7 +50,7 @@ module.exports = (app, db, passport) => {
     while (fs.existsSync('media/' + req.params.id + '-' + (pics+1) + '.jpg')) {
       pics++;
     }
-    MF.getProduct(req.params.id, (fish)=> {
+    Product.retrieve(['id', req.params.id], false, fish => {
       fish.pics = pics;
       res.render('viewproduct', fish);
     });
@@ -53,7 +59,7 @@ module.exports = (app, db, passport) => {
   app.get('/editfish/:id', (req, res) => {
     res.locals.editing = true;
     if (req.isAuthenticated() && req.user.username === 'angel') {
-      MF.getProduct(req.params.id, (fish) => {
+      MF.retrieve(['id', req.params.id], false, fish => {
         res.render('addfish', fish);
       });
     }
