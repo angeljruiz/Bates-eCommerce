@@ -74,11 +74,6 @@ function saveOrder(payment, cart, rtr) {
 }
 
 module.exports = (app, passport) => {
-  // Session.retrieve(false, false, session => {
-  //   session.forEach( (sess) => {
-  //     sess.delete();
-  //   });
-  // });
   Locker.removeLocks();
   app.use((req, res, next) => {
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
@@ -109,7 +104,9 @@ module.exports = (app, passport) => {
 
   app.get('/deleteorder', (req, res) => {
     if (res.locals.aauth) {
-      Order.delete(['cid', req.query.cid], () => {
+      let order = new Order( {cid: req.query.cid});
+      console.log(order);
+      order.delete( () => {
         res.redirect('/admin');
       });
     }
@@ -133,7 +130,7 @@ module.exports = (app, passport) => {
       c.edit = (req.body.editing == 'true');
       delete req.body.editing;
       c.save(false, () => {
-        res.redirect('/');
+        res.redirect('/admin');
       });
     }
   });
@@ -161,22 +158,21 @@ module.exports = (app, passport) => {
           "description": "Hand made, custom glass."
       }]
     };
-    console.log('@@@@');
     Locker.lockResources(req.session.cart, req.sessionID, locked => {
       console.log(locked);
       if (locked) {
-        paypal.payment.create(create_payment_json, function (error, payment) {
-          if (error) {
-            console.log(error.response);
-            throw error;
-          } else {
-            for (let i=0;i<payment.links.length;i++) {
-              if (payment.links[i].rel === 'approval_url') {
-                res.redirect(payment.links[i].href);
+          paypal.payment.create(create_payment_json, function (error, payment) {
+            if (error) {
+              console.log(error.response);
+              throw error;
+            } else {
+              for (let i=0;i<payment.links.length;i++) {
+                if (payment.links[i].rel === 'approval_url') {
+                  return res.redirect(payment.links[i].href);
+                }
               }
             }
-          }
-        });
+          });
       } else return res.redirect('/cart');
     });
   });
@@ -198,6 +194,7 @@ module.exports = (app, passport) => {
         console.log(err.response);
         throw err;
       } else {
+        Locker.removeSessionLocks(req.sessionID);
         saveOrder(payment, new Cart(req.session.cart), () => {
           req.session.cart = 0;
           pager.update(req, req.session.cart);

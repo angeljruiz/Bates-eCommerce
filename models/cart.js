@@ -86,6 +86,8 @@ class cart extends Persistent {
     });
   }
 
+  publicKey() { return ['cid', this.cid]; }
+
   save(fn) {
     let items = [];
     this.items.forEach( (item, index) => {

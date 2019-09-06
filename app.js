@@ -27,7 +27,7 @@ app.use(session({
   name: 'Sharkreefcookies',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1 * 30 * 60 * 1000 } // 30 minutes
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 30 minutes
 }));
 app.use(passport.initialize());
 app.use(passport.session());
