@@ -41,7 +41,6 @@ class orders extends Persistent {
 
   delete(fn) {
     let cart = new Cart({cid: this.cid});
-    console.log(cart);
     cart.delete( () => {
       super.delete(fn);
     });

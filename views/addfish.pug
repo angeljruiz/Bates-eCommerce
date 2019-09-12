@@ -2,12 +2,26 @@ extends ../includes/layout.pug
 
 append resources
   title Add stock
+  link(href='../vendor/dropzone.min.css' rel='stylesheet')
+  script(src="../vendor/dropzone.min.js")
+  script(src="../js/fileupload.js" defer)
   
 append body
+  input#id(type='hidden' value=id)
   .col-md-10.mx-auto
     .card
         .card-body
-          .form-group
+          if editing
+            .dropzone.rounded.mb-5#dropzone
+          .row.my-1
+            if pics
+              each pic, index in pics
+                .col-xs-12.col-lg-2.mr-3
+                  img.demo.thumb-img.rounded(src='../uploads/' + pic.name style='width:100%')
+                  input.my-2(type='text' id='picName-' + index value=pic.num || '' style='width: 100%')
+                  button.btn.btn-outline-primary.form-control.mb-3(onclick='edit(' + index + ', "' + pic.name + '")') Edit
+                  button.btn.btn-outline-danger.form-control.mb-5(onclick='delete_image("' + pic.name + '")') Delete
+          .form-group.mt-3
             form(action='/addfish' method='POST')
               input(type='hidden' name='editing' value=editing? 'true' : 'false')
               .form-group

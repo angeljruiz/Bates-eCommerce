@@ -17,7 +17,7 @@ class cart extends Persistent {
   return this;
   }
 
-  static addItem(cart, item, amount, Order, rtr) {
+  static addItem(cart, item, amount) {
     let f = false;
     cart.items.forEach( (product, index) => {
       if (product.id == item.id) {
@@ -29,33 +29,22 @@ class cart extends Persistent {
       cart.items.push(item);
       cart.amount.push(amount);
     }
-    if (cart.cid != -1) {
-      Order.getOrder(cart.cid, (order) => {
-        if (!order)
-          return console.error('error saving cart');
-        delete order.cart;
-        order.edit = true;
-        Order.save(order, cart, rtr);
-      });
-    } else return rtr();
   }
 
-  static removeItem(cart, item, amount, Order, rtr) {
-    cart.items.forEach( (product, index) => {
-      if (product.id == item) {
-        cart.items.splice(index, 1);
-        cart.amount.splice(index, 1);
-      }
-    });
-    if (cart.cid != -1) {
-      Order.getOrder(cart.cid, (order) => {
-        if (!order)
-          return console.error('error saving cart');
-        delete order.cart;
-        order.edit = true;
-        Order.save(order, cart, rtr);
+  static removeItems(cart, items, rtr) {
+    return new Promise( (resolve, reject) => {
+      let index;
+      items.forEach( item => {
+        index = cart.items.map( cartItem => { return cartItem.id; } ).indexOf(item.id);
+        if (cart.amount[index] == item.amount) {
+          cart.items.splice(index, 1);
+          cart.amount.splice(index, 1);
+        } else {
+          cart.amount[index] = parseInt(cart.amount[index]) - parseInt(item.amount);
+        }
       });
-    } else return rtr();
+      resolve();
+    });
   }
 
   static getTotal(cart) {

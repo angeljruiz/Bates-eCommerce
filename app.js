@@ -6,6 +6,7 @@ var session = require('express-session');
 var bp = require('body-parser');
 var passport = require('passport');
 var morgan = require('morgan');
+var device = require('express-device');
 var fs = require('fs');
 var db = require('./scripts/database.js');
 var pgSession = require('connect-pg-simple')(session);
@@ -18,6 +19,8 @@ app.use(bp.urlencoded({extended: true}));
 app.use(bp.json());
 app.use(flash());
 app.use(express.static(__dirname));
+app.use(device.capture());
+device.enableDeviceHelpers(app)
 app.use(morgan('dev'));
 app.use(session({
   store: new pgSession({

@@ -14,9 +14,11 @@ module.exports.connect = function (callback) {
 
 class Database {
   static className(model) { return (new model).constructor.name + ' as lh '}
-  static publicKey(pk) { if (pk != 'all' && pk) return 'WHERE lh.' + pk[0] + " = '" + pk[1] + "'"; else return ''; }
-  static joinNeeded(model, attrs) {
+  static publicKey(pk) { if (pk != 'all' && pk) return 'WHERE lh.' + pk[0] + " = '" + pk[1] + "'" + (pk[2]? ' ' + pk[2] : ''); else return ''; }
+  static joinNeeded(model, attrs, pk) {
     let needed = false;
+    if (!pk)
+      return false;
     if (!Object.getPrototypeOf(model).name || Object.getPrototypeOf(model).name == 'Persistent')
       return false;
     let keys = model.variables();
@@ -48,7 +50,7 @@ class Database {
     return t;
   }
   static join(attrs, pk, model) {
-    if (Database.joinNeeded(model, attrs))
+    if (Database.joinNeeded(model, attrs, pk))
       return 'FULL JOIN ' + Object.getPrototypeOf(model).name + ' rh on lh.' + pk[0] + '=rh.' + pk[0] + ' ';
     else
       return '';
@@ -66,7 +68,34 @@ class Database {
     }
     return attributes + post;
   }
-  getData( model, attrs, pk, fn) {
+  custom( model, input, fn) {
+    let c = new model;
+    let d = [];
+    let keys = Object.keys(c);
+    console.log(input);
+    pool.query(input, (err, res) => {
+      if (err)
+        return console.error('error running query', err);
+      let rtr = function(item) {
+        c[item] = res.rows[0][item];
+      }
+      if (res.rows.length == 1) {
+          keys.forEach ( rtr );
+      } else if (res.rows.length > 1) {
+        res.rows.forEach( (item, index) => {
+          d.push(new model);
+          keys.forEach ( (key) => {
+            d[index][key] = res.rows[index][key];
+          });
+        });
+      } else return fn(false);
+      if (res.rows.length == 1)
+        return fn(c);
+      else if (res.rows.length >= 1)
+        return fn(d);
+    });
+  }
+  async getData( model, attrs, pk, fn) {
     let c = new model;
     let d = [];
     let keys = Object.keys(c);

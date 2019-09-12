@@ -16,26 +16,17 @@ append body
                 th Name
                 th Shipped
             tbody
-              if orders.length
-                each order, index in orders
-                  tr.text-center.mb-3
-                    td.text-left.px-1
-                      a(href='/thankyou?oid=' + order.cid)
-                        h6.mb-0= order.cid
-                    td.px-0
-                      span= order.date
-                    td.clear(data-title='Name:')
-                      span= order.fn + ' ' + order.ln
-                    td(data-title='Shipped:')
-                      span= order.shipped != 'false'
-              else
+              if !orders.length
+                - orders = [orders]
+              each order in orders
                 tr.text-center.mb-3
                   td.text-left.px-1
-                    a(href='/thankyou?oid=' + orders.cid)
-                      h6.mb-0= orders.cid
+                    a(href='/thankyou?oid=' + order.cid)
+                      h6.mb-0= order.cid
                   td.px-0
-                    span= orders.date
+                    span= order.date
                   td.clear(data-title='Name:')
-                    span= orders.fn + ' ' + orders.ln
+                    span= order.fn + ' ' + order.ln
                   td(data-title='Shipped:')
-                    span= orders.shipped != 'false'
+                    span= order.shipped != 'false'
+            

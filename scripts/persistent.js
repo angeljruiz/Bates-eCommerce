@@ -9,6 +9,11 @@ class Persistent {
         fn(item);
     });
   }
+  static customQuery(query, fn) {
+    db.custom(this, query, item => {
+      fn(item);
+    });
+  }
   publicKey() { return ['id', this.id]; }
   values(attrs) {
     let values = [];

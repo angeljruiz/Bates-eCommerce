@@ -1,4 +1,5 @@
 var User = require('../models/user.js');
+var Image = require('../models/image.js');
 var MF = require('../models/marinefish.js');
 var Order = require('../models/order.js');
 var Product = require('../models/product.js');
@@ -10,7 +11,7 @@ var mw = require('./middleware.js');
 module.exports = (app, passport) => {
 
   app.get('/', (req, res) => {
-    Product.retrieve(false, ['id', 'price', 'name'], fish => {
+    Product.retrieve(false, false, fish => {
       res.render('index', { fishes: fish });
     });
   });
@@ -27,6 +28,7 @@ module.exports = (app, passport) => {
   app.get('/thankyou', (req, res) => {
     Order.retrieve(['cid', req.query.oid], order => {
       if (order) {
+        order.date = mw.formatDate(new Date(order.date));
         res.render('thankyou', order);
       } else return res.redirect('/');
     });
@@ -46,23 +48,28 @@ module.exports = (app, passport) => {
   });
 
   app.get('/viewproduct=:id', (req, res) => {
-    let pics = 0;
-    while (fs.existsSync('media/' + req.params.id + '-' + (pics+1) + '.jpg')) {
-      pics++;
-    }
-    Product.retrieve(['id', req.params.id], false, fish => {
-      fish.pics = pics;
-      res.render('viewproduct', fish);
+    Image.retrieve(['id', req.params.id, 'ORDER BY num'], ['num', 'type', 'name'], images => {
+      if (!images) images = [];
+      if (!Array.isArray(images)) images = [images];
+      Product.retrieve(['id', req.params.id], false, fish => {
+        fish.pics = images;
+        res.render('viewproduct', fish);
+      });
     });
   });
 
   app.get('/editfish/:id', (req, res) => {
     res.locals.editing = true;
-    if (req.isAuthenticated() && req.user.username === 'angel') {
-      MF.retrieve(['id', req.params.id], false, fish => {
-        res.render('addfish', fish);
-      });
-    }
+    Image.retrieve(['id', req.params.id, 'ORDER BY num'], ['num', 'type', 'name'], images => {
+      if (!images) images = [];
+      if (!Array.isArray(images)) images = [images];
+      if (res.locals.aauth) {
+        MF.retrieve(['id', req.params.id], false, fish => {
+          fish.pics = images;
+          res.render('addfish', fish);
+        });
+      }
+    });
   });
 
 };

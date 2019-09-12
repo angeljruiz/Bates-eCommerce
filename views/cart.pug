@@ -8,6 +8,9 @@ append body
     .card.mb-2
       .card-header Cart
       .card-body
+        if (flash.length > 0)
+          .alert.alert-info.text-center
+            = flash
         .table-responsive#mobile-table
           table.table.mobile-table
             thead
@@ -24,7 +27,7 @@ append body
                       img.checkout-img.img-fluid.img-thumbnail(src='../media/' + item.id + '-1.jpg')
                   td.px-0.text-left.float-left
                     a(href='/viewproduct=' + item.id): h6.mb-0= item.name
-                    a(href='/remove/' + item.id + '/all'): small.text-muted remove 
+                    a(href='/remove/' + item.id + '/' + cart.amount[index]): small.text-muted remove 
                   td.clear(data-title='Amount:')
                     span #{cart.amount[index]}
                   td(data-title='Price:')

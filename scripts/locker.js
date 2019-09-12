@@ -33,8 +33,22 @@ class Locker {
       }
     });
   }
+  removeIDLock(sid, id) {
+    return new Promise( (resolve, reject) => {
+      Lock.retrieve(['sid', sid, ' AND ID = ' + id], false, lock => {
+        if (!lock) return resolve();
+        Product.retrieve(['id', id], ['quantity'], product => {
+          let newProduct = new Product({id: id, quantity: parseInt(product.quantity) + parseInt(lock.amount), edit:true });
+          newProduct.save(['quantity']);
+          lock.delete();
+          resolve();
+        });
+      });
+    });
+  }
   lockResources(cart, sid, fn) {
     let locked = true;
+    let items = [];
     Locker.loadResources(cart.items, sid, resources => {
       Lock.retrieve(['sid', sid], false, locks => {
         let newLock, newProduct;
@@ -58,52 +72,36 @@ class Locker {
               if (lockAmount != cart.amount[index]) {
                 newLock = new Lock({lid: locks[lockIndex].lid, amount: cart.amount[index], edit: true});
                 newLock.save(['lid', 'amount']);
-                newProduct = new Product({id: item.id, quantity: parseInt(currentResource.amount) - parseInt(cart.amount[index]) + parseInt(lockAmount), edit: true});
+                newProduct = new Product({id: item.id, quantity: parseInt(currentResource.amount) - cart.amount[index] + lockAmount, edit: true});
                 newProduct.save(['quantity']);
               }
             } else {
               newLock = new Lock({sid: sid, id: item.id, amount: cart.amount[index]});
               newLock.save(['sid', 'id', 'amount']);
-              newProduct = new Product({id: item.id, quantity: parseInt(currentResource.amount) - parseInt(cart.amount[index]), edit: true});
+              newProduct = new Product({id: item.id, quantity: parseInt(currentResource.amount) - cart.amount[index], edit: true});
               newProduct.save(['quantity']);
             }
+            if (index == cart.items.length-1) return fn(locked? true : items);
             return;
           }
+          items.push({id: item.id, amount: Math.abs(parseInt(currentResource.amount) - cart.amount[index] + lockAmount)});
           locked = false;
+          if (index == cart.items.length-1) return fn(locked? true : items);
         });
       });
     });
-    return fn(false);
   }
   removeLocks() {
-    Lock.retrieve(false, false, locks => {
-      if (!locks) return;
-      let amount, sid, id, lid;
-      sid = locks.sid;
-      id = locks.id;
-      amount = locks.amount;
-      lid = locks.lid;
-      let func = function(sid, id, amount, lid) {
-         Session.retrieve(['sid', sid], ['sid'], session => {
-          if (!session) {
-            Product.retrieve(['id', id], false, item => {
-              item.quantity = parseInt(item.quantity) + parseInt(amount);
-              item.save();
-              let lock = new Lock({lid: lid});
-              lock.delete();
-            });
-          }
+    Lock.customQuery('SELECT * FROM lock as lh LEFT JOIN session as rh on rh.sid = lh.sid WHERE rh.sid IS NULL', locks => {
+      if (!locks) { return; }
+      if (!Array.isArray(locks)) locks = [locks];
+      locks.forEach( lock => {
+        Product.retrieve(['id', lock.id], false, item => {
+          item.quantity = parseInt(item.quantity) + parseInt(lock.amount);
+          item.save();
         });
-      }
-      if (Array.isArray(locks)) {
-        locks.forEach( lock => {
-          sid = lock.sid;
-          id = lock.id;
-          amount = lock.amount;
-          lid = lock.lid;
-          func(sid, id, amount, lid);
-        });
-      } else func(sid, id, amount, lid);
+        lock.delete();
+      });
     });
   }
 }

@@ -4,6 +4,7 @@ var mw = require('./middleware.js');
 var pager = require('../scripts/pager.js');
 
 var User = require('../models/user.js');
+var Image = require('../models/image.js');
 var Order = require('../models/order.js');
 var MF = require('../models/marinefish.js');
 var Cart = require('../models/cart.js');
@@ -11,8 +12,9 @@ var Product = require('../models/product.js');
 var Session = require('../models/session.js');
 var Locker = require('../scripts/locker.js');
 
-
 var paypal = require('paypal-rest-sdk');
+var multer = require('multer');
+var upload = multer({ dest: 'uploads/' });
 
 // Sandbox PayPal API
 var CLIENT =
@@ -85,21 +87,19 @@ module.exports = (app, passport) => {
     next();
   });
 
-  app.get('/addtocart/:id/:amount', (req, res) => {
-    Product.retrieve(['id', req.params.id], ['name', 'id', 'price', 'description'], product => {
-      let rtr = () => {
-        req.session.save();
-        res.redirect('/');
-      }
-      Cart.addItem(req.session.cart, product, parseInt(req.params.amount), Order, rtr);
+  app.get('/addtocart', (req, res) => {
+    if (!req.query.id || !req.query.amount) return res.redirect('back');
+    Product.retrieve(['id', req.query.id], ['name', 'id', 'price', 'description'], product => {
+      Cart.addItem(req.session.cart, product, parseInt(req.query.amount));
+      res.redirect('/');
     });
   });
 
-  app.get('/remove/:id/:amount', (req, res) => {
-    let rtr = () => {
-      res.redirect(req.header('Referer'));
-    }
-    Cart.removeItem(req.session.cart, req.params.id, req.params.amount, Order, rtr);
+  app.get('/remove/:id/:amount', async (req, res) => {
+    await Cart.removeItems(req.session.cart, [{ id: req.params.id, amount: req.params.amount}]);
+    req.session.save();
+    Locker.removeIDLock(req.sessionID, req.params.id);
+    res.redirect('back');
   });
 
   app.get('/deleteorder', (req, res) => {
@@ -124,8 +124,49 @@ module.exports = (app, passport) => {
     } else res.redirect('/');
   });
 
+  app.post('/file_upload', upload.single('file'), (req, res) => {
+    if (!res.locals.aauth || !req.query.id) return res.redirect("back");
+    fs.readFile(req.file.path, function(err, data) {
+      let image = new Image({id: req.query.id, name: req.file.filename, type: req.file.originalname.split('.')[1].toLowerCase()});
+      image.save(['id', 'name', 'type']);
+      res.redirect("back");
+    });
+  });
+
+  app.get('/delete_image', (req, res) => {
+    if (!res.locals.aauth || !req.query.name) return res.redirect("back");
+    let image = new Image({name: req.query.name});
+    image.delete( () => {
+      res.redirect('back');
+    })
+  });
+
+  app.get('/main', (req, res) => {
+    if (!req.query.id) return res.send('');
+    Image.retrieve(['id', req.query.id, 'ORDER BY id LIMIT 1'], ['name'], image => {
+      if (!image) return res.send('');
+      res.redirect('../uploads/' + image.name);
+    });
+  });
+
+  app.get('/rename', (req, res) => {
+    if (!res.locals.aauth) return res.redirect('/');
+    let image = new Image({name: req.query.name, num: req.query.rename, edit: true});
+    image.save(['num'], () => {
+      res.redirect("back");
+    });
+  });
+
+  app.get('/image', (req, res) => {
+    if (!req.query.name) return res.redirect('back');
+    Image.retrieve(['name', req.query.name], ['data', 'type'], image => {
+      res.contentType('image/' + image.type);
+      res.send(image.data);
+    });
+  });
+
   app.post('/addfish', (req, res) => {
-    if (req.isAuthenticated() && req.user.username === 'angel') {
+    if (res.locals.aauth) {
       let c = new MF(req.body);
       c.edit = (req.body.editing == 'true');
       delete req.body.editing;
@@ -158,9 +199,8 @@ module.exports = (app, passport) => {
           "description": "Hand made, custom glass."
       }]
     };
-    Locker.lockResources(req.session.cart, req.sessionID, locked => {
-      console.log(locked);
-      if (locked) {
+    Locker.lockResources(req.session.cart, req.sessionID, async locked => {
+      if (locked == true) {
           paypal.payment.create(create_payment_json, function (error, payment) {
             if (error) {
               console.log(error.response);
@@ -173,7 +213,11 @@ module.exports = (app, passport) => {
               }
             }
           });
-      } else return res.redirect('/cart');
+      } else {
+        await Cart.removeItems(req.session.cart, locked);
+        req.flash('itemRemoved', 'We had to remove some items from your cart because they were sold out');
+        res.redirect('/cart');
+      }
     });
   });
 
@@ -221,6 +265,7 @@ module.exports = (app, passport) => {
   });
 
   app.get('/deleteproduct=:id', (req, res) => {
+    if (!res.locals.aauth) return res.redirect('/');
     let t = new MF({id: req.params.id});
     t.delete();
     res.redirect('/admin');

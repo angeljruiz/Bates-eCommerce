@@ -1,4 +1,9 @@
 mixin header()
+  //- if path == '/'
+  //-   .col-12.px-0
+  //-     .jumbotron(style='background-color: rgb(205,205,205); height: 100vh')
+  //-       .container
+  //-         h1.display-4 jumbotron
   a(href='/')
     img.micon.rounded.img-fluid
 
@@ -10,7 +15,7 @@ mixin footer()
         a.mr-2.pl-2.footer-link(href='/contact') Contact
         a.mr-2.pl-2.footer-link(href='/privatepolicy') Privacy
     .row
-      .cr-name.mx-auto &copy 2019 Monsoon Glass
+      .cr-name.mx-auto &copy 2017-2019 Angel Ruiz-Bates
 
 mixin navvy(index)
   -
@@ -50,7 +55,3 @@ mixin navvy(index)
             li.nav-item: a.nav-link.pt-0(href=urls[0])= pages[i]
           if (aauth)
             li.nav-item: a.nav-link.pt-0(href='/admin') Admin
-                    
-mixin icons
-  a.float-left.ml-1(href= 'https://github.com/angeljruiz')
-    i.fa-2x.fab.fa-github
