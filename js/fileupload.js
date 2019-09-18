@@ -1,7 +1,9 @@
 Dropzone.autoDiscover = false;
 
-var id = $('#id')[0].value;
-$("#dropzone").dropzone({ url: "/file_upload?id=" + id});
+var sku = $('#hsku')[0].value;
+var store = $('#store')[0].value;
+
+$("#dropzone").dropzone({ url: "/file_upload?sku=" + sku + '&store=' + store});
 
 function edit(id, name) {
   var xml = new XMLHttpRequest();

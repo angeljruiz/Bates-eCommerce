@@ -1,7 +1,7 @@
 extends ../includes/layout.pug
 
 append body
-  input#hid(type='hidden' value=id)
+  input#hsku(type='hidden' value=sku)
   .col-md-4.ml-auto
     each pic in pics
       .slides
@@ -25,7 +25,7 @@ append body
             //-   input(type="number" value="1" readonly)
             //-   i.more.rounded +
             p.w-100.lead= description
-            a.btn.btn-outline-primary.form-control.mx-5#atc(href='/addtocart?id=' + id + '&amount=1') Add to cart    
+            a.btn.btn-outline-primary.form-control.mx-5#atc(href='/addtocart?sku=' + sku + '&amount=1') Add to cart    
             
 append footer
   script(src='../js/counter.js')

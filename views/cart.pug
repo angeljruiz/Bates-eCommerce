@@ -1,7 +1,6 @@
 extends ../includes/layout.pug
 
 append resources
-  title Shark Reef Exotics
   form(action='/create_payment' method='post' id='paymentform')
 append body
   .col-xs-12.col-md-8.col-lg-6.ml-auto
@@ -23,11 +22,11 @@ append body
               each item, index in cart.items
                 tr.text-center
                   td.text-left.px-1.float-left
-                    a(href='/viewproduct=' + item.id)
-                      img.checkout-img.img-fluid.img-thumbnail(src='../media/' + item.id + '-1.jpg')
+                    a(href='/viewproduct=' + item.sku)
+                      img.checkout-img.img-fluid.img-thumbnail(src='/main?sku=' + item.sku)
                   td.px-0.text-left.float-left
-                    a(href='/viewproduct=' + item.id): h6.mb-0= item.name
-                    a(href='/remove/' + item.id + '/' + cart.amount[index]): small.text-muted remove 
+                    a(href='/viewproduct=' + item.sku): h6.mb-0= item.name
+                    a(href='/remove/' + item.sku + '/' + cart.amount[index]): small.text-muted remove 
                   td.clear(data-title='Amount:')
                     span #{cart.amount[index]}
                   td(data-title='Price:')

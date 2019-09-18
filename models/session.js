@@ -1,6 +1,6 @@
 'use strict';
 
-let Persistent = require('../scripts/persistent.js');
+let Persistent = require('../config/persistent.js');
 
 class session extends Persistent {
   constructor(input) {

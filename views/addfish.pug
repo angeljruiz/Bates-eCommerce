@@ -7,7 +7,7 @@ append resources
   script(src="../js/fileupload.js" defer)
   
 append body
-  input#id(type='hidden' value=id)
+  input#hsku(type='hidden' value=sku)
   .col-md-10.mx-auto
     .card
         .card-body
@@ -24,9 +24,14 @@ append body
           .form-group.mt-3
             form(action='/addfish' method='POST')
               input(type='hidden' name='editing' value=editing? 'true' : 'false')
+              if aauth
+                .form-group
+                    h3 
+                      strong Store ID
+                    input.form-control#store(type='number' name='store' placeholder='Enter store ID here' value= editing? store : -1)
               .form-group
                 h3 
-                  strong Fish name
+                  strong Produt name
                 input.form-control(type='text' name='name' placeholder='Enter name here' value= editing? name : "")
               .form-group
                 h3 
@@ -34,8 +39,8 @@ append body
                 textarea.form-control(name='description' placeholder='Enter description here')= editing? description : ""
               .form-group
                 h3 
-                  strong ID
-                input.form-control(type='number' name='id' value=editing? id : "-1")
+                  strong SKU
+                input.form-control(type='number' name='sku' value=editing? sku : "-1")
               .form-group
                 h3 
                   strong Price
@@ -65,9 +70,9 @@ append body
                 input(type='radio' id='caggr' name='ag' value='cag' checked=ag === 'cag' ? true : false)
                 label(for='caggr') Aggressive to conspecifics
                 br
-                input(type='radio' id='naggr' name='ag' value='nag' checked=ag === 'nag' ? true : false)
-                label(for='naggr') Non-aggressive
+                input(type='radio' id='aggrn' name='ag' value='nag' checked=ag === 'nag' ? true : false)
+                label(for='aggrn') Non-aggressive
               input.btn.btn-primary.mr-2(type='submit' value='Submit')
-              a.btn.btn-danger(href='/deleteproduct=' + id) Delete
+              a.btn.btn-danger(href='/deleteproduct=' + sku) Delete
               
               

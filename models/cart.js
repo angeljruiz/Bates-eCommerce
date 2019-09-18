@@ -1,4 +1,4 @@
-let Persistent = require('../scripts/persistent.js');
+let Persistent = require('../config/persistent.js');
 let Product = require('./product.js');
 
 class cart extends Persistent {
@@ -20,7 +20,7 @@ class cart extends Persistent {
   static addItem(cart, item, amount) {
     let f = false;
     cart.items.forEach( (product, index) => {
-      if (product.id == item.id) {
+      if (product.sku == item.sku) {
         f = true;
         cart.amount[index] += amount;
       }
@@ -35,7 +35,7 @@ class cart extends Persistent {
     return new Promise( (resolve, reject) => {
       let index;
       items.forEach( item => {
-        index = cart.items.map( cartItem => { return cartItem.id; } ).indexOf(item.id);
+        index = cart.items.map( cartItem => { return cartItem.sku; } ).indexOf(item.sku);
         if (cart.amount[index] == item.amount) {
           cart.items.splice(index, 1);
           cart.amount.splice(index, 1);
@@ -58,20 +58,24 @@ class cart extends Persistent {
   }
 
   static getCart(cid, fn) {
-    let c = new cart;
-    c.cid = cid;
-    cart.retrieve(['cid', cid], false, ct => {
+    return new Promise( async (resolve, reject) => {
+      let c = new cart;
+      let productsProm = [];
+      c.cid = cid;
+      let ct = await cart.retrieve(['cid', cid], false);
       if (!ct || ct.items.length == 2) return fn(false);
       let items = ct.items.slice(1,-1).split(',');
       let len = items.length != 2? items.length/2 : items.length-1;
       for(let i=0;i<len;i++) {
-        Product.retrieve(['id', items[i*2]], false, product => {
-          c.items.push(product);
-          c.amount.push(items[i*2+1]);
-          if (i == len-1)
-            return fn(c);
-        });
+        productsProm.push(Product.retrieve(['sku', items[i*2]], false));
       }
+      Promise.all(productsProm).then( products => {
+        products.forEach( (product, index) => {
+          c.items.push(product);
+          c.amount.push(items[index*2+1]);
+        });
+        resolve(c);
+      });
     });
   }
 
@@ -80,7 +84,7 @@ class cart extends Persistent {
   save(fn) {
     let items = [];
     this.items.forEach( (item, index) => {
-      items.push(item.id);
+      items.push(item.sku);
       items.push(this.amount[index]);
     });
     items = '{' + items + '}';

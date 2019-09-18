@@ -1,31 +1,30 @@
 extends ../includes/layout.pug
 
-append resources
-  title Shark Reef Exotics
 append body
     - var add = ''
-    if !fishes.length
-      - fishes = [fishes]
+    if !products.length
+      - products = [products]
     .col-xs-12.col-md-10.mx-auto.text-center.mb-3.py-4
-      span.product-header.display-4 Marine Fish
+      span.product-header.display-4 Marine Fishes
     .row
-      each fish, index in fishes
-        if (device_type == 'desktop')
-          - add = 'mr-3'
-        .row.mb-5
-          .col-xs-12.col-md-4.mb-5.ml-auto.px-0(class = add)
-            .product
-              a(href='/viewproduct=' + fish.id): img.card-img.rounded.h-100(src='../main?id=' + fish.id style='max-height: 80vh')
-              if fish.quantity == 0
-                .sold-out.px-auto.py-auto.rounded
-                  span: h6.mb-0.text Sold Out
+      if products.length > 0
+        each product, index in products
           if (device_type == 'desktop')
-            - add = 'ml-3'
-          else 
-            - add = ''
-          .col-xs-12.col-md-3.text-center.mr-auto(class = add)
-            h3.w-100= fish.name
-            span Price: $#{fish.price}
-            p.lead= fish.description
-            if fish.quantity > 0
-              a.btn.btn-outline-primary.form-control#atc(href='/addtocart?id=' + fish.id + '&amount=1') Add to cart    
+            - add = 'mr-3'
+          .row.mb-5
+            .col-xs-12.col-md-4.mb-5.ml-auto.px-0(class = add)
+              .product
+                a(href='/viewproduct=' + product.sku): img.card-img.rounded.h-100(src='../main?sku=' + product.sku style='max-height: 80vh')
+                if product.quantity == 0
+                  .sold-out.px-auto.py-auto.rounded
+                    span: h6.mb-0.text Sold Out
+            if (device_type == 'desktop')
+              - add = 'ml-3'
+            else 
+              - add = ''
+            .col-xs-12.col-md-3.text-center.mr-auto(class = add)
+              h3.w-100= product.name
+              span Price: $#{product.price}
+              p.lead= product.description
+              if product.quantity > 0
+                a.btn.btn-outline-primary.form-control#atc(href='/addtocart?sku=' + product.sku + '&amount=1') Add to cart    

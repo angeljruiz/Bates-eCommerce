@@ -1,19 +1,20 @@
 "use strict";
 
-var express = require('express');
-var flash = require('connect-flash-plus');
-var session = require('express-session');
-var bp = require('body-parser');
-var passport = require('passport');
-var morgan = require('morgan');
-var device = require('express-device');
-var fs = require('fs');
-var db = require('./scripts/database.js');
-var pgSession = require('connect-pg-simple')(session);
-var app = express();
+let express = require('express');
+let flash = require('connect-flash-plus');
+let session = require('express-session');
+let bp = require('body-parser');
+let passport = require('passport');
+let morgan = require('morgan');
+let device = require('express-device');
+let fs = require('fs');
+let db = require('./scripts/database');
+let pgSession = require('connect-pg-simple')(session);
 
+let Auth = require('./config/auth');
+let Keys = require('./config/keys');
 
-require('./scripts/passport.js')(passport);
+let app = express();
 
 app.use(bp.urlencoded({extended: true}));
 app.use(bp.json());
@@ -26,8 +27,8 @@ app.use(session({
   store: new pgSession({
     pool : db.pool,                // Connection pool
   }),
-  secret: 'weiofjwoeifj',
-  name: 'Sharkreefcookies',
+  secret: Keys.cookieKey,
+  name: 'BeCommercecookies',
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 24 * 60 * 60 * 1000 } // 30 minutes
@@ -38,11 +39,12 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 app.locals.pretty = true;
 
-require('./scripts/utilities.js')(app, passport);
-require('./scripts/routes.js')(app, passport);
-var mw = require('./scripts/middleware.js')
+app.use('/auth', Auth);
+require('./routes/utilities')(app, passport);
+require('./routes/routes')(app, passport);
+let mw = require('./config/middleware')
 
-var autoViews = {};
+let autoViews = {};
 const reg = /(login|signup)/;
 
 app.use( (req, res, next) => {
@@ -57,7 +59,7 @@ app.use( (req, res, next) => {
   next();
 });
 
-var port = 80
+let port = 80
 
 app.listen(port, () => {
     console.log('listening on ' + port);

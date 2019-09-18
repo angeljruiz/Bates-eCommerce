@@ -1,4 +1,4 @@
-let Persistent = require('../scripts/persistent.js');
+let Persistent = require('../config/persistent.js');
 let Cart = require('../models/cart.js');
 
 class orders extends Persistent {
@@ -23,19 +23,15 @@ class orders extends Persistent {
   }
 
   static retrieve(pk, fn) {
-    super.retrieve(pk, false, order => {
-      if (!order) {
-        if (fn)
-          return fn(false);
-        else return false;
-      }
-      Cart.getCart(order.cid, cart => {
-        if (!cart)
-          return fn(order);
-        order.cart = cart;
-        Cart.getTotal(order.cart);
-        return fn(order);
-      });
+    return new Promise( async (resolve, reject) => {
+      let cart;
+      let order = await super.retrieve(pk, false);
+      if (!order) return resolve(false);
+      if (order.cid) cart = await Cart.getCart(order.cid);
+      if (!cart) return resolve(order);
+      order.cart = cart;
+      Cart.getTotal(order.cart);
+      resolve(order);
     });
   }
 

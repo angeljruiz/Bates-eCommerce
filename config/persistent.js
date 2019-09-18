@@ -1,20 +1,19 @@
 let db = require('../scripts/database.js');
 
 class Persistent {
-  static retrieve(pk, attrs=false, fn) {
-    db.getData(this, attrs? attrs : 'all', pk, item => {
-      if (!item) return fn(false);
-      item.edit = true;
-      if (fn)
-        fn(item);
+  static async retrieve(pk, attrs=false) {
+    let item = await db.getData(this, attrs? attrs : 'all', pk);
+    if (!item) return false;
+    item.edit = true;
+    return item;
+  }
+  static customQuery(query) {
+    return new Promise( async (resolve, reject) => {
+      let item = await db.custom(this, query);
+      resolve(item);
     });
   }
-  static customQuery(query, fn) {
-    db.custom(this, query, item => {
-      fn(item);
-    });
-  }
-  publicKey() { return ['id', this.id]; }
+  publicKey() { return ['sku', this.sku]; }
   values(attrs) {
     let values = [];
     attrs.forEach( item => {

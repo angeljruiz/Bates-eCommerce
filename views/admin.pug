@@ -14,6 +14,6 @@ append body
               a.btn.btn-primary.ml-2(href='/orders') View Orders
     each fish in fishes
       .card
-        a(href='/editfish/' + fish.id)
+        a(href='/editfish/' + fish.sku)
           .card-body
             h5.card-title= fish.name

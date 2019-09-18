@@ -16,31 +16,21 @@ append body
         .form-group
           .row.justify-content-center
             .col-md-8
-              .input-group
-                .input-group-prepend
-                  span.input-group-text Username
-                input.form-control(type='text' name='username' form='signup')
+              input.form-control(type='text' name='username' form='signup' placeholder='Username')
         .form-group
           .row.justify-content-center
             .col-md-8
-              .input-group
-                .input-group-prepend
-                  span.input-group-text Email
-                input.form-control(type='text' name='email' form='signup')
+              input.form-control(type='text' name='email' form='signup' placeholder='Email')
         .form-group
           .row.justify-content-center
             .col-md-8
-              .input-group
-                .input-group-prepend
-                  span.input-group-text Password
-                input.form-control(type='password' name='password' form='signup')
+              input.form-control(type='password' name='password' form='signup' placeholder='Password')
         .form-group
           .row.justify-content-center
             .col-md-4
               input.form-control(type='submit' class='btn btn-primary' value='Register' form='signup')
         .col-md-8.mx-auto
           hr
-        .col-md-4.mx-auto.text-center(style='font-size: 15px')
-          .row
+        .col-md-8.mx-auto.text-center(style='font-size: 15px')
             span.mr-1 Have an 
             a(href='/login') account?

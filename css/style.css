@@ -3,7 +3,7 @@ html {
   min-height: 100%;
 }
 body {
-  background-color: rgb(250,250,250);
+  background-color: rgb(225,225,225);
   margin-bottom: 78px;
 }
 
@@ -13,6 +13,16 @@ body {
 
 .row {
   margin: auto;
+}
+
+.fb {
+  background-color: rgb(66, 103, 178);
+  color: white;
+}
+
+.gg {
+  background-color: #DB4437;
+  color: white;
 }
 
 .btn-outline-light {
@@ -65,18 +75,6 @@ body {
   transform: translate(-50%, -50%);
   text-align: center;
 }
-
-/* @media (max-width: 575.98px) {
-  .sold-out {
-    left: 250px;
-  }
-}
-
-@media (min-width: 992px) {
-  .sold-out {
-    left: 380px;
-  }
-} */
 
 .qty-input { /* Dominic Kolbe Codepen */
   border: 1px solid black;
@@ -150,9 +148,11 @@ input[type=number]::-webkit-outer-spin-button {
   max-width: 150px;
   max-height: 150px;
 }
+
 .micon {
   content: url('/media/mi.png');
   display: block;
+  max-height: 200px;
   margin: 0 auto;
 }
 
@@ -161,7 +161,12 @@ h6 > a {
 }
 
 .card {
-  border: none;
+  background-color: rgb(225,225,225);
+  border: solid grey;
+}
+
+.card-header {
+  background-color: inherit;
 }
 
 .product a {

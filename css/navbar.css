@@ -1,33 +1,9 @@
-.navbar {
+.header {
   background-color: #232f3e;
 }
 
-.navbar a {
+.header a {
   color: white;
-}
-
-.nav-buttons {
-  z-index: 999;
-  position: relative;
-  height: 100%;
-  top: 40px;
-}
-
-@media all and (max-width: 575.98px) {
-  .topheader {
-    height: 0px;
-  }
-
-  .nav-button {
-    height: 37px;
-  }
-
-  .nav-buttons {
-    z-index: 999;
-    position: relative;
-    height: 100%;
-    top: 5px;
-  }
 }
 
 .navlink {

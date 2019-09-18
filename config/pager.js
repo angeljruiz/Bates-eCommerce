@@ -12,7 +12,8 @@ class Pager {
     else
       this.loggedIn = false;
     if (typeof req.user !== 'undefined') {
-      if (req.user.username === 'angel')
+      this.user = req.user.username;
+      if (req.user.id === '113536219076962285527' || req.user.id === '3089221391120478' || req.user.id == '8087529995')
         this.aauth = true;
     } else {
       this.aauth = false;

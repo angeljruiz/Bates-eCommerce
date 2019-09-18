@@ -1,7 +1,9 @@
 "use strict";
 
+var Keys = require('../config/keys');
+
 var db = require('pg');
-var config = { user: 'postgres', database: 'SharkReef', password: 'mamadastacoslol', host: 'localhost', port: 5432, max: 10, idleTimeoutMillis: 30000 };
+var config = { user: Keys.Database.username, database: 'SharkReef', password: Keys.Database.password, host: 'localhost', port: 5432, max: 10, idleTimeoutMillis: 30000 };
 var pool = new db.Pool(config);
 
 pool.on('error', function (err) {
@@ -34,7 +36,7 @@ class Database {
     let t = [];
     let keys = model.variables();
     if (!attrs) attrs = Object.keys(new model);
-    if (control) t.push('id');
+    if (control) t.push('sku');
     attrs.forEach( item => {
       if (keys.includes(item) == control)
         t.push(item);
@@ -68,65 +70,69 @@ class Database {
     }
     return attributes + post;
   }
-  custom( model, input, fn) {
-    let c = new model;
-    let d = [];
-    let keys = Object.keys(c);
-    console.log(input);
-    pool.query(input, (err, res) => {
-      if (err)
-        return console.error('error running query', err);
-      let rtr = function(item) {
-        c[item] = res.rows[0][item];
-      }
-      if (res.rows.length == 1) {
-          keys.forEach ( rtr );
-      } else if (res.rows.length > 1) {
-        res.rows.forEach( (item, index) => {
-          d.push(new model);
-          keys.forEach ( (key) => {
-            d[index][key] = res.rows[index][key];
+  custom( model, input) {
+    return new Promise( (resolve, reject) => {
+      let c = new model;
+      let d = [];
+      let keys = Object.keys(c);
+      console.log(input);
+      pool.query(input, (err, res) => {
+        if (err)
+          return reject(err);
+        let rtr = function(item) {
+          c[item] = res.rows[0][item];
+        }
+        if (res.rows.length == 1) {
+            keys.forEach ( rtr );
+        } else if (res.rows.length > 1) {
+          res.rows.forEach( (item, index) => {
+            d.push(new model);
+            keys.forEach ( (key) => {
+              d[index][key] = res.rows[index][key];
+            });
           });
-        });
-      } else return fn(false);
-      if (res.rows.length == 1)
-        return fn(c);
-      else if (res.rows.length >= 1)
-        return fn(d);
+        } else return resolve(false);
+        if (res.rows.length == 1)
+          resolve(c);
+        else if (res.rows.length >= 1)
+          resolve(d);
+      });
     });
   }
-  async getData( model, attrs, pk, fn) {
-    let c = new model;
-    let d = [];
-    let keys = Object.keys(c);
-    let query;
-    query = 'SELECT ' + Database.attributes(attrs, '', '', ' FROM ') + Database.className(model);
-    query += Database.join(attrs, pk, model);
-    query += Database.publicKey(pk);
-    console.log(query);
-    pool.query(query, (err, res) => {
-      if (err)
-        return console.error('error running query', err);
-      let rtr = function(item) {
-        c[item] = res.rows[0][item];
-      }
-      if (res.rows.length == 1) {
-        if (attrs == 'all')
-          keys.forEach ( rtr );
-        else
-          attrs.forEach( rtr );
-      } else if (res.rows.length > 1) {
-        res.rows.forEach( (item, index) => {
-          d.push(new model);
-          keys.forEach ( (key) => {
-            d[index][key] = res.rows[index][key];
+  async getData( model, attrs, pk) {
+    return new Promise( (resolve, reject) => {
+      let c = new model;
+      let d = [];
+      let keys = Object.keys(c);
+      let query;
+      query = 'SELECT ' + Database.attributes(attrs, '', '', ' FROM ') + Database.className(model);
+      query += Database.join(attrs, pk, model);
+      query += Database.publicKey(pk);
+      console.log(query);
+      pool.query(query, (err, res) => {
+        if (err)
+          return reject(err);
+        let rtr = function(item) {
+          c[item] = res.rows[0][item];
+        }
+        if (res.rows.length == 1) {
+          if (attrs == 'all')
+            keys.forEach ( rtr );
+          else
+            attrs.forEach( rtr );
+        } else if (res.rows.length > 1) {
+          res.rows.forEach( (item, index) => {
+            d.push(new model);
+            keys.forEach ( (key) => {
+              d[index][key] = res.rows[index][key];
+            });
           });
-        });
-      } else return fn(false);
-      if (res.rows.length == 1)
-        return fn(c);
-      else if (res.rows.length >= 1)
-        return fn(d);
+        } else return resolve(false);
+        if (res.rows.length == 1)
+          resolve(c);
+        else if (res.rows.length >= 1)
+          resolve(d);
+      });
     });
   }
   saveData(model, attrs, pk, input, fn) {

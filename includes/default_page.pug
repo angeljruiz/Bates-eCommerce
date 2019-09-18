@@ -1,11 +1,6 @@
 mixin header()
-  //- if path == '/'
-  //-   .col-12.px-0
-  //-     .jumbotron(style='background-color: rgb(205,205,205); height: 100vh')
-  //-       .container
-  //-         h1.display-4 jumbotron
   a(href='/')
-    img.micon.rounded.img-fluid
+    img.micon.rounded
 
 mixin footer()
   .footer
@@ -18,20 +13,19 @@ mixin footer()
       .cr-name.mx-auto &copy 2017-2019 Angel Ruiz-Bates
 
 mixin navvy(index)
-  -
-      var pages = [ 'Home', 'these', 'dont', 'do', 'jack'];
-      var urls = [ '/', '/inverts', '/coral', '/wysiwyg', '/food'];  
-  col-xs-12
-    .topheader.d-flex
-      .btn-group.ml-auto.mt-1.nav-buttons
+  .col-xs-12.sticky-top.mb-4
+    .header.d-flex.py-1
+      if (aauth)
+        .nav-item: a.nav-link(href='/admin') Admin
+      .btn-group.ml-auto.nav-buttons
         button.btn.btn-outline-light.rounded.nav-button(data-toggle='dropdown')
           i.fa-lg.fas.fa-shopping-cart
-        .dropdown-menu.dropdown-menu-right.mt-4.pt-0.pb-2
+        .dropdown-menu.dropdown-menu-right.mt-2
           each item, index in cart.items
-            a.dropdown-item(href='/viewproduct=' + item.id)
+            a.dropdown-item(href='/viewproduct=' + item.sku)
               .row
                 .col-xs
-                  img.dropdown-img.img-thumbnail(src='../media/' + item.id + '-1.jpg')
+                  img.dropdown-img.img-thumbnail(src='/main?sku=' + item.sku)
                 .col-xs.ml-2.cart-dropdown
                   h6= item.name
                   span $#{(cart.amount[index]*item.price).toFixed(2)}
@@ -39,19 +33,11 @@ mixin navvy(index)
           .row 
             span.mx-auto Total: $#{cart.total}
           .row 
-              a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
+            a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
         if (loggedIn)
           a.btn.btn-outline-light.nav-button.rounded.ml-1(href='/logout')
             i.fa-lg.fas.fa-sign-out-alt
         if (!loggedIn)
           a.btn.btn-outline-light.nav-button.rounded.ml-1(href='/login')
             i.fa-lg.fas.fa-user
-    nav.navbar.navbar-dark.navbar-expand-lg.mb-4
-      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navcollapse')
-        span.navbar-toggler-icon
-      #navcollapse.collapse.navbar-collapse
-        ul.navbar-nav.mx-auto
-          each i in [0, 1, 2, 3, 4]
-            li.nav-item: a.nav-link.pt-0(href=urls[0])= pages[i]
-          if (aauth)
-            li.nav-item: a.nav-link.pt-0(href='/admin') Admin
+    

@@ -1,6 +1,6 @@
 $('.qty-input i').click(function() {
   val = parseInt($('.qty-input input').val());
-  id = parseInt($('#hid').val());
+  sku = parseInt($('#hsku').val());
 
   if ($(this).hasClass('less')) {
       val = val - 1;
@@ -12,7 +12,7 @@ $('.qty-input i').click(function() {
   }
 
   $('.qty-input input').val(val);
-  $('#atc').attr('href', '/addtocart/' + id + '/' + val);
+  $('#atc').attr('href', '/addtocart/' + sku + '/' + val);
 });
 
 $('.qty-input i').on("wheel", "input[type=number]", function (e) {

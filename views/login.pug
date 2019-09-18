@@ -3,6 +3,7 @@ extends ../includes/layout.pug
 append resources
   title Login
   form(action='/login' method='POST' id='login')
+  form(action='/auth/google' method='GET' id='google')
     
 append body
   .col-md-4.mx-auto
@@ -17,24 +18,20 @@ append body
         .form-group
           .row.justify-content-center
             .col-md-8
-              .input-group
-                .input-group-prepend
-                  span.input-group-text Username
-                input.form-control(type='text' name='username' form='login')
+              input.form-control(type='text' name='username' form='login' placeholder='Email')
         .form-group
           .row.justify-content-center
             .col-md-8
-              .input-group
-                .input-group-prepend
-                  span.input-group-text Password
-                input.form-control(type='password' name='password' form='login')
+              input.form-control(type='password' name='password' form='login' placeholder='Password')
         .form-group
           .row.justify-content-center
-            .col-md-4
+            .col-md-8.text-center
                 input.form-control.btn.btn-primary.mb-2(type='submit' value='Login' form='login')
+                a.btn.btn-primary.fb.form-control.mb-2(href='/auth/facebook') Facebook
+                a.btn.btn.primary.gg.form-control(href='/auth/google') Google+
         .col-md-8.mx-auto
           hr      
-        .col-md-4.mx-auto.text-center(style='font-size: 15px')
+        .col-md-8.mx-auto.text-center(style='font-size: 15px')
           span Need to 
           a(href='/signup') register?
           

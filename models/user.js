@@ -1,7 +1,7 @@
 let fs = require('fs');
 let bcrypt = require('bcrypt-nodejs');
 
-let Persistent = require('../scripts/persistent.js');
+let Persistent = require('../config/persistent.js');
 
 class users extends Persistent {
     constructor(input) {
