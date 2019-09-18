@@ -7,7 +7,6 @@ var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var User = require('../models/user');
-var Keys = require('../config/keys');
 
 passport.serializeUser( (user, done) => {
   done(null, user.id);
@@ -30,7 +29,7 @@ passport.use('signup', new LocalStrategy( { passReqToCallback: true }, async (re
       return done(null, newUser);
     });
 }));
-passport.use('google', new GoogleStrategy( { clientID: Keys.google.clientID, clientSecret: Keys.google.clientSecret, callbackURL: '/auth/google/redirect' }, async (accessToken, refreshToken, profile, done) => {
+passport.use('google', new GoogleStrategy( { clientID: process.env.GG_ID, clientSecret: process.env.GG_PW, callbackURL: '/auth/google/redirect' }, async (accessToken, refreshToken, profile, done) => {
   let user = await User.retrieve( ['id', profile.id ], ['id']);
   if (user) {
     return done(null, user);
@@ -43,7 +42,7 @@ passport.use('google', new GoogleStrategy( { clientID: Keys.google.clientID, cli
     return done(null, newUser);
   });
 }));
-passport.use('facebook', new FacebookStrategy( { clientID: Keys.facebook.clientID, clientSecret: Keys.facebook.clientSecret, callbackURL: '/auth/facebook/redirect', profileFields: ['id', 'emails', 'name'] }, async (accessToken, refreshToken, profile, done) => {
+passport.use('facebook', new FacebookStrategy( { clientID: process.env.FB_ID, clientSecret: process.env.FB_PASSWORD, callbackURL: '/auth/facebook/redirect', profileFields: ['id', 'emails', 'name'] }, async (accessToken, refreshToken, profile, done) => {
   let user = await User.retrieve( ['id', profile.id ], ['id']);
   if (user) {
     return done(null, user);

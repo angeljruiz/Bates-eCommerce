@@ -1,9 +1,7 @@
 "use strict";
 
-var Keys = require('../config/keys');
-
 var db = require('pg');
-var config = { user: Keys.Database.username, database: 'SharkReef', password: Keys.Database.password, host: 'localhost', port: 5432, max: 10, idleTimeoutMillis: 30000 };
+var config = { user: process.env.DATABASE_USERNAME, database: process.env.DATABASE, password: process.env.DATABASE_PASSWORD, host: process.env.DATABASE_HOST, port: 5432, max: 10, idleTimeoutMillis: 30000 };
 var pool = new db.Pool(config);
 
 pool.on('error', function (err) {

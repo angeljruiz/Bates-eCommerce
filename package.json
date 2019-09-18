@@ -1,21 +1,21 @@
 {
-  "name": "sharkreef",
+  "name": "bates-ecommerce",
   "version": "1.0.0",
-  "description": "Site for Shark Reef Tucson.",
+  "description": "ecommerce platform",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/angeljruiz/SharkReefSite.git"
+    "url": "git+https://github.com/angeljruiz/Bates-eCommerce.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/angeljruiz/SharkReefSite/issues"
+    "url": "https://github.com/angeljruiz/Bates-eCommerce/issues"
   },
-  "homepage": "https://github.com/angeljruiz/SharkReefSite#readme",
+  "homepage": "https://github.com/angeljruiz/Bates-eCommerce#readme",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.19.0",

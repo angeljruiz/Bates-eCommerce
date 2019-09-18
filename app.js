@@ -12,7 +12,6 @@ let db = require('./scripts/database');
 let pgSession = require('connect-pg-simple')(session);
 
 let Auth = require('./config/auth');
-let Keys = require('./config/keys');
 
 let app = express();
 
@@ -27,7 +26,7 @@ app.use(session({
   store: new pgSession({
     pool : db.pool,                // Connection pool
   }),
-  secret: Keys.cookieKey,
+  secret: 'iuhiuhedgriuyHG(*&)',
   name: 'BeCommercecookies',
   resave: false,
   saveUninitialized: false,
@@ -61,6 +60,6 @@ app.use( (req, res, next) => {
 
 let port = 80
 
-app.listen(port, () => {
-    console.log('listening on ' + port);
+app.listen(process.env.PORT, () => {
+    console.log('listening on ' + process.env.PORT);
 });

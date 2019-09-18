@@ -1,4 +1,3 @@
-var Keys = require('../config/keys');
 var Order = require('../models/order');
 var Cart = require('../models/cart');
 
@@ -8,8 +7,8 @@ var paypal = require('paypal-rest-sdk');
 
 paypal.configure({
   'mode': 'sandbox',
-  'client_id': Keys.paypal.clientID,
-  'client_secret': Keys.paypal.clientSecret
+  'client_id': process.env.PP_ID,
+  'client_secret': process.env.PP_PW
 });
 
 class Paypal {
