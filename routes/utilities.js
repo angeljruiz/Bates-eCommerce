@@ -67,9 +67,10 @@ module.exports = (app, passport) => {
 
   app.post('/file_upload', upload.single('file'), (req, res) => {
     if (!res.locals.aauth || !req.query.sku) return res.redirect("back");
-    fs.readFile(req.file.path, function(err, data) {
-      let image = new Image({sku: req.query.sku, name: req.file.filename, type: req.file.originalname.split('.')[1].toLowerCase()});
-      image.save(['sku', 'name', 'type']);
+    fs.readFile(req.file.path, 'hex', function(err, data) {
+      data = '\\x' + data;
+      let image = new Image({sku: req.query.sku, name: req.file.filename, data: data, type: req.file.originalname.split('.')[1].toLowerCase()});
+      image.save(['sku', 'name', 'type', 'data']);
       res.redirect("back");
     });
   });

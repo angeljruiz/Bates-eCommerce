@@ -147,7 +147,7 @@ class Database {
     query += Database.className(model) + Database.attributes(attrs, pre, '', post);
     query += pk? ' = (' : ' VALUES (';
     query += Database.attributes(input, '', "'", ') ') + Database.publicKey(pk);
-    console.log(query);
+    // console.log(query);
     pool.query(query, (err) => {
       if (err)
         return console.error('error running query', err);

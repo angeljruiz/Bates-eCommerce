@@ -10,7 +10,7 @@ mixin footer()
         a.mr-2.pl-2.footer-link(href='/contact') Contact
         a.mr-2.pl-2.footer-link(href='/privatepolicy') Privacy
     .row
-      .cr-name.mx-auto &copy 2017-2019 Angel Ruiz-Bates
+      .cr-name.mx-auto &copy 2017-2020 Angel Ruiz-Bates
 
 mixin navvy(index)
   .col-xs-12.sticky-top.mb-4
@@ -30,9 +30,9 @@ mixin navvy(index)
                   h6= item.name
                   span $#{(cart.amount[index]*item.price).toFixed(2)}
             .dropdown-divider
-          .row 
+          .row
             span.mx-auto Total: $#{cart.total}
-          .row 
+          .row
             a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
         if (loggedIn)
           a.btn.btn-outline-light.nav-button.rounded.ml-1(href='/logout')
@@ -40,4 +40,3 @@ mixin navvy(index)
         if (!loggedIn)
           a.btn.btn-outline-light.nav-button.rounded.ml-1(href='/login')
             i.fa-lg.fas.fa-user
-    

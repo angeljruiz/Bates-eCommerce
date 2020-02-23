@@ -1,11 +1,16 @@
 "use strict";
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+  var morgan = require('morgan');
+  app.use(morgan('dev'));
+}
+
 let express = require('express');
 let flash = require('connect-flash-plus');
 let session = require('express-session');
 let bp = require('body-parser');
 let passport = require('passport');
-let morgan = require('morgan');
 let device = require('express-device');
 let fs = require('fs');
 let db = require('./scripts/database');
@@ -21,7 +26,6 @@ app.use(flash());
 app.use(express.static(__dirname));
 app.use(device.capture());
 device.enableDeviceHelpers(app)
-app.use(morgan('dev'));
 app.use(session({
   store: new pgSession({
     pool : db.pool,                // Connection pool
@@ -60,6 +64,6 @@ app.use( (req, res, next) => {
 
 let port = 80
 
-app.listen(process.env.PORT, () => {
-    console.log('listening on ' + process.env.PORT);
+app.listen(process.env.PORT || 80, () => {
+    console.log('listening on ' + (process.env.PORT || 80));
 });

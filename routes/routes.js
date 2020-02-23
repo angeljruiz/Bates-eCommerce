@@ -63,4 +63,17 @@ module.exports = (app, passport) => {
     });
   });
 
+  app.get('/uploads/:name', async (req, res) => {
+    console.log('here');
+    if (!fs.existsSync(req.path)) {
+      let image = await Image.retrieve(['name', req.params.name], ['data', 'type']);
+      fs.writeFile('.' + req.path, image.data, (err) => {
+        if (err) throw err;
+        console.log('The file has been saved!');
+      });
+      res.type(image.type);
+      res.send(image.data);
+    }
+  });
+
 };
