@@ -1,12 +1,14 @@
 "use strict";
 
+let express = require('express');
+let app = express();
+
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
   var morgan = require('morgan');
   app.use(morgan('dev'));
 }
 
-let express = require('express');
 let flash = require('connect-flash-plus');
 let session = require('express-session');
 let bp = require('body-parser');
@@ -17,8 +19,6 @@ let db = require('./scripts/database');
 let pgSession = require('connect-pg-simple')(session);
 
 let Auth = require('./config/auth');
-
-let app = express();
 
 app.use(bp.urlencoded({extended: true}));
 app.use(bp.json());

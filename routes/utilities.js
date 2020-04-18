@@ -42,7 +42,7 @@ module.exports = (app, passport) => {
   app.get('/remove/:sku/:amount', async (req, res) => {
     await Cart.removeItems(req.session.cart, [{ sku: req.params.sku, amount: req.params.amount}]);
     req.session.save();
-    Locker.removeSKULock(req.sessionID, req.params.sku);
+    Locker.removeIDLock(req.sessionID, req.params.sku);
     res.redirect('back');
   });
 
@@ -65,13 +65,14 @@ module.exports = (app, passport) => {
     });
   });
 
-  app.post('/file_upload', upload.single('file'), (req, res) => {
+  app.post('/file_upload', upload.single('file'), mw.resizeImages, async (req, res) => {
     if (!res.locals.aauth || !req.query.sku) return res.redirect("back");
-    fs.readFile(req.file.path, 'hex', function(err, data) {
-      data = '\\x' + data;
-      let image = new Image({sku: req.query.sku, name: req.file.filename, data: data, type: req.file.originalname.split('.')[1].toLowerCase()});
-      image.save(['sku', 'name', 'type', 'data']);
-      res.redirect("back");
+    fs.readFile(req.file.path, 'hex', async function(err, data) {
+    // debugger
+    data = '\\x' + data;
+    let image = new Image({sku: req.query.sku, name: req.file.filename, data: data, type: req.file.originalname.split('.')[1].toLowerCase()});
+    image.save(['sku', 'name', 'type', 'data']);
+    res.redirect("back");
     });
   });
 
@@ -86,7 +87,7 @@ module.exports = (app, passport) => {
 
   app.get('/main', async (req, res) => {
     if (!req.query.sku) return res.send('');
-    let image = await Image.retrieve(['sku', req.query.sku, 'ORDER BY sku LIMIT 1'], ['name']);
+    let image = await Image.retrieve(['sku', req.query.sku, 'ORDER BY num LIMIT 1'], ['name']);
     if (!image) return res.send('');
     res.redirect('../uploads/' + image.name);
   });

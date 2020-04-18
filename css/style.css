@@ -229,7 +229,7 @@ h6 > a {
   width: 16.66%;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 576px) {
   .thumb-img {
     min-height: 75px;
     min-width: 90px;
@@ -238,6 +238,10 @@ h6 > a {
     max-height: 500px;
     min-width: 475px;
     max-width: 475px;
+  }
+
+  .product-row {
+    width: 75%;
   }
 }
 

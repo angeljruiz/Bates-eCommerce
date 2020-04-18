@@ -20,6 +20,8 @@ mixin navvy(index)
       .btn-group.ml-auto.nav-buttons
         button.btn.btn-outline-light.rounded.nav-button(data-toggle='dropdown')
           i.fa-lg.fas.fa-shopping-cart
+          if (cart.totalItems > 0)
+            span.badge.badge-danger.ml-2 #{cart.totalItems}
         .dropdown-menu.dropdown-menu-right.mt-2
           each item, index in cart.items
             a.dropdown-item(href='/viewproduct=' + item.sku)

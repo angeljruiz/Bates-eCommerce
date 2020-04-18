@@ -1,3 +1,8 @@
+var fs = require('fs');
+var sharp = require('sharp');
+
+sharp.cache(false);
+
 module.exports = {
 
   isLoggedOn: (req, res, next) => {
@@ -54,5 +59,21 @@ module.exports = {
     let time = hours + ':' + minutes;
 
     return months[monthIndex] + ' ' + day + ' at ' + time + ' ' + c;
+  },
+
+  resizeImages: async (req, res, next) => {
+    if (!req.file) return next();
+
+    req.body.images = [];
+    const newFilename = 'weoijweofj.jpg';
+    await sharp(req.file.path)
+      .resize(300, 300, {fit: 'inside'})
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toFile(`uploads/${req.file.filename + 'r'}`);
+    fs.unlink(req.file.path, () => {});
+    req.file.path += 'r';
+
+    next();
   }
 }

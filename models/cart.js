@@ -51,6 +51,7 @@ class cart extends Persistent {
     let total = 0;
     for(let i=0;i<cart.items.length;i++)
       total += cart.items[i].price * 1 * cart.amount[i];
+      cart.totalItems = cart.amount.reduce( (sum, n) => sum + n, 0);
     cart.subtotal = total.toFixed(2);
     cart.salestax = 0;
     cart.shipping = cart.subtotal > 0? 6.99 : 0.00;
