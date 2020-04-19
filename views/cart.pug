@@ -24,15 +24,15 @@ append body
                   td.text-left.px-1.float-left
                     a(href='/viewproduct=' + item.sku)
                       img.checkout-img.img-fluid.img-thumbnail(src='/main?sku=' + item.sku)
-                  td.px-0.text-left.float-left
+                  td.px-0.text-left.float-left.pl-2
                     a(href='/viewproduct=' + item.sku): h6.mb-0= item.name
-                    a(href='/remove/' + item.sku + '/' + cart.amount[index]): small.text-muted remove 
+                    a(href='/remove/' + item.sku + '/' + item.quantity): small.text-muted remove 
                   td.clear(data-title='Amount:')
-                    span #{cart.amount[index]}
+                    span #{cart.items[index].quantity}
                   td(data-title='Price:')
                     span $#{item.price}
                   td.cst(data-title='Total:')
-                    span $#{(item.price*cart.amount[index]).toFixed(2)}
+                    span $#{(item.price*item.quantity).toFixed(2)}
   .col-xs-12.col-md-4.mr-auto 
     .card.mb-3
       .card-header Order 

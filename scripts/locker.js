@@ -16,13 +16,7 @@ class Locker {
         products.push(Product.retrieve(['sku', item.sku], ['quantity', 'sku']));
       });
       Promise.all(products).then( results => {
-        results.forEach( product => {
-          let t = {};
-          t.sku = product.sku;
-          t.amount = product.quantity;
-          resources.push(t);
-        });
-        resolve(resources);
+        resolve(results);
       });
     });
   }
@@ -41,8 +35,8 @@ class Locker {
       let lock = await Lock.retrieve(['sid', sid, ' AND SKU = ' + sku], false);
       if (!lock) return resolve();
       let product = await Product.retrieve(['SKU', sku], ['quantity']);
-      let newProduct = new Product({sku: sku, quantity: parseInt(product.quantity) + parseInt(lock.amount), edit:true });
-      newProduct.save(['quantity']);
+      let newProduct = new Product({sku: sku, quantity: parseInt(product.quantity) + parseInt(lock.amount)});
+      newProduct.save(['quantity'], newProduct.publicKey());
       lock.delete();
       resolve();
     });
@@ -51,45 +45,48 @@ class Locker {
     return new Promise( async (resolve, reject) => {
       let locked = true;
       let items = [];
-      let resources = Locker.loadResources(cart.items, sid);
       let locks = await Lock.retrieve(['sid', sid], false);
+      let resources = await Locker.loadResources(cart.items, sid);
       let newLock, newProduct;
       let lockIndex, lockAmount, currentResource;
       if (!locks) locks = [];
       if (!Array.isArray(locks)) locks = [locks];
-      locks.forEach( lock => {
+      locks = locks.filter( lock => {
         if (!cart.items.map( cartItem => { return cartItem.sku }).includes(lock.sku)) {
           Product.retrieve(['sku', lock.sku], ['quantity']).then( product => {
-            newProduct = new Product({sku: lock.sku, quantity: parseInt(product.quantity) + parseInt(lock.amount), edit:true });
-            newProduct.save(['quantity']);
+            newProduct = new Product({sku: lock.sku, quantity: parseInt(product.quantity) + parseInt(lock.amount)});
+            newProduct.save(['quantity'], newProduct.publicKey());
             lock.delete();
           });
-        }});
-      cart.items.forEach( async (item, index) => {
+          return false;
+        }
+        return true;
+      });
+      for(let index=0;index<cart.items.length;index+=1) {
+        let item = cart.items[index];
         lockIndex = locks.map( lock => { return lock.sku }).indexOf(item.sku);
         lockAmount = lockIndex != -1? locks[lockIndex].amount : 0;
-        currentResource = (await resources).filter( resource => { if (resource.sku == item.sku) return true; })[0];
-        if (currentResource.amount >= cart.amount[index] - lockAmount) {
+        currentResource = resources[index];
+        if (currentResource.quantity >= item.quantity - lockAmount) {
           if (lockIndex != -1) {
-            if (lockAmount != cart.amount[index]) {
-              newLock = new Lock({lid: locks[lockIndex].lid, amount: cart.amount[index], edit: true});
-              newLock.save(['lid', 'amount']);
-              newProduct = new Product({sku: item.sku, quantity: parseInt(currentResource.amount) - cart.amount[index] + lockAmount, edit: true});
-              newProduct.save(['quantity']);
+            if (lockAmount != item.quantity) {
+              newLock = new Lock({lid: locks[lockIndex].lid, amount: item.quantity});
+              newLock.save(['lid', 'amount'], newLock.publicKey());
+              newProduct = new Product({sku: item.sku, quantity: parseInt(currentResource.amount) - (item.quantity + lockAmount)});
+              newProduct.save(['quantity'], newProduct.publicKey());
             }
           } else {
-            newLock = new Lock({sid: sid, sku: item.sku, amount: cart.amount[index]});
+            newLock = new Lock({sid: sid, sku: item.sku, amount: item.quantity});
             newLock.save(['sid', 'sku', 'amount']);
-            newProduct = new Product({sku: item.sku, quantity: parseInt(currentResource.amount) - cart.amount[index], edit: true});
-            newProduct.save(['quantity']);
+            newProduct = new Product({sku: item.sku, quantity: parseInt(currentResource.amount) - item.quantity});
+            newProduct.save(['quantity'], newProduct.publicKey());
           }
-          if (index == cart.items.length-1) return resolve(locked? true : items);
-          return;
+        } else {
+          items.push({sku: item.sku, quantity: Math.abs(parseInt(currentResource.quantity) - item.quantity + lockAmount)});
+          locked = false;
         }
-        items.push({sku: item.sku, amount: Math.abs(parseInt(currentResource.amount) - cart.amount[index] + lockAmount)});
-        locked = false;
-        if (index == cart.items.length-1) return resolve(locked? true : items);
-      });
+        return resolve(locked? true : items);
+      }
     });
   }
   async removeLocks() {
@@ -103,7 +100,7 @@ class Locker {
     Promise.all(products).then(results => {
       results.forEach( (item, index) => {
         item.quantity = parseInt(item.quantity) + parseInt(locks[index].amount);
-        item.save();
+        item.save(false, item.publicKey());
         locks[index].delete();
       });
     });

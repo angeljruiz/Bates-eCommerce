@@ -12,7 +12,6 @@ class image extends Persistent{
       this.num = input.num || null;
       this.type = input.type || null;
       this.data = input.data || null;
-      if (input.edit) this.edit = true;
     } else {
       this.data = this.sku = this.num = this.name = this.type = this.data = -1;
     }

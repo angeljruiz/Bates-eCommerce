@@ -10,10 +10,10 @@ append body
         ul.list-group
           .card
             .card-body
-              a.btn.btn-primary(href='/addfish') Add Product
+              a.btn.btn-primary(href='/addproduct') Add Product
               a.btn.btn-primary.ml-2(href='/orders') View Orders
-    each fish in fishes
+    each product in products
       .card
-        a(href='/editfish/' + fish.sku)
+        a(href='/editproduct/' + product.sku)
           .card-body
-            h5.card-title= fish.name
+            h5.card-title= product.name

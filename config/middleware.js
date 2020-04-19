@@ -65,14 +65,14 @@ module.exports = {
     if (!req.file) return next();
 
     req.body.images = [];
-    const newFilename = 'weoijweofj.jpg';
     await sharp(req.file.path)
       .resize(300, 300, {fit: 'inside'})
       .toFormat("jpeg")
-      .jpeg({ quality: 90 })
+      .jpeg()
       .toFile(`uploads/${req.file.filename + 'r'}`);
     fs.unlink(req.file.path, () => {});
     req.file.path += 'r';
+    req.file.filename += 'r';
 
     next();
   }

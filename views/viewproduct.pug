@@ -2,7 +2,7 @@ extends ../includes/layout.pug
 
 append body
   input#hsku(type='hidden' value=sku)
-  .col-md-4.ml-auto
+  .col-md-10.col-lg-4.ml-auto
     each pic in pics
       .slides
         img.slide-img.rounded(src='../uploads/' + pic.name)
@@ -13,7 +13,7 @@ append body
       each pic, index in pics
         .column.mr-3
           img.demo.thumb-img.rounded(src='../uploads/' + pic.name style='width:100%' onclick='currentSlide(' + parseInt(index+1) + ')')
-  .col-md-4.mr-auto.text-center
+  .col-md-10.col-lg-5.mr-auto.mt-2.ml-2.text-center
     .card
       .card-header.mt-3: h2= name
         h4.text-muted $#{price}

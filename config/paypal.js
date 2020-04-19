@@ -15,12 +15,12 @@ class Paypal {
   static itemList(cart) {
     let list = {};
     list.items = [];
-    cart.items.forEach( (item, index) => {
+    cart.items.forEach( item => {
       let t = {};
       t.name = item.name;
       t.sku = item.sku;
       t.price = String(item.price);
-      t.quantity = cart.amount[index];
+      t.quantity = item.quantity;
       t.currency = "USD";
       t.description = item.description;
       list.items.push(t);
@@ -53,7 +53,7 @@ class Paypal {
       postal_code: shipping.postal_code
     }
     order = new Order(order);
-    order.save(false, () => {
+    order.save(false, false, () => {
       cart.cid = order.cid;
       cart.save(rtr);
     });

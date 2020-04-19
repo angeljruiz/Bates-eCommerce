@@ -9,7 +9,6 @@ class product extends Persistent {
       this.price = input.price || 0;
       this.description = input.description || '';
       this.quantity = input.quantity || 0;
-      this.edit = input.edit == true;
       this.type = input.type || '';
       this.store = input.store || -1;
     } else {
@@ -22,6 +21,8 @@ class product extends Persistent {
       this.store = -1;
     }
   }
+
+  publicKey() { return ['sku', this.sku]; }
 }
 
 module.exports = product;

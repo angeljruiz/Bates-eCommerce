@@ -5,53 +5,36 @@ class cart extends Persistent {
   constructor(input) {
     super();
     if (!input) {
-    this.items = [];
-    this.amount = [];
-    this.subtotal = 0;
-    this.cid = -1;
-  } else {
-    this.items = input.items;
-    this.amount = input.amount;
-    this.cid = input.cid;
-  }
+      this.items = [];
+      this.subtotal = 0;
+      this.cid = -1;
+    } else {
+      this.items = input.items;
+      this.cid = input.cid;
+    }
   return this;
   }
 
   static addItem(cart, item, amount) {
-    let f = false;
-    cart.items.forEach( (product, index) => {
-      if (product.sku == item.sku) {
-        f = true;
-        cart.amount[index] += amount;
-      }
-    });
-    if (!f) {
-      cart.items.push(item);
-      cart.amount.push(amount);
-    }
+    item.quantity = amount;
+    let itemIndex = cart.items.findIndex( i => i.sku === item.sku);
+    if(itemIndex > -1) cart.items[itemIndex].quantity += 1
+    else cart.items.push(item);
   }
 
-  static removeItems(cart, items, rtr) {
-    return new Promise( (resolve, reject) => {
-      let index;
-      items.forEach( item => {
-        index = cart.items.map( cartItem => { return cartItem.sku; } ).indexOf(item.sku);
-        if (cart.amount[index] == item.amount) {
-          cart.items.splice(index, 1);
-          cart.amount.splice(index, 1);
-        } else {
-          cart.amount[index] = parseInt(cart.amount[index]) - parseInt(item.amount);
-        }
-      });
-      resolve();
+  static removeItems(cart, items) {
+    items.forEach( item => {
+      let itemIndex = cart.items.findIndex( i => i.sku === item.sku);
+      if(itemIndex > -1) {
+        if(cart.items[itemIndex].quantity - item.quantity <= 0) cart.items = cart.items.filter( i => i.sku !== item.sku)
+        else cart.items[itemIndex].quantity -= item.quantity;
+      }
     });
   }
 
   static getTotal(cart) {
-    let total = 0;
-    for(let i=0;i<cart.items.length;i++)
-      total += cart.items[i].price * 1 * cart.amount[i];
-      cart.totalItems = cart.amount.reduce( (sum, n) => sum + n, 0);
+    let total = cart.items.reduce( (sum, item) => sum + (item.price * item.quantity), 0);
+    cart.totalItems = cart.items.reduce( (sum, item) => sum + item.quantity, 0);
     cart.subtotal = total.toFixed(2);
     cart.salestax = 0;
     cart.shipping = cart.subtotal > 0? 6.99 : 0.00;
@@ -83,13 +66,7 @@ class cart extends Persistent {
   publicKey() { return ['cid', this.cid]; }
 
   save(fn) {
-    let items = [];
-    this.items.forEach( (item, index) => {
-      items.push(item.sku);
-      items.push(this.amount[index]);
-    });
-    items = '{' + items + '}';
-    super.save({items:items, cid: this.cid}, fn);
+    super.save({items:JSON.stringify(this.items), cid: this.cid}, fn);
   }
 
 }

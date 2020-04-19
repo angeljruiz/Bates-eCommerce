@@ -30,15 +30,15 @@ mixin navvy(index)
                   img.dropdown-img.img-thumbnail(src='/main?sku=' + item.sku)
                 .col-xs.ml-2.cart-dropdown
                   h6= item.name
-                  span $#{(cart.amount[index]*item.price).toFixed(2)}
+                  span $#{(item.quantity*item.price).toFixed(2)}
             .dropdown-divider
           .row
             span.mx-auto Total: $#{cart.total}
           .row
             a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
         if (loggedIn)
-          a.btn.btn-outline-light.nav-button.rounded.ml-1(href='/logout')
+          a.btn.btn-outline-light.nav-button.rounded.ml-1.pt-2(href='/logout')
             i.fa-lg.fas.fa-sign-out-alt
         if (!loggedIn)
-          a.btn.btn-outline-light.nav-button.rounded.ml-1(href='/login')
+          a.btn.btn-outline-light.nav-button.rounded.ml-1.pt-2(href='/login')
             i.fa-lg.fas.fa-user

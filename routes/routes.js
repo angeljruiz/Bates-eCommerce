@@ -1,6 +1,5 @@
 var User = require('../models/user.js');
 var Image = require('../models/image.js');
-var MF = require('../models/marinefish.js');
 var Order = require('../models/order.js');
 var Product = require('../models/product.js');
 
@@ -17,8 +16,8 @@ module.exports = (app, passport) => {
 
   app.get('/admin', async (req, res) => {
     if (!res.locals.aauth) res.redirect('/');
-    let fishes = await Product.retrieve(false, ['sku', 'name']);
-    res.render('admin', { fishes: fishes });
+    let products = await Product.retrieve(false, ['sku', 'name']);
+    res.render('admin', { products: products });
   });
 
   app.get('/thankyou', async (req, res) => {
@@ -51,15 +50,14 @@ module.exports = (app, passport) => {
     });
   });
 
-  app.get('/editfish/:sku', (req, res) => {
-    res.locals.editing = true;
+  app.get('/editproduct/:sku', (req, res) => {
     let images = Image.retrieve(['sku', req.params.sku, 'ORDER BY num'], ['num', 'type', 'name']);
-    let product = MF.retrieve(['sku', req.params.sku], false);
+    let product = Product.retrieve(['sku', req.params.sku], false);
     Promise.all([images, product]).then( data => {
       if (!data[0]) data[0] = [];
       if (!Array.isArray(data[0])) data[0] = [data[0]];
       data[1].pics = data[0];
-      res.render('addfish', data[1]);
+      res.render('editproduct', data[1]);
     });
   });
 

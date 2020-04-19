@@ -25,7 +25,7 @@ passport.use('signup', new LocalStrategy( { passReqToCallback: true }, async (re
     newUser.email = req.body.email;
     newUser.id = Math.random().toString(10).substring(9);
     newUser.generateHash(password);
-    newUser.save( false,  () => {
+    newUser.save( false, false,  () => {
       return done(null, newUser);
     });
 }));
@@ -38,7 +38,7 @@ passport.use('google', new GoogleStrategy( { clientID: process.env.GG_ID, client
   newUser.username = profile.displayName;
   newUser.email = profile.emails[0].value;
   newUser.id = profile.id;
-  newUser.save( false,  () => {
+  newUser.save( false, false,  () => {
     return done(null, newUser);
   });
 }));
@@ -51,7 +51,7 @@ passport.use('facebook', new FacebookStrategy( { clientID: process.env.FB_ID, cl
   newUser.username = profile.name.givenName + ' ' + profile.name.familyName;
   newUser.email = profile.emails[0].value;
   newUser.id = profile.id;
-  newUser.save( false,  () => {
+  newUser.save( false, false,  () => {
     return done(null, newUser);
   });
 }));

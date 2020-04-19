@@ -6,7 +6,6 @@ var pager = require('../config/pager');
 var User = require('../models/user');
 var Image = require('../models/image');
 var Order = require('../models/order');
-var MF = require('../models/marinefish');
 var Cart = require('../models/cart');
 var Product = require('../models/product');
 var Session = require('../models/session');
@@ -40,7 +39,7 @@ module.exports = (app, passport) => {
   });
 
   app.get('/remove/:sku/:amount', async (req, res) => {
-    await Cart.removeItems(req.session.cart, [{ sku: req.params.sku, amount: req.params.amount}]);
+    await Cart.removeItems(req.session.cart, [{ sku: req.params.sku, quantity: req.params.amount}]);
     req.session.save();
     Locker.removeIDLock(req.sessionID, req.params.sku);
     res.redirect('back');
@@ -60,7 +59,7 @@ module.exports = (app, passport) => {
     let order = await Order.retrieve(['cid', req.query.cid]);
     order.shipped = req.query.tracking;
     delete order.cart;
-    order.save(false, () => {
+    order.save(false, order.publicKey(), () => {
       res.redirect('back');
     });
   });
@@ -68,7 +67,6 @@ module.exports = (app, passport) => {
   app.post('/file_upload', upload.single('file'), mw.resizeImages, async (req, res) => {
     if (!res.locals.aauth || !req.query.sku) return res.redirect("back");
     fs.readFile(req.file.path, 'hex', async function(err, data) {
-    // debugger
     data = '\\x' + data;
     let image = new Image({sku: req.query.sku, name: req.file.filename, data: data, type: req.file.originalname.split('.')[1].toLowerCase()});
     image.save(['sku', 'name', 'type', 'data']);
@@ -95,17 +93,23 @@ module.exports = (app, passport) => {
   app.get('/rename', (req, res) => {
     if (!res.locals.aauth) return res.redirect('/');
     let image = new Image({name: req.query.name, num: req.query.rename, edit: true});
-    image.save(['num'], () => {
+    image.save(['num'], image.publicKey(), () => {
       res.redirect("back");
     });
   });
 
-  app.post('/addfish', (req, res) => {
+  app.post('/addproduct', (req, res) => {
     if (!res.locals.aauth) return res.redirect('back');
-    let c = new MF(req.body);
-    c.edit = (req.body.editing == 'true');
-    delete req.body.editing;
-    c.save(false, () => {
+    let c = new Product(req.body);
+    c.save(false, false, () => {
+      res.redirect('/admin');
+    });
+  });
+
+  app.post('/editproduct', (req, res) => {
+    if (!res.locals.aauth) return res.redirect('back');
+    let c = new Product(req.body);
+    c.save(false, c.publicKey(), () => {
       res.redirect('/admin');
     });
   });
@@ -113,7 +117,7 @@ module.exports = (app, passport) => {
   app.post('/create_payment', async (req, res) => {
     let locked = await Locker.lockResources(req.session.cart, req.sessionID);
     let payment = await Paypal.createPayment(req.session.cart);
-    if (locked == true) {
+    if (locked === true) {
       for (let i=0;i<payment.links.length;i++) {
         if (payment.links[i].rel === 'approval_url') {
           return res.redirect(payment.links[i].href);
@@ -151,7 +155,7 @@ module.exports = (app, passport) => {
 
   app.get('/deleteproduct=:sku', (req, res) => {
     if (!res.locals.aauth) return res.redirect('/');
-    let t = new MF({sku: req.params.sku});
+    let t = new Product({sku: req.params.sku});
     t.delete();
     res.redirect('/admin');
   });

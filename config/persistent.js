@@ -4,7 +4,6 @@ class Persistent {
   static async retrieve(pk, attrs=false) {
     let item = await db.getData(this, attrs? attrs : 'all', pk);
     if (!item) return false;
-    item.edit = true;
     return item;
   }
   static customQuery(query) {
@@ -21,13 +20,8 @@ class Persistent {
     });
     return values;
   }
-  save(attrs, fn) {
-    let pk = false;
+  save(attrs, pk, fn) {
     let t = '';
-    if (this.edit) {
-      delete this.edit;
-      pk = this.publicKey();
-    }
     if (attrs && !Array.isArray(attrs)) {
       db.saveData(this.constructor, Object.keys(attrs), pk, Object.values(attrs), fn);
     } else {

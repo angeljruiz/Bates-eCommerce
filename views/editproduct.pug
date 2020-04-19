@@ -1,0 +1,52 @@
+extends ../includes/layout.pug
+
+append resources
+  title Add stock
+  link(href='../vendor/dropzone.min.css' rel='stylesheet')
+  script(src="../vendor/dropzone.min.js")
+  script(src="../js/fileupload.js" defer)
+
+append body
+  input#hsku(type='hidden' value=sku)
+  .col-md-10.mx-auto
+    .card
+        .card-body
+          .dropzone.rounded.mb-5#dropzone
+          .row.my-1
+            if pics
+              each pic, index in pics
+                .col-xs-12.col-lg-2.mr-3
+                  img.demo.thumb-img.rounded(src='../uploads/' + pic.name style='width:100%')
+                  input.my-2(type='text' id='picName-' + index value=pic.num || '' style='width: 100%')
+                  button.btn.btn-outline-primary.form-control.mb-3(onclick='edit(' + index + ', "' + pic.name + '")') Edit
+                  button.btn.btn-outline-danger.form-control.mb-5(onclick='delete_image("' + pic.name + '")') Delete
+          .form-group.mt-3
+            form(action='/editproduct' method='POST')
+              if aauth
+                .form-group
+                    h3
+                      strong Store ID
+                    input.form-control#store(type='number' name='store' placeholder='Enter store ID here' value=store)
+              .form-group
+                h3
+                  strong Product name
+                input.form-control(type='text' name='name' placeholder='Enter name here' value=name)
+              .form-group
+                h3
+                  strong Description
+                textarea.form-control(name='description' placeholder='Enter description here')= description
+              .form-group
+                h3
+                  strong SKU
+                input.form-control(type='number' name='sku' value= sku)
+              .form-group
+                h3
+                  strong Price
+                input.form-control(type='number' step='any' name='price' value= price)
+              .form-group
+                h3
+                  strong Quantity
+                input.form-control(type='number' name='quantity' value= quantity)
+
+              input.btn.btn-primary.mr-2(type='submit' value='Submit')
+              a.btn.btn-danger(href='/deleteproduct=' + sku) Delete
