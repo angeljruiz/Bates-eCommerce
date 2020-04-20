@@ -106,7 +106,7 @@ class Database {
       query = 'SELECT ' + Database.attributes(attrs, '', '', ' FROM ') + Database.className(model);
       query += Database.join(attrs, pk, model);
       query += Database.publicKey(pk);
-      console.log(query);
+      if(model.name != 'users') console.log(query);
       pool.query(query, (err, res) => {
         if (err)
           return reject(err);
@@ -133,36 +133,39 @@ class Database {
       });
     });
   }
-  saveData(model, attrs, pk, input, fn) {
-    let pre = '(', post = ')', query ='';
-    if (pk) {
-      if (attrs.length > 1) {
-        pre = 'SET (';
-      } else {
-        pre = 'SET ';
-        post = '';
-      }
-      query = 'UPDATE ';
-    } else query = 'INSERT INTO ';
-    query += Database.className(model) + Database.attributes(attrs, pre, '', post);
-    query += pk? ' = (' : ' VALUES (';
-    query += Database.attributes(input, '', "'", ') ') + Database.publicKey(pk);
-    // console.log(query);
-    pool.query(query, (err) => {
-      if (err)
-        return console.error('error running query', err);
-      if (fn)
-        return fn(true);
+  saveData(model, attrs, pk, input) {
+    return new Promise( (resolve, reject) => {
+      let pre = '(', post = ')', query ='';
+      if (pk) {
+        if (attrs.length > 1) {
+          pre = 'SET (';
+        } else {
+          pre = 'SET ';
+          post = '';
+        }
+        query = 'UPDATE ';
+      } else query = 'INSERT INTO ';
+      query += Database.className(model) + Database.attributes(attrs, pre, '', post);
+      query += pk? ' = (' : ' VALUES (';
+      query += Database.attributes(input, '', "'", ') ') + Database.publicKey(pk);
+      pool.query(query, (err) => {
+        if (err)
+          return reject(err)
+        else
+          return resolve(true);
+      });
     });
   }
   deleteData(model, pk, fn) {
-    let query = 'DELETE FROM ' + Database.className(model) + Database.publicKey(pk);
-    console.log(query);
-    pool.query(query, (err) => {
-      if (err)
-          return console.error('error running query', err);
-      if (fn)
-        return fn();
+    return new Promise( (resolve, reject) => {
+      let query = 'DELETE FROM ' + Database.className(model) + Database.publicKey(pk);
+      console.log(query);
+      pool.query(query, (err) => {
+        if (err)
+          return reject(err)
+        else
+          return resolve(true);
+      });
     });
   }
 

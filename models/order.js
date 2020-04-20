@@ -22,7 +22,7 @@ class orders extends Persistent {
     return this;
   }
 
-  static retrieve(pk, fn) {
+  static retrieve(pk) {
     return new Promise( async (resolve, reject) => {
       let cart;
       let order = await super.retrieve(pk, false);
@@ -35,11 +35,10 @@ class orders extends Persistent {
     });
   }
 
-  delete(fn) {
+  async delete() {
     let cart = new Cart({cid: this.cid});
-    cart.delete( () => {
-      super.delete(fn);
-    });
+    await cart.delete();
+    return await super.delete();
   }
 
   publicKey() { return ['cid', this.cid]; }

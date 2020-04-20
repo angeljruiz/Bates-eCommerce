@@ -13,19 +13,12 @@ let flash = require('connect-flash-plus');
 let session = require('express-session');
 let bp = require('body-parser');
 let passport = require('passport');
-let device = require('express-device');
 let fs = require('fs');
 let db = require('./scripts/database');
 let pgSession = require('connect-pg-simple')(session);
 
-let Auth = require('./config/auth');
+// app.locals.pretty = true;
 
-app.use(bp.urlencoded({extended: true}));
-app.use(bp.json());
-app.use(flash());
-app.use(express.static(__dirname));
-app.use(device.capture());
-device.enableDeviceHelpers(app)
 app.use(session({
   store: new pgSession({
     pool : db.pool,                // Connection pool
@@ -34,18 +27,33 @@ app.use(session({
   name: 'BeCommercecookies',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 30 minutes
+  cookie: { maxAge: 3 * 60 * 1000 }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(bp.urlencoded({extended: true}));
+app.use(bp.json());
+app.use(flash());
+
 app.set('view engine', 'pug');
 app.set('views', './views');
-app.locals.pretty = true;
 
+let Auth = require('./config/auth');
 app.use('/auth', Auth);
+
+app.use('/react', express.static('client/build'));
+app.use('/css', express.static('css'));
+app.use('/media', express.static('media'));
+app.use('/js', express.static('js'));
+app.use('/uploads', express.static('uploads'));
+app.use('/vendor', express.static('vendor'));
+
 require('./routes/utilities')(app, passport);
 require('./routes/routes')(app, passport);
-let mw = require('./config/middleware')
+
+app.use(express.static('client/build'))
 
 let autoViews = {};
 const reg = /(login|signup)/;

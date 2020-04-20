@@ -53,8 +53,8 @@ class Cart extends Persistent {
 
   publicKey() { return ['cid', this.cid]; }
 
-  save(fn) {
-    super.save({items:JSON.stringify(this.items), cid: this.cid}, fn);
+  async save(fn) {
+    return await super.save({items:JSON.stringify(this.items), cid: this.cid});
   }
 
 }

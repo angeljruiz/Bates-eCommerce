@@ -13,9 +13,11 @@ function addToCart(sku, amount, name, price) {
     });
     if (!found) {
       let element = "<a class= 'dropdown-item' href='/viewproduct=" + sku + "'><div class='row'><div class='col-xs'><img class='dropdown-img img-thumbnail' src='/main?sku=" + sku + "'></div><div class='col-xs ml-2 cart-dropdown'><h6>" + name + "</h6><span>$" + price + "</span></div></div></a>";
-      let badge = "<span class='badge badge-danger ml-2'>0</span>"
       $('.dropdown-menu.dropdown-menu-right.mt-2').prepend(element);
-      $('#cdd').append(badge);
+      if($('span.badge.badge-danger.ml-2').length === 0) {
+        let badge = "<span class='badge badge-danger ml-2'>0</span>"
+        $('#cdd').append(badge);
+      }
     }
     let totalItems= parseInt($('span.badge.badge-danger.ml-2').text(), 10);
     $('span.badge.badge-danger.ml-2').html(totalItems + 1);

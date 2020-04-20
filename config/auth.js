@@ -11,10 +11,12 @@ var User = require('../models/user');
 passport.serializeUser( (user, done) => {
   done(null, user.id);
 });
+
 passport.deserializeUser( async (id, done) => {
   let user = await User.retrieve( ['id', id ], false);
   return done(null, user);
 });
+
 passport.use('signup', new LocalStrategy( { passReqToCallback: true }, async (req, username, password, done) => {
   let user = await User.retrieve( ['username', username ], ['id']);
     if (user) {
@@ -25,10 +27,9 @@ passport.use('signup', new LocalStrategy( { passReqToCallback: true }, async (re
     newUser.email = req.body.email;
     newUser.id = Math.random().toString(10).substring(9);
     newUser.generateHash(password);
-    newUser.save( false, false,  () => {
-      return done(null, newUser);
-    });
+    return done(null, await newUser.save() ? newUser : false);
 }));
+
 passport.use('google', new GoogleStrategy( { clientID: process.env.GG_ID, clientSecret: process.env.GG_PW, callbackURL: '/auth/google/redirect' }, async (accessToken, refreshToken, profile, done) => {
   let user = await User.retrieve( ['id', profile.id ], ['id']);
   if (user) {
@@ -38,10 +39,9 @@ passport.use('google', new GoogleStrategy( { clientID: process.env.GG_ID, client
   newUser.username = profile.displayName;
   newUser.email = profile.emails[0].value;
   newUser.id = profile.id;
-  newUser.save( false, false,  () => {
-    return done(null, newUser);
-  });
+  return done(null, await newUser.save() ? newUser : false);
 }));
+
 passport.use('facebook', new FacebookStrategy( { clientID: process.env.FB_ID, clientSecret: process.env.FB_PASSWORD, callbackURL: '/auth/facebook/redirect', profileFields: ['id', 'emails', 'name'] }, async (accessToken, refreshToken, profile, done) => {
   let user = await User.retrieve( ['id', profile.id ], ['id']);
   if (user) {
@@ -51,10 +51,9 @@ passport.use('facebook', new FacebookStrategy( { clientID: process.env.FB_ID, cl
   newUser.username = profile.name.givenName + ' ' + profile.name.familyName;
   newUser.email = profile.emails[0].value;
   newUser.id = profile.id;
-  newUser.save( false, false,  () => {
-    return done(null, newUser);
-  });
+  return done(null, await newUser.save() ? newUser : false);
 }));
+
 passport.use('login', new LocalStrategy( { passReqToCallback: true }, async (req, username, password, done) => {
   let user = await User.retrieve( ['username', username ], false);
   if (!user || !user.validPassword(password)) {

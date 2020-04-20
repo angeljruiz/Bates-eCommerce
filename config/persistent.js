@@ -20,28 +20,30 @@ class Persistent {
     });
     return values;
   }
-  save(attrs, pk, fn) {
-    let t = '';
-    if (attrs && !Array.isArray(attrs)) {
-      db.saveData(this.constructor, Object.keys(attrs), pk, Object.values(attrs), fn);
-    } else {
-      if (Object.getPrototypeOf(this.constructor).name && Object.getPrototypeOf(this.constructor).name != 'Persistent') {
-        t = db.constructor.getJoinAttrs(this.constructor, attrs, false);
-        db.saveData(Object.getPrototypeOf(this.constructor), t, pk, db.constructor.getJoinData(this, t), () => {
-          t = db.constructor.getJoinAttrs(this.constructor, attrs, true);
-          db.saveData(this.constructor, t, pk, db.constructor.getJoinData(this, t), fn);
-        });
-      } else
-        db.saveData(this.constructor, attrs? attrs : Object.keys(this), pk, attrs? this.values(attrs) : Object.values(this), fn);
-    }
+  async save(attrs, pk) {
+    return new Promise( async resolve => {
+      let t = '';
+      if (attrs && !Array.isArray(attrs)) {
+        resolve(await db.saveData(this.constructor, Object.keys(attrs), pk, Object.values(attrs)));
+      } else {
+        if (Object.getPrototypeOf(this.constructor).name && Object.getPrototypeOf(this.constructor).name != 'Persistent') {
+          t = db.constructor.getJoinAttrs(this.constructor, attrs, false);
+          let parentSuccess = await db.saveData(Object.getPrototypeOf(this.constructor), t, pk, db.constructor.getJoinData(this, t));
+          if(parentSuccess) {
+            t = db.constructor.getJoinAttrs(this.constructor, attrs, true);
+            resolve(await db.saveData(this.constructor, t, pk, db.constructor.getJoinData(this, t)));
+          }
+        } else
+          resolve(await db.saveData(this.constructor, attrs? attrs : Object.keys(this), pk, attrs? this.values(attrs) : Object.values(this)));
+      }
+    });
   }
-  delete(fn) {
+  async delete(fn) {
     if (Object.getPrototypeOf(this.constructor).name && Object.getPrototypeOf(this.constructor).name != 'Persistent') {
-      db.deleteData(this.constructor, this.publicKey(), () => {
-        db.deleteData(Object.getPrototypeOf(this.constructor), this.publicKey(), fn);
-      });
+      await db.deleteData(this.constructor, this.publicKey());
+      return await db.deleteData(Object.getPrototypeOf(this.constructor), this.publicKey());
     } else {
-      db.deleteData(this.constructor, this.publicKey(), fn);
+      return await db.deleteData(this.constructor, this.publicKey());
     }
   }
 }

@@ -1,7 +1,7 @@
 extends ../includes/layout.pug
 
 append resources
-  script(src='../js/addtocart.js' defer)
+  script(src='/js/addtocart.js' defer)
 
 append body
     - var add = ''
@@ -20,10 +20,6 @@ append body
               if product.quantity == 0
                 .sold-out.px-auto.py-auto.rounded
                   span: h6.mb-0.text Sold Out
-          if (device_type == 'desktop')
-            - add = 'ml-3' 
-          else
-            - add = ''
           .col-xs-12.col-md-3.text-center.mr-auto(class = add)
             h3.w-100= product.name
             span Price: $#{product.price}

@@ -32,7 +32,6 @@ module.exports = (app, passport) => {
   app.get('/addtocart', async (req, res) => {
     if (!req.query.sku || !req.query.amount) return res.redirect('back');
     let product = await Product.retrieve(['sku', req.query.sku], ['name', 'sku', 'price', 'description']);
-    console.log(product);
     Cart.addItem(req.session.cart, product, parseInt(req.query.amount));
     res.redirect('/');
   });
@@ -44,12 +43,11 @@ module.exports = (app, passport) => {
     res.redirect('back');
   });
 
-  app.get('/deleteorder', (req, res) => {
+  app.get('/deleteorder', async (req, res) => {
     if (res.locals.aauth) {
       let order = new Order( {cid: req.query.cid});
-      order.delete( () => {
-        res.redirect('/admin');
-      });
+      await order.delete()
+      res.redirect('/admin');
     }
   });
 
@@ -58,9 +56,8 @@ module.exports = (app, passport) => {
     let order = await Order.retrieve(['cid', req.query.cid]);
     order.shipped = req.query.tracking;
     delete order.cart;
-    order.save(false, order.publicKey(), () => {
-      res.redirect('back');
-    });
+    await order.save(false, order.publicKey());
+    res.redirect('back');
   });
 
   app.post('/file_upload', upload.single('file'), mw.resizeImages, async (req, res) => {
@@ -68,49 +65,45 @@ module.exports = (app, passport) => {
     fs.readFile(req.file.path, 'hex', async function(err, data) {
     data = '\\x' + data;
     let image = new Image({sku: req.query.sku, name: req.file.filename, data: data, type: req.file.originalname.split('.')[1].toLowerCase()});
-    image.save(['sku', 'name', 'type', 'data']);
+    await image.save(['sku', 'name', 'type', 'data']);
     res.redirect("back");
     });
   });
 
-  app.get('/delete_image', (req, res) => {
+  app.get('/delete_image', async (req, res) => {
     if (!res.locals.aauth || !req.query.name) return res.redirect("back");
     let image = new Image({name: req.query.name});
     fs.unlink('./uploads/' + req.query.name, () => {});
-    image.delete( () => {
-      res.redirect('back');
-    })
+    await image.delete();
+    res.redirect('back');
   });
 
   app.get('/main', async (req, res) => {
     if (!req.query.sku) return res.send('');
     let image = await Image.retrieve(['sku', req.query.sku, 'ORDER BY num LIMIT 1'], ['name']);
     if (!image) return res.send('');
-    res.redirect('../uploads/' + image.name);
+    res.redirect('/uploads/' + image.name);
   });
 
-  app.get('/rename', (req, res) => {
+  app.get('/rename', async (req, res) => {
     if (!res.locals.aauth) return res.redirect('/');
     let image = new Image({name: req.query.name, num: req.query.rename, edit: true});
-    image.save(['num'], image.publicKey(), () => {
-      res.redirect("back");
-    });
+    await image.save(['num'], image.publicKey());
+    res.redirect("back");
   });
 
-  app.post('/addproduct', (req, res) => {
+  app.post('/addproduct', async (req, res) => {
     if (!res.locals.aauth) return res.redirect('back');
     let c = new Product(req.body);
-    c.save(false, false, () => {
-      res.redirect('/admin');
-    });
+    await c.save(false, false);
+    res.redirect('/admin');
   });
 
-  app.post('/editproduct', (req, res) => {
+  app.post('/editproduct', async (req, res) => {
     if (!res.locals.aauth) return res.redirect('back');
     let c = new Product(req.body);
-    c.save(false, c.publicKey(), () => {
-      res.redirect('/admin');
-    });
+    await c.save(false, c.publicKey());
+    res.redirect('back');
   });
 
   app.post('/create_payment', async (req, res) => {
@@ -152,10 +145,10 @@ module.exports = (app, passport) => {
     });
   });
 
-  app.get('/deleteproduct=:sku', (req, res) => {
+  app.get('/deleteproduct=:sku', async (req, res) => {
     if (!res.locals.aauth) return res.redirect('/');
     let t = new Product({sku: req.params.sku});
-    t.delete();
+    await t.delete();
     res.redirect('/admin');
   });
 

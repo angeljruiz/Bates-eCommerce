@@ -2,6 +2,8 @@ var User = require('../models/user.js');
 var Image = require('../models/image.js');
 var Order = require('../models/order.js');
 var Product = require('../models/product.js');
+var path = require('path');
+
 
 var fs = require('fs');
 
@@ -12,6 +14,10 @@ module.exports = (app, passport) => {
   app.get('/', async (req, res) => {
     let product = await Product.customQuery('SELECT * FROM product ORDER BY quantity DESC');
     res.render('index', { products: product });
+  });
+
+  app.get('/react', async (req, res) => {
+    res.sendFile(path.resolve('client/build/index.html'));
   });
 
   app.get('/admin', async (req, res) => {
@@ -67,12 +73,10 @@ module.exports = (app, passport) => {
   });
 
   app.get('/uploads/:name', async (req, res) => {
-    console.log('here');
     if (!fs.existsSync(req.path)) {
       let image = await Image.retrieve(['name', req.params.name], ['data', 'type']);
       fs.writeFile('.' + req.path, image.data, (err) => {
         if (err) throw err;
-        console.log('The file has been saved!');
       });
       res.type(image.type);
       res.send(image.data);

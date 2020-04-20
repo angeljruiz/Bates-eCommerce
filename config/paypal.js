@@ -28,7 +28,7 @@ class Paypal {
     return list;
   }
 
-  static saveOrder(payment, cart, rtr) {
+  static async saveOrder(payment, cart) {
     let fn, ln, name;
     let shipping = payment.transactions[0].item_list.shipping_address;
     name = shipping.recipient_name.split(' ');
@@ -53,10 +53,10 @@ class Paypal {
       postal_code: shipping.postal_code
     }
     order = new Order(order);
-    order.save(false, false, () => {
+    if(await order.save()) {
       cart.cid = order.cid;
-      cart.save(rtr);
-    });
+      return await cart.save();
+    }
   }
   createPayment(cart) {
     return new Promise( (resolve, reject) => {
@@ -125,11 +125,11 @@ class Paypal {
                 }
             ]
           };
-          paypal.payout.create(create_payout_json, true, function (error, payout) {
+          paypal.payout.create(create_payout_json, true, async function (error, payout) {
             if (error) {
               resolve(false);
             } else {
-              Paypal.saveOrder(payment, new Cart(cart));
+              await Paypal.saveOrder(payment);
               resolve(payment);
             }
           });
