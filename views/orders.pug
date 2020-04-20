@@ -16,8 +16,6 @@ append body
                 th Name
                 th Shipped
             tbody
-              if !orders.length
-                - orders = [orders]
               each order in orders
                 tr.text-center.mb-3
                   td.text-left.px-1

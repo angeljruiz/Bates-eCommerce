@@ -1,5 +1,8 @@
 extends ../includes/layout.pug
 
+append resources
+  script(src='../js/addtocart.js' defer)
+
 append body
     - var add = ''
     if !products.length
@@ -26,4 +29,4 @@ append body
             span Price: $#{product.price}
             p.lead= product.description
             if product.quantity > 0
-              a.btn.btn-outline-primary.form-control#atc(href='/addtocart?sku=' + product.sku + '&amount=1') Add to cart
+              a.btn.btn-outline-primary.form-control#atc(onclick='addToCart(' + product.sku + ',1,"' + product.name + '",' + product.price + ')') Add to cart    

@@ -25,8 +25,7 @@ module.exports = (app, passport) => {
     if (!req.session.cart) {
       req.session.cart = new Cart;
     }
-    Cart.getTotal(req.session.cart);
-    pager.update(req, req.session.cart);
+    pager.update(req);
     next();
   });
 
@@ -135,8 +134,8 @@ module.exports = (app, passport) => {
     Locker.removeSessionLocks(req.sessionID);
     req.session.cart = 0;
     pager.update(req, req.session.cart);
-    req.flash('thankyou', 'Thank you! We\'ll be shipping your order soon');
-    res.redirect('thankyou?oid='+ req.query.paymentId);
+    req.flash('thankyou', "Thank you! We'll be shipping your order soon");
+    res.redirect('/thankyou?oid='+ req.query.paymentId);
   });
 
   app.get('/cancel_payment', (req, res) => {

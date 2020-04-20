@@ -20,8 +20,8 @@ class Pager {
       this.user = 0;
     }
     this.path = req.path
-    if (cart)
-      this.cart = cart;
+    if (req.session.cart)
+      this.cart = req.session.cart;
     let keys = Object.keys(this);
     Object.entries(this).forEach( (entries, index) => {
       req.res.locals[entries[0]] = entries[1];

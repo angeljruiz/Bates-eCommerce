@@ -72,21 +72,21 @@ class Locker {
             if (lockAmount != item.quantity) {
               newLock = new Lock({lid: locks[lockIndex].lid, amount: item.quantity});
               newLock.save(['lid', 'amount'], newLock.publicKey());
-              newProduct = new Product({sku: item.sku, quantity: parseInt(currentResource.amount) - (item.quantity + lockAmount)});
+              newProduct = new Product({sku: item.sku, quantity: parseInt(currentResource.quantity) - (item.quantity + lockAmount)});
               newProduct.save(['quantity'], newProduct.publicKey());
             }
           } else {
             newLock = new Lock({sid: sid, sku: item.sku, amount: item.quantity});
             newLock.save(['sid', 'sku', 'amount']);
-            newProduct = new Product({sku: item.sku, quantity: parseInt(currentResource.amount) - item.quantity});
+            newProduct = new Product({sku: item.sku, quantity: parseInt(currentResource.quantity) - item.quantity});
             newProduct.save(['quantity'], newProduct.publicKey());
           }
         } else {
           items.push({sku: item.sku, quantity: Math.abs(parseInt(currentResource.quantity) - item.quantity + lockAmount)});
           locked = false;
         }
-        return resolve(locked? true : items);
       }
+      return resolve(locked? true : items);
     });
   }
   async removeLocks() {

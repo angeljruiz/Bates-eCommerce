@@ -18,11 +18,11 @@ mixin navvy(index)
       if (aauth)
         .nav-item: a.nav-link(href='/admin') Admin
       .btn-group.ml-auto.nav-buttons
-        button.btn.btn-outline-light.rounded.nav-button(data-toggle='dropdown')
+        button#cdd.btn.btn-outline-light.rounded.nav-button(data-toggle='dropdown')
           i.fa-lg.fas.fa-shopping-cart
           if (cart.totalItems > 0)
-            span.badge.badge-danger.ml-2 #{cart.totalItems}
-        .dropdown-menu.dropdown-menu-right.mt-2
+            span.badge.badge-danger.ml-2= cart.totalItems
+        .dropdown-menu.dropdown-menu-right.mt-2.mr-2
           each item, index in cart.items
             a.dropdown-item(href='/viewproduct=' + item.sku)
               .row
@@ -33,7 +33,7 @@ mixin navvy(index)
                   span $#{(item.quantity*item.price).toFixed(2)}
             .dropdown-divider
           .row
-            span.mx-auto Total: $#{cart.total}
+            span#ct.mx-auto Total: $#{cart.total}
           .row
             a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
         if (loggedIn)

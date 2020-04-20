@@ -30,7 +30,12 @@ module.exports = (app, passport) => {
   app.get('/orders', async (req, res) => {
     if (!res.locals.aauth) return res.redirect('/');
     let orders = await Order.retrieve(['finalized', true, 'ORDER BY date DESC']);
-    res.render('orders', { orders: orders });
+    if(!orders) orders = [];
+    if(!Array.isArray(orders)) orders = [orders];
+    res.render('orders', { orders: orders.map( order => {
+      order.date = mw.formatDate(new Date(order.date));
+      return order;
+    })});
   });
 
   app.get('/checkout', (req, res) => {

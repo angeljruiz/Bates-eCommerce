@@ -27,7 +27,7 @@ class orders extends Persistent {
       let cart;
       let order = await super.retrieve(pk, false);
       if (!order) return resolve(false);
-      if (order.cid) cart = await Cart.getCart(order.cid);
+      if (order.cid) cart = await Cart.retrieve(['cid', order.cid]);
       if (!cart) return resolve(order);
       order.cart = cart;
       Cart.getTotal(order.cart);

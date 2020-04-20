@@ -61,13 +61,13 @@ append body
                   a(href='/viewproduct=' + item.sku)
                     img.checkout-img.img-fluid.img-thumbnail(src='/main?sku=' + item.sku)
                 td.px-0.text-left.float-left
-                  a(href='/viewproduct=' + item.sku): h6.mb-0= item.name
+                  a(href='/viewproduct=' + item.sku): h6.mb-0.ml-2= item.name
                 td.clear(data-title='Amount:')
-                  span=cart.amount[index]
+                  span=item.quantity
                 td(data-title='Price:')
                   span= '$' + item.price
                 td.cst(data-title='Total:')
-                  span $#{(item.price*cart.amount[index]).toFixed(2)}
+                  span $#{(item.price*item.quantity).toFixed(2)}
   .col-xs-12.col-lg-4.mr-auto
     if aauth
       .card

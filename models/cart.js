@@ -1,7 +1,7 @@
 let Persistent = require('../config/persistent.js');
 let Product = require('./product.js');
 
-class cart extends Persistent {
+class Cart extends Persistent {
   constructor(input) {
     super();
     if (!input) {
@@ -20,6 +20,7 @@ class cart extends Persistent {
     let itemIndex = cart.items.findIndex( i => i.sku === item.sku);
     if(itemIndex > -1) cart.items[itemIndex].quantity += 1
     else cart.items.push(item);
+    Cart.getTotal(cart);
   }
 
   static removeItems(cart, items) {
@@ -30,6 +31,7 @@ class cart extends Persistent {
         else cart.items[itemIndex].quantity -= item.quantity;
       }
     });
+    Cart.getTotal(cart);
   }
 
   static getTotal(cart) {
@@ -41,25 +43,11 @@ class cart extends Persistent {
     cart.total = (parseFloat(cart.subtotal) + parseFloat(cart.salestax) + cart.shipping).toFixed(2);
   }
 
-  static getCart(cid, fn) {
+  static retrieve(pk) {
     return new Promise( async (resolve, reject) => {
-      let c = new cart;
-      let productsProm = [];
-      c.cid = cid;
-      let ct = await cart.retrieve(['cid', cid], false);
-      if (!ct || ct.items.length == 2) return fn(false);
-      let items = ct.items.slice(1,-1).split(',');
-      let len = items.length != 2? items.length/2 : items.length-1;
-      for(let i=0;i<len;i++) {
-        productsProm.push(Product.retrieve(['sku', items[i*2]], false));
-      }
-      Promise.all(productsProm).then( products => {
-        products.forEach( (product, index) => {
-          c.items.push(product);
-          c.amount.push(items[index*2+1]);
-        });
-        resolve(c);
-      });
+      let t = await super.retrieve(pk);
+      t.items = JSON.parse(t.items);
+      resolve(t);
     });
   }
 
@@ -71,4 +59,4 @@ class cart extends Persistent {
 
 }
 
-module.exports = cart;
+module.exports = Cart;
