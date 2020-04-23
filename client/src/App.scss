@@ -1,5 +1,16 @@
-$tester: blue;
 .App {
   text-align: center;
-  color: $tester;
+  padding: 0;
+  font-size: 1rem;
+}
+
+.facebookLogin {
+  background-color: rgb(66, 103, 178);
+  color: white;
+  display: inline-block;
+  border: none;
+}
+
+.facebookLogin:hover {
+  background-color: darken($color: rgb(66, 103, 178), $amount: 10%);
 }

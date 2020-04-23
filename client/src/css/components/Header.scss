@@ -1,0 +1,25 @@
+nav.navbar {
+    text-align: right;
+}
+
+ul.navbar-nav {
+    width: 100%;
+    flex-direction: row;
+}
+
+.micon {
+    content: url('/media/mi.png');
+    display: block;
+    max-height: 200px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.nav-item {
+    // display: inline-flex;
+    // margin: 0 1rem;
+}
+
+.nav-link {
+    // display: inline-block;
+}

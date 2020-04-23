@@ -1,31 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.scss';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-let show = false;
+import './vendor/bootstrap.min.css';
+      // link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous")
 
-function toggler(e) {
-  show = !show;
-  renderApp();
-}
 
-function Tester(props) {
-  return (<div>hello {props.name}</div>)
-}
+import './index.scss';
 
-Tester.defaultProps = {
-  name: 'Angel'
-}
+import App from './App';
 
 function renderApp() {
   ReactDOM.render(
     <React.StrictMode>
       <App />
-      <button onClick={toggler}>{!show ? 'Show info' : 'Hide info'}</button>
-      <Tester />
-      {show && (<p>You found me!</p>)}
     </React.StrictMode>,
     document.getElementById('root')
   );

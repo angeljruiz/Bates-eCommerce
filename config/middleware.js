@@ -11,13 +11,13 @@ module.exports = {
         return res.redirect('/');
       return next();
     }
-    res.flash('notLogged', 'Please sign in')
+    req.flash('notLogged', 'Please sign in')
     res.redirect('/login');
   },
 
   validateInfo: (req, res, next) => {
     if (req.body.username === '' || req.body.password === '' || req.body.email === '') {
-      req.res.flash('incorrect', 'Invalid username, email, or password');
+      req.flash('incorrect', 'Invalid username, email, or password');
       if (req.originalUrl === '/login')
         return res.redirect('/login');
       else
@@ -28,7 +28,7 @@ module.exports = {
 
   validInfo: (req, res, next) => {
     if (req.body.fn === '' || req.body.ln === '') {
-      req.res.flash('incorrect', 'Please fill out the entire form');
+      req.flash('incorrect', 'Please fill out the entire form');
       return res.redirect('/asguest');
     } else {
       return next();
