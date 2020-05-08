@@ -6,7 +6,15 @@ let app = express();
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
   var morgan = require('morgan');
+  var webpack = require('webpack')
+  var webpackDevMiddleware = require('webpack-dev-middleware')
+  var webpackHotMiddleware = require('webpack-hot-middleware')
+  var webpackConfig = require('./config/webpack.config')
+  var compiler = webpack(webpackConfig)
+  
   app.use(morgan('dev'));
+  app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: webpackConfig.output.publicPath }))
+  app.use(webpackHotMiddleware(compiler))
 }
 
 let flash = require('connect-flash-plus');
@@ -21,7 +29,7 @@ let pgSession = require('connect-pg-simple')(session);
 
 app.use(session({
   store: new pgSession({
-    pool : db.pool,                // Connection pool
+    pool : db.pool,           
   }),
   secret: 'iuhiuhedgriuyHG(*&)',
   name: 'BeCommercecookies',

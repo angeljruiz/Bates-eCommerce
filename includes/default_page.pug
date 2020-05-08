@@ -20,22 +20,22 @@ mixin navvy(index)
       .btn-group.ml-auto.nav-buttons
         button#cdd.btn.btn-outline-light.rounded.nav-button(data-toggle='dropdown')
           i.fa-lg.fas.fa-shopping-cart
-          if (cart.totalItems > 0)
-            span.badge.badge-danger.ml-2= cart.totalItems
+          //- if (cart.totalItems > 0)
+          //-   span.badge.badge-danger.ml-2= cart.totalItems
         .dropdown-menu.dropdown-menu-right.mt-2.mr-2
-          each item, index in cart.items
-            a.dropdown-item(href='/viewproduct=' + item.sku)
-              .row
-                .col-xs
-                  img.dropdown-img.img-thumbnail(src='/main?sku=' + item.sku)
-                .col-xs.ml-2.cart-dropdown
-                  h6= item.name
-                  span $#{(item.quantity*item.price).toFixed(2)}
-            .dropdown-divider
-          .row
-            span#ct.mx-auto Total: $#{cart.total}
-          .row
-            a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
+          //- each item, index in cart.items
+          //-   a.dropdown-item(href='/viewproduct=' + item.sku)
+          //-     .row
+          //-       .col-xs
+          //-         img.dropdown-img.img-thumbnail(src='/main?sku=' + item.sku)
+          //-       .col-xs.ml-2.cart-dropdown
+          //-         h6= item.name
+          //-         span $#{(item.quantity*item.price).toFixed(2)}
+          //-   .dropdown-divider
+          //- .row
+          //-   span#ct.mx-auto Total: $#{cart.total}
+          //- .row
+          //-   a.btn.btn-outline-dark.viewcart.mx-auto.mt-1(href='/cart') View Cart
         if (loggedIn)
           a.btn.btn-outline-light.nav-button.rounded.ml-1.pt-2(href='/logout')
             i.fa-lg.fas.fa-sign-out-alt
