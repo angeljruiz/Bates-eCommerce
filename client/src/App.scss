@@ -4,9 +4,17 @@
   font-size: 1rem;
 }
 
+.googleLogin {
+  background-color: #DB4437;
+  border: none;
+}
+
+.googleLogin:hover {
+  background-color: darken($color: #DB4437, $amount: 10%);
+}
+
 .facebookLogin {
   background-color: rgb(66, 103, 178);
-  color: white;
   display: inline-block;
   border: none;
 }

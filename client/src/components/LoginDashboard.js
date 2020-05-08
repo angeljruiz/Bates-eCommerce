@@ -1,25 +1,31 @@
 import React from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import GoogleLogin from 'react-google-login';
-import FacebookLogin from 'react-facebook-login';
+// import FacebookLogin from 'react-facebook-login';
 
 import '../css/components/LoginDashboard.scss'
 
-const responseGoogle = (response) => {
+const googleLogin = (response) => {
     console.log(response);
+    // fetch('/auth/google/redirect', response).then( data => console.log(data));
 };
 
-const responseFacebook = (response) => {
-    console.log(response);
-  }
+// const facebookLogin = (response) => {
+//     console.log(response);
+//     fetch('/auth/facebook/redirect').then( data => console.log(data));
+//   }
 
 export default class LoginDashboard extends React.Component {
-    googleLogin = () => {
-        window.location = '/auth/google';
+    googleLogin = (e) => {
+        console.log(JSON.stringify(e));
+        fetch('/auth/google/redirect?accessToken=' + e.accessToken).then(d => console.log(d.body));
     }
     handleSubmit = (e) => {
         e.preventDefault();
+    }
+    handleLogin = () => {
+        
     }
     render = () => {
         return (
@@ -36,18 +42,18 @@ export default class LoginDashboard extends React.Component {
                             </div>
                             <div className='form-group'>
                                 <button className='btn btn-primary form-control mb-2'>Login</button>
-                                <FacebookLogin
+                                <Link className='btn btn-primary form-control googleLogin mb-2' to='/auth/google'>Google</Link>
+                                {/* <FacebookLogin
                                     cssClass='facebookLogin'
                                     appId="797038567358898"
                                     fields="name,email,picture"
-                                    callback={responseFacebook} 
-                                />                                
+                                    callback={facebookLogin} 
+                                />                                 */}
                                 <GoogleLogin
-                                    cssClass='facebookLogin'
-                                    clientId='1071517499996-c009vtm561n2bhvlhqg9s4drgdctt6d4.apps.googleusercontent.com'
+                                    clientId='1071517499996-gv37g6p9sdbdvml2llifn57q275v6gbl.apps.googleusercontent.com'
                                     buttonText="Login"
-                                    onSuccess={responseGoogle}
-                                    onFailure={responseGoogle}
+                                    onSuccess={this.googleLogin}
+                                    onFailure={this.googleLogin}
                                     cookiePolicy={'single_host_origin'}
                                 />
                             </div>

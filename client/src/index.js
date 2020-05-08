@@ -10,17 +10,12 @@ import './index.scss';
 
 import App from './App';
 
-function renderApp() {
-  ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-    document.getElementById('root')
-  );
-}
-
-renderApp();
-
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
 
 
 serviceWorker.unregister();

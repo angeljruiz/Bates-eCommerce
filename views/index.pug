@@ -16,7 +16,7 @@ append body
         .row.mb-5.product-row
           .col-xs-12.col-md-6.mb-5.ml-auto.px-0.product-img(class = add)
             .product
-              a(href='/viewproduct=' + product.sku): img.card-img.rounded.h-100(src='../main?sku=' + product.sku style='max-height: 80vh')
+              a(href='/viewproduct/' + product.sku): img.card-img.rounded.h-100(src='../main?sku=' + product.sku style='max-height: 80vh')
               if product.quantity == 0
                 .sold-out.px-auto.py-auto.rounded
                   span: h6.mb-0.text Sold Out

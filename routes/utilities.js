@@ -21,6 +21,7 @@ module.exports = (app, passport) => {
   Locker.removeLocks();
   Mall.loadMall(app);
   app.use((req, res, next) => {
+    console.log(req.user);
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
     if (!req.session.cart) {
       req.session.cart = new Cart;

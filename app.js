@@ -16,6 +16,7 @@ let passport = require('passport');
 let fs = require('fs');
 let db = require('./scripts/database');
 let pgSession = require('connect-pg-simple')(session);
+let cors = require('cors');
 
 // app.locals.pretty = true;
 
@@ -36,6 +37,7 @@ app.use(passport.session());
 app.use(bp.urlencoded({extended: true}));
 app.use(bp.json());
 app.use(flash());
+app.use(cors());
 
 app.set('view engine', 'pug');
 app.set('views', './views');
