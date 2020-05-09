@@ -10,7 +10,6 @@ html
       script(src='/public/main.bundle.js' defer)
       include ../includes/default_page
   body
-    - console.log(loggedIn)
     input#logged(type='hidden' value= loggedIn ? 'true' : 'false')
     block body
   //- +footer()

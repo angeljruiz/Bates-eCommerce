@@ -12,12 +12,10 @@ var mw = require('../config/middleware.js');
 module.exports = (app, passport) => {
 
   app.get('/', async (req, res) => {
-    let product = await Product.customQuery('SELECT * FROM product ORDER BY quantity DESC');
-    res.render('index', { products: product });
+    res.render('index');
   });
 
   app.get('/storeLanding', async (req, res) => {
-    if (!req.user) return res.send(JSON.stringify([]));
     let products = await Product.customQuery('SELECT * FROM product ORDER BY quantity DESC');
     if(!products) products = [];
     res.send(JSON.stringify(products));

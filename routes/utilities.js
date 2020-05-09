@@ -160,4 +160,8 @@ module.exports = (app, passport) => {
     });
   });
 
+  app.get('/loggedredirect', async (req, res) => {
+    res.redirect('/');
+  });
+
 }

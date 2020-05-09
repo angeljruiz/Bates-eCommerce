@@ -67,18 +67,9 @@ passport.use('login', new LocalStrategy( { passReqToCallback: true }, async (req
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 
-router.get('/google/redirect', passport.authenticate('google', { failureRedirect: '/'}), (req, res) => {
-  res.locals.loggedIn = 'true'
-  console.log(req.user);
-  console.log(res.locals);
-  console.log('im here!!!!');
-  
-  res.redirect('/');
-});
+router.get('/google/redirect', passport.authenticate('google', { failureRedirect: '/login', successRedirect: '/loggedredirect'}));
 
-router.get('/facebook/redirect', passport.authenticate('facebook'), (req, res) => {
-  res.redirect('/');
-});
+router.get('/facebook/redirect', passport.authenticate('facebook', { failureRedirect: '/login', successRedirect: '/loggedredirect'}));
 
 module.exports = router;
 
