@@ -5,24 +5,13 @@ html
       title Bates eCommerce
       meta(charset="utf-8")
       meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
-      link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous")
-
-      link(href='/css/style.css' rel='stylesheet')
-      link(href='/css/navbar.css' rel='stylesheet')
-      link(href='/css/mobile-table.css' rel='stylesheet')
-      link(href='/css/footer.css' rel='stylesheet')
-      //- link(rel="icon" href="../media/icon.ico")
       if (showTests)
         link(href='/vendor/mocha.css')
-      script(src='https://code.jquery.com/jquery-3.4.1.min.js')
-      script(src='/vendor/bootstrap.bundle.min.js')
-      script(src='/public/bundle.js' defer)
+      script(src='/public/main.bundle.js' defer)
       include ../includes/default_page
   body
-    //- .container-fluid
-    //-   +header()
-    //-   +navvy
-    //-   .row
+    - console.log(loggedIn)
+    input#logged(type='hidden' value= loggedIn ? 'true' : 'false')
     block body
   //- +footer()
   if (showTests)

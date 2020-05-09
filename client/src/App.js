@@ -1,30 +1,57 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
-import { BrowserRouter, Route } from 'react-router-dom';
+import { Provider, connect } from 'react-redux';
+import Cookies from 'js-cookie'
+
+import AppRouter from './router/AppRouter';
 import configureStore from './store/configureStore';
+import { init } from './actions/accountActions';
+import { addProduct } from './actions/productsActions';
+
+import './vendor/bootstrap.min.css'
 
 import './App.scss';
-import '../../vendor/bootstrap.min.css'
-
-import Header from './components/Header.js';
-import LoginDashboard from './components/LoginDashboard';
-import SignupDashboard from './components/SignupDashboard';
 
 const store = configureStore();
 
-class App extends React.Component {
+export default class App extends React.Component {
+  componentDidMount() {
+    console.log(Cookies.get());
+    
+    fetch('/storelanding').then( async products => {
+      let images = [];
+      products = await products.json();
+      products = products.filter( p => store.getState().products.findIndex( s => s.sku === p.sku) === -1);
+      products.forEach( product => {
+          images.push(fetch('/main?sku=' + product.sku));
+      });
+      Promise.all(images).then( data => {
+          data = data.map( d => d.blob());
+          Promise.all(data).then( data => {
+              products = products.map( (p, index) => { p.image = URL.createObjectURL(data[index]); return p });
+              if(products.length > 0)
+                  store.dispatch(addProduct(products));
+          });
+      });
+    });
+    store.dispatch(init(document.getElementById('logged').value))
+  }
   render() {
-    return (
-      <div className="App container-fluid">
-        <BrowserRouter>
-          <Header />
-          <Route path='/login' exact={true} component={LoginDashboard} />
-          <Route path='/register' exact={true} component={SignupDashboard} />
-        </BrowserRouter>
+    return(
+      <div className='App'>
+        <Provider store={store}>
+          <AppRouter products={store.getState().products}/>
+        </Provider>
       </div>
     )
-  }
+  };
 }
 
-ReactDOM.render(<App />, window.document.getElementById('root'));
+// const mapStateToProps = (state) => {
+//   return {
+//     state
+//   };
+// };
+
+// export default connect(mapStateToProps)(App);
  

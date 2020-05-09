@@ -5,14 +5,17 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
   entry: [
+    'babel-polyfill',
     'webpack-hot-middleware/client',
-    './client/src/App.js'
+    './client/src/index.js'
   ],
-  mode: 'development',
+  mode: process.env.NODE_ENV || 'development',
   output: {
     path: path.join(__dirname, 'build'),
-    filename: 'bundle.js',
-    publicPath: '/public/'
+    filename: '[name].bundle.js',
+    publicPath: '/public/',
+    hotUpdateChunkFilename: 'hot-update.js',
+    hotUpdateMainFilename: 'hot-update.json'
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
@@ -64,5 +67,10 @@ module.exports = {
         ],
       }
     ]
-  }
+  },
+  // optimization: {
+  //   splitChunks: {
+  //     chunks: 'all',
+  //   },
+  // }
 }

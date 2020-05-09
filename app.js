@@ -1,7 +1,8 @@
 "use strict";
 
 let express = require('express');
-let app = express();
+let cors = require('cors');
+let app = express().use('*', cors());
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -34,8 +35,9 @@ app.use(session({
   secret: 'iuhiuhedgriuyHG(*&)',
   name: 'BeCommercecookies',
   resave: false,
+  httpOnly: false,
   saveUninitialized: false,
-  cookie: { maxAge: 3 * 60 * 1000 }
+  cookie: { maxAge: 60 * 60 * 60 * 1000 }
 }));
 
 app.use(passport.initialize());
@@ -44,6 +46,7 @@ app.use(passport.session());
 app.use(bp.urlencoded({extended: true}));
 app.use(bp.json());
 app.use(flash());
+app.use(cors());
 
 app.set('view engine', 'pug');
 app.set('views', './views');

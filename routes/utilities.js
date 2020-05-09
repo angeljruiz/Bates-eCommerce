@@ -155,11 +155,9 @@ module.exports = (app, passport) => {
   app.post('/login', mw.validateInfo, passport.authenticate('login', { session: true, successRedirect : '/', failureRedirect : '/login' }));
 
   app.get('/logout', (req, res) => {
-     req.logout();
-     req.user = 0;
-     setTimeout(() => {
-       res.redirect('/');
-     }, 1000);
+    req.session.destroy(function (err) {
+      res.redirect('/');
+    });
   });
 
 }

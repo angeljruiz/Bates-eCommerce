@@ -16,6 +16,13 @@ module.exports = (app, passport) => {
     res.render('index', { products: product });
   });
 
+  app.get('/storeLanding', async (req, res) => {
+    if (!req.user) return res.send(JSON.stringify([]));
+    let products = await Product.customQuery('SELECT * FROM product ORDER BY quantity DESC');
+    if(!products) products = [];
+    res.send(JSON.stringify(products));
+  });
+
   app.get('/react', async (req, res) => {
     res.sendFile(path.resolve('client/build/index.html'));
   });
@@ -50,7 +57,7 @@ module.exports = (app, passport) => {
     else return res.render('checkout');
   });
 
-  app.get('/viewproduct=:sku', (req, res) => {
+  app.get('/viewproduct/:sku', (req, res) => {
     let images = Image.retrieve(['sku', req.params.sku, 'ORDER BY num'], ['num', 'type', 'name']);
     let product = Product.retrieve(['sku', req.params.sku], false);
     Promise.all([images, product]).then( data => {

@@ -7,7 +7,7 @@ class Pager {
   update(req, cart) {
     let f = req.flash('incorrect') + req.flash('thankyou') + req.flash('taken') + req.flash('notLogged') + req.flash('itemRemoved');
     req.res.locals.flash = f;
-    if (req.isAuthenticated())
+    if (req.isAuthenticated() || req.user)
       this.loggedIn = true;
     else
       this.loggedIn = false;
