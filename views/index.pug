@@ -1,28 +1,6 @@
 extends ../includes/layout.pug
 
 append resources
+  title Be Store
 
 append body
-  #root
-    //- - var add = ''
-    //- if !products.length
-    //-   - products = [products]
-    //- .col-xs-12.col-md-10.mx-auto.text-center.mb-3.py-4
-    //-   span.product-header.display-4 Marine Fishes
-    //- if products.length > 0
-    //-   each product, index in products
-    //-     if (device_type == 'desktop')
-    //-       - add = 'mr-3'
-    //-     .row.mb-5.product-row
-    //-       .col-xs-12.col-md-6.mb-5.ml-auto.px-0.product-img(class = add)
-    //-         .product
-    //-           a(href='/viewproduct/' + product.sku): img.card-img.rounded.h-100(src='../main?sku=' + product.sku style='max-height: 80vh')
-    //-           if product.quantity == 0
-    //-             .sold-out.px-auto.py-auto.rounded
-    //-               span: h6.mb-0.text Sold Out
-    //-       .col-xs-12.col-md-3.text-center.mr-auto(class = add)
-    //-         h3.w-100= product.name
-    //-         span Price: $#{product.price}
-    //-         p.lead= product.description
-    //-         if product.quantity > 0
-    //-           a.btn.btn-outline-primary.form-control#atc(onclick='addToCart(' + product.sku + ',1,"' + product.name + '",' + product.price + ')') Add to cart    

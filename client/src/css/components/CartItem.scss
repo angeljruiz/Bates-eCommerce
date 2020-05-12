@@ -1,0 +1,65 @@
+.cart-item {
+    text-align: left;
+    font-size: 1rem;
+}
+
+.cart-item p {
+    margin: 0;
+}
+
+.cart-item .card-header {
+    padding: 1rem;
+}
+
+.card-header .d-inline-block h5,
+.card-header .d-inline-block h6 {
+    display: inline;
+}
+
+.cart-item img {
+    width: 75px;
+    height: 75px;
+    vertical-align: -.5rem;
+}
+
+.cart-item aside {
+    position: absolute;
+    right: 0;
+}
+
+.item-total {
+    display: inline-block;
+    margin-top: 22px;
+}
+
+.card-header span ~ input {
+    width: 4rem;
+    background-color: inherit;
+    border: none;
+    font-size: 1.75rem;
+    // font-size: 1.1rem;
+}
+
+.card-header .item-total ~ span {
+    margin-left: 0;
+}
+
+.amount {
+    display: inline-block;
+    position: absolute;
+    right: 20px;
+    top: 40px;
+}
+
+.amount span {
+    font-size: 3rem;
+    vertical-align: -8px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}

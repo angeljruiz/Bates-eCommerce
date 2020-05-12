@@ -2,35 +2,6 @@ extends ../includes/layout.pug
 
 append resources
   title Login
-  form(action='/login' method='POST' id='login')
-  form(action='/auth/google' method='GET' id='google')
 
 append body
-  .col-md-4.mx-auto
-    .card
-      .card-header.text-center
-        i.fa.fa-sign-in.fa-lg.mr-1
-        h4.d-inline-block Login
-      .card-body
-        if (flash.length > 0)
-          .alert.alert-danger.text-center
-            = flash
-        .form-group
-          .row.justify-content-center
-            .col-md-8
-              input.form-control(type='text' name='username' form='login' placeholder='Email')
-        .form-group
-          .row.justify-content-center
-            .col-md-8
-              input.form-control(type='password' name='password' form='login' placeholder='Password')
-        .form-group
-          .row.justify-content-center
-            .col-md-8.text-center
-                input.form-control.btn.btn-primary.mb-2(type='submit' value='Login' form='login')
-                a.btn.btn-primary.fb.form-control.mb-2(href='/auth/facebook' disabled) Facebook
-                a.btn.btn.primary.gg.form-control(href='/auth/google') Google+
-        .col-md-8.mx-auto
-          hr
-        .col-md-8.mx-auto.text-center(style='font-size: 15px')
-          span.mr-1 Need to
-          a(href='/signup') register?
+  #root

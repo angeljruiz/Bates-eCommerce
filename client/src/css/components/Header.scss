@@ -1,26 +1,51 @@
+@import '../variables';
+
+@font-face {
+    font-family: 'Montserratb';
+    src: url('../../vendor/Montserrat-ExtraBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.total-items {
+    color: white;
+}
+
+nav {
+    background-color: $mainColor;
+    font-size: 1.25rem;
+}
+
+nav .navbar-brand {
+    font-weight: bolder;
+    font-family: 'Montserratb';
+    font-size: 1.5rem;
+    padding: .3rem .75rem;
+    border: 2px solid $mainHighlight;
+    border-radius: 5px;
+}
+
+nav .navbar-brand:hover {
+    color: darken($color: $mainHighlight, $amount: 15);
+}
+
+.navbar-brand ~ button {
+    background-color: inherit;
+    color: $mainHighlight;
+    border: none;
+}
+
+.navbar-brand ~ button:hover {
+    color: darken($color: $mainHighlight, $amount: 15)
+}
+
 nav.navbar {
     text-align: right;
     font-size: 1.4rem;
+    padding: .6rem 1rem;
 }
 
 ul.navbar-nav {
     width: 100%;
     flex-direction: row;
-}
-
-.micon {
-    content: url('/media/mi.png');
-    display: block;
-    max-height: 200px;
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.nav-item {
-    // display: inline-flex;
-    // margin: 0 1rem;
-}
-
-.nav-link {
-    // display: inline-block;
 }

@@ -29,6 +29,17 @@ module.exports = (app, passport) => {
     next();
   });
 
+  app.get('/storeLanding', async (req, res) => {
+    let products = await Product.customQuery('SELECT * FROM product ORDER BY quantity DESC');
+    if(!products) products = [];
+    res.send(JSON.stringify(products));
+  });
+
+  app.get('/isLogged', (req, res) => {
+    res.send(req.user !== undefined);
+  });
+
+
   app.get('/addtocart', async (req, res) => {
     if (!req.query.sku || !req.query.amount) return res.redirect('back');
     let product = await Product.retrieve(['sku', req.query.sku], ['name', 'sku', 'price', 'description']);
@@ -68,6 +79,17 @@ module.exports = (app, passport) => {
     await image.save(['sku', 'name', 'type', 'data']);
     res.redirect("back");
     });
+  });
+
+  app.get('/uploads/:name', async (req, res) => {
+    if (!fs.existsSync(req.path)) {
+      let image = await Image.retrieve(['name', req.params.name], ['data', 'type']);
+      fs.writeFile('.' + req.path, image.data, (err) => {
+        if (err) throw err;
+      });
+      res.type(image.type);
+      res.send(image.data);
+    }
   });
 
   app.get('/delete_image', async (req, res) => {

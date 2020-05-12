@@ -1,53 +1,49 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { logout } from '../actions/accountActions'
+import Cart from './Cart';
 
-import '../css/components/Header.scss'
+import { logout } from '../actions/accountActions';
+import { showCart } from '../actions/cartActions';
 
+import '../css/components/Header.scss';
 
 class Header extends React.Component {
-    render() { 
-        let logged = this.props.account.logged
+    render() {         
+        let loggedIn = this.props.loggedIn        
         return (
             <header>
-                <NavLink className='rounded' to='/'>
-                    <img className='micon' alt='Main icon' />
-                </NavLink>
-                <nav className='navbar bg-light'>
+                <nav className='navbar fixed-top'>
                     <ul className='navbar-nav'>
-                        <NavLink 
+                        <NavLink to='/' className='navbar-brand'>Be</NavLink>
+                        <button 
                             className='nav-link ml-auto mr-3'
-                            activeClassName='active' 
-                            to='/cart'
+                            onClick={ this.props.toggleCart(!this.props.show) }
+                            onMouseDown={ e => e.preventDefault() }
                             key='cart'
                             >
-                                Cart
-                        </NavLink>
-                        { logged === 'true' && <a
+                                <FontAwesomeIcon icon='shopping-cart' />
+                                 { (this.props.show && this.props.totalItems > 0) && <Cart /> }
+                                 { this.props.totalItems > 0 && <span className='ml-2 total-items'>{this.props.totalItems}</span>}
+                        </button>
+                        { loggedIn && <a
                             className='nav-link'
-                            // activeClassName='active' 
                             onClick={this.logOut.bind(this)}
-                            href='/logout'
+                            href={ process.env.REACT_APP_HOSTNAME + '/logout' }
                             key='logout'
                             >
-                                Logout
-                        </a>}
-                        { logged === 'false' && <NavLink 
+                                <FontAwesomeIcon icon='user-circle' />
+                        </a> }
+                        { !loggedIn && <NavLink 
                             className='nav-link'
                             activeClassName='active' 
                             to='/login'
                             key='login'
                             >
-                                Log in
-                        </NavLink>}
-                        {/* <li className='nav-item ml-auto'>
-                            <NavLink className='nav-link' activeClassName='active' to='/cart'>Cart</NavLink>
-                        </li>
-                        <li className='nav-item'>
-                            <NavLink className='nav-link' activeClassName='active' to={true ? '/login' : '/logout'}>Sign in</NavLink>
-                        </li> */}
+                                <FontAwesomeIcon icon='sign-in-alt' />
+                        </NavLink> }
                     </ul>
                 </nav>
             </header>
@@ -58,10 +54,22 @@ class Header extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ cart: { show, totalItems }, account: {loggedIn}}) => {
     return {
-        ...state
+        show,
+        loggedIn,
+        totalItems
     }
 };
 
-export default connect(mapStateToProps)(Header)
+const mapDispatchToProps = dispatch => {
+    return {
+        toggleCart: (show) => {
+            return function(e) {
+                dispatch(showCart(show));
+            }
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header)

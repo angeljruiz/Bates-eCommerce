@@ -1,23 +1,21 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
-import { Provider, connect } from 'react-redux';
-import Cookies from 'js-cookie'
+import { Provider } from 'react-redux';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSignOutAlt, faSignInAlt, faShoppingCart, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons'
 
 import AppRouter from './router/AppRouter';
 import configureStore from './store/configureStore';
 import { init } from './actions/accountActions';
 import { addProduct } from './actions/productsActions';
 
-import './vendor/bootstrap.min.css'
-
 import './App.scss';
 
 const store = configureStore();
+library.add( faSignInAlt, faSignOutAlt, faShoppingCart, faLinkedin, faGithub, faUserCircle );
 
 export default class App extends React.Component {
-  componentDidMount() {
-    console.log(Cookies.get());
-    
+  componentDidMount() {        
     fetch('/storelanding').then( async products => {
       let images = [];
       products = await products.json();
@@ -34,7 +32,9 @@ export default class App extends React.Component {
           });
       });
     });
-    store.dispatch(init(document.getElementById('logged').value))
+    fetch('/isLogged').then( data => data.json()).then( data => {
+      store.dispatch(init(data))
+    });
   }
   render() {
     return(
@@ -46,12 +46,4 @@ export default class App extends React.Component {
     )
   };
 }
-
-// const mapStateToProps = (state) => {
-//   return {
-//     state
-//   };
-// };
-
-// export default connect(mapStateToProps)(App);
  

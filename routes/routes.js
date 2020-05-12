@@ -1,4 +1,3 @@
-var User = require('../models/user.js');
 var Image = require('../models/image.js');
 var Order = require('../models/order.js');
 var Product = require('../models/product.js');
@@ -9,20 +8,9 @@ var fs = require('fs');
 
 var mw = require('../config/middleware.js');
 
-module.exports = (app, passport) => {
-
+module.exports = (app) => {
   app.get('/', async (req, res) => {
     res.render('index');
-  });
-
-  app.get('/storeLanding', async (req, res) => {
-    let products = await Product.customQuery('SELECT * FROM product ORDER BY quantity DESC');
-    if(!products) products = [];
-    res.send(JSON.stringify(products));
-  });
-
-  app.get('/react', async (req, res) => {
-    res.sendFile(path.resolve('client/build/index.html'));
   });
 
   app.get('/admin', async (req, res) => {
@@ -75,17 +63,6 @@ module.exports = (app, passport) => {
       data[1].pics = data[0];
       res.render('editproduct', data[1]);
     });
-  });
-
-  app.get('/uploads/:name', async (req, res) => {
-    if (!fs.existsSync(req.path)) {
-      let image = await Image.retrieve(['name', req.params.name], ['data', 'type']);
-      fs.writeFile('.' + req.path, image.data, (err) => {
-        if (err) throw err;
-      });
-      res.type(image.type);
-      res.send(image.data);
-    }
   });
 
 };

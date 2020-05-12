@@ -4,12 +4,13 @@ import { connect } from 'react-redux';
 import '../css/components/LandingPage.scss';
 
 import { addProduct } from '../actions/productsActions';
+import { setProductsCart } from '../actions/cartActions';
 
 import Product from './Product';
 
 class LandingPage extends React.Component {
     componentDidMount() {
-        fetch('/storelanding', { method: 'GET', headers: authHeaders()}).then( async products => {
+        fetch('/storelanding').then( async products => {
             let images = [];
             products = await products.json();
             if(this.props.products.length === 0) return;
@@ -29,26 +30,19 @@ class LandingPage extends React.Component {
     }
     render() {
         return (
-            <main className='mt-3'>
+            <article className='mt-3'>
                 <h1>Featured</h1>
-                {this.props.products.map( (product, i) => <Product key={i} product={product}/>)}
-            </main>
+                {this.props.products.map( (product, i) => <Product key={i} product={{...product}} addProduct={ setProductsCart } dispatch={this.props.dispatch}/>)}
+            </article>
         )
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({products}) => {
     return {
-      products: state.products,
+      products,
     };
   };
-
-  function authHeaders() {
-      return {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-      }
-  }
 
 export default connect(mapStateToProps)(LandingPage);
 

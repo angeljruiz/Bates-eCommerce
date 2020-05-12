@@ -3,17 +3,17 @@ var webpack = require('webpack')
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'cheap-module-source-map',
   entry: [
     'babel-polyfill',
     'webpack-hot-middleware/client',
-    './client/src/index.js'
+    './src/index.js'
   ],
   mode: process.env.NODE_ENV || 'development',
   output: {
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, '../build'),
     filename: '[name].bundle.js',
-    publicPath: '/public/',
+    publicPath: '/',
     hotUpdateChunkFilename: 'hot-update.js',
     hotUpdateMainFilename: 'hot-update.json'
   },
@@ -22,7 +22,6 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
       template: './includes/layout.pug',
       inject: true
     })
@@ -30,11 +29,11 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader"
-        }
+        },
       },
       {
         test: /\.pug$/,
@@ -47,6 +46,18 @@ module.exports = {
         use: [
           {
             loader: "html-loader"
+          }
+        ]
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'fonts/'
+            }
           }
         ]
       },

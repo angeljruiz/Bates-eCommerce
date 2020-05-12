@@ -1,0 +1,22 @@
+@import '../variables';
+
+footer {
+    color:#007bff;
+    background-color: $mainColor;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    font-weight: 600;
+    font-size: .8rem;
+}
+
+footer aside {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    font-size: 1.25rem;
+}
+
+footer span {
+    vertical-align: -10px;
+}

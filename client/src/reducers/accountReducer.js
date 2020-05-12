@@ -1,11 +1,11 @@
-const accountDefaultState = { logged: 'false' };
+const accountDefaultState = { loggedIn: false };
 
-export default (state = accountDefaultState, {logged, type}) => {
+export default (state = accountDefaultState, {loggedIn, type}) => {
     switch(type) {
         case 'INIT_ACCOUNT':
-            return {logged};
+            return { loggedIn };
         case 'LOG_OUT':
-            return { logged: 'false' }
+            return { loggedIn: false }
         default:
             return state
     }
