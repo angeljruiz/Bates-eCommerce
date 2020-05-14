@@ -1,0 +1,32 @@
+@import '../variables';
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $mainColor;
+    padding-top: 60px;
+}
+
+.sidebar a {
+    text-decoration: none;
+}
+
+.sidebar hr {
+    margin-bottom: 2rem;
+}
+
+.sidebar .text-left li {
+    padding-left: 30%;
+}
+
+.sidebar li ~ li {
+    margin-top: 2rem;
+}
+
+.sidebar p {
+    display: inline;
+    margin-left: 1rem;
+}

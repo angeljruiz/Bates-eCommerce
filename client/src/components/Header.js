@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Cart from './Cart';
+import Sidebar from './Sidebar';
 
 import { logout } from '../actions/accountActions';
 import { showCart } from '../actions/cartActions';
@@ -11,39 +12,29 @@ import { showCart } from '../actions/cartActions';
 import '../css/components/Header.scss';
 
 class Header extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.showSidebar = false;
+    }
+
     render() {         
-        let loggedIn = this.props.loggedIn        
         return (
             <header>
                 <nav className='navbar fixed-top'>
                     <ul className='navbar-nav'>
-                        <NavLink to='/' className='navbar-brand'>Be</NavLink>
+                        { this.showSidebar && <Sidebar loggedIn={this.props.loggedIn} hide={this.props.showSidebar(false).bind(this)}/>}
+                        <button onClick={this.props.showSidebar(!this.showSidebar).bind(this)} onMouseDown={ e => e.preventDefault() } className={'navbar-brand main-scheme ' + (this.showSidebar ? 'move-over' : '')}>Be</button>
                         <button 
                             className='nav-link ml-auto mr-3'
-                            onClick={ this.props.toggleCart(!this.props.show) }
+                            onClick={ this.props.toggleCart(!this.props.show, this.props.totalItems) }
                             onMouseDown={ e => e.preventDefault() }
                             key='cart'
                             >
                                 <FontAwesomeIcon icon='shopping-cart' />
-                                 { (this.props.show && this.props.totalItems > 0) && <Cart /> }
-                                 { this.props.totalItems > 0 && <span className='ml-2 total-items'>{this.props.totalItems}</span>}
+                                { this.props.totalItems > 0 && <span className='ml-2 total-items'>{this.props.totalItems}</span>}
+                                { (this.props.show && this.props.totalItems > 0) && <Cart products={this.props.products} /> }
                         </button>
-                        { loggedIn && <a
-                            className='nav-link'
-                            onClick={this.logOut.bind(this)}
-                            href={ process.env.REACT_APP_HOSTNAME + '/logout' }
-                            key='logout'
-                            >
-                                <FontAwesomeIcon icon='user-circle' />
-                        </a> }
-                        { !loggedIn && <NavLink 
-                            className='nav-link'
-                            activeClassName='active' 
-                            to='/login'
-                            key='login'
-                            >
-                                <FontAwesomeIcon icon='sign-in-alt' />
-                        </NavLink> }
                     </ul>
                 </nav>
             </header>
@@ -54,19 +45,29 @@ class Header extends React.Component {
     }
 }
 
-const mapStateToProps = ({ cart: { show, totalItems }, account: {loggedIn}}) => {
+const mapStateToProps = ({ cart: { show, totalItems, products }, account: {loggedIn}}) => {
     return {
         show,
         loggedIn,
-        totalItems
+        totalItems,
+        products
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        toggleCart: (show) => {
+        toggleCart: (show, totalItems) => {
             return function(e) {
+                if (totalItems <= 0) return;
                 dispatch(showCart(show));
+            }
+        },
+
+        showSidebar: show => {
+            return function(e) {                
+                this.showSidebar = show;
+                if (show) dispatch(showCart(false, 1));             
+                this.forceUpdate();
             }
         }
     }

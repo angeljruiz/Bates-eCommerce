@@ -11,6 +11,15 @@
     color: white;
 }
 
+.move-over {
+    position: absolute;
+    right: 0;
+}
+
+hr {
+    border-top: 2px solid $mainHighlight;
+}
+
 nav {
     background-color: $mainColor;
     font-size: 1.25rem;
@@ -23,6 +32,9 @@ nav .navbar-brand {
     padding: .3rem .75rem;
     border: 2px solid $mainHighlight;
     border-radius: 5px;
+    z-index: 50;
+    background-color: $mainColor;
+    color: $mainHighlight;
 }
 
 nav .navbar-brand:hover {
@@ -42,7 +54,7 @@ nav .navbar-brand:hover {
 nav.navbar {
     text-align: right;
     font-size: 1.4rem;
-    padding: .6rem 1rem;
+    padding: .6rem 0 .6rem 1rem;
 }
 
 ul.navbar-nav {

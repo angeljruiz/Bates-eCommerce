@@ -29,7 +29,7 @@
 
 .item-total {
     display: inline-block;
-    margin-top: 22px;
+    margin-top: 10px;
 }
 
 .card-header span ~ input {
@@ -37,11 +37,16 @@
     background-color: inherit;
     border: none;
     font-size: 1.75rem;
-    // font-size: 1.1rem;
+    cursor: pointer;
 }
 
 .card-header .item-total ~ span {
     margin-left: 0;
+}
+
+.card-header h5 ~ p {
+    font-size: .75rem;
+    color: grey;
 }
 
 .amount {
