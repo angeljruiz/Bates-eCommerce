@@ -1,17 +1,19 @@
+@import '../variables';
+
 aside.cart-dropdown {
     position: absolute;
     right: 0px;
-    top: 71px;
+    top: 70px;
     left: 0;
     overflow-y: scroll;
 }
 
-aside.cart-dropdown:before {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, .4);
-    content: '';
+.cart-dropdown .cart-total {
+    display: inline;
+    color: $mainConfirm;
+}
+
+.cart-dropdown .card-body {
+    display: flex;
+    justify-content: space-between;
 }

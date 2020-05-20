@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Header from '../components/Header.js';
 import Footer from '../components/Footer.js';
 
-export default function Layout (props) {
+function Layout (props) {
     return (
         <div style={{paddingBottom: '5rem'}}>
             <Header />
@@ -14,3 +15,9 @@ export default function Layout (props) {
         </div>
     )
 }
+
+Layout.propTypes = {
+    children: PropTypes.any
+}
+
+export default Layout;

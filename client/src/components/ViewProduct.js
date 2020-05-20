@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 const ViewProduct = ({product}) => {
@@ -13,6 +14,10 @@ const ViewProduct = ({product}) => {
             <button className='btn btn-outline-primary form-control'>Add to cart</button>
         </div>
     </div>
+}
+
+ViewProduct.propTypes = {
+    product: PropTypes.object
 }
 
 const mapStateToProps = (state, { match: { params: { sku }}}) => {            
