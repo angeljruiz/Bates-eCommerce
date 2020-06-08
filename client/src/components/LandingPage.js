@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import '../css/components/LandingPage.scss';
 
 import { addProduct } from '../actions/productsActions';
-import { setProductsCart } from '../actions/cartActions';
+import { addProductCart } from '../actions/cartActions';
 
 import Product from './Product';
 
@@ -30,9 +30,13 @@ class LandingPage extends React.Component {
     }
     render() {
         return (
-            <article className='mt-3'>
-                <h1>Featured</h1>
-                {this.props.products.map( (product, i) => <Product key={i} product={{...product}} addProduct={ setProductsCart } dispatch={this.props.dispatch}/>)}
+            <article>
+                <div className="jumbotron jumbotron-fluid">
+                    <div className="container-fluid">
+                        <h1>Featured</h1>
+                    </div>
+                </div>
+                {this.props.products.map( (product, i) => <Product key={i} product={{...product}} addProduct={ addProductCart } dispatch={this.props.dispatch}/>)}
             </article>
         )
     }

@@ -10,6 +10,6 @@ export default () => (
             <a href='https://github.com/angeljruiz'><FontAwesomeIcon icon={['fab', 'github']} size='lg' /></a>
         </aside>
         <br />
-        <span>&copy; 2017-2020 Angel Ruiz-Bates</span>
+        <span>&copy; 2017 RB Implementations LLC</span>
     </footer>
 )

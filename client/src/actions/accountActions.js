@@ -1,7 +1,7 @@
-export const init = ( loggedIn => {
+export const init = ( account => {
     return {
         type: 'INIT_ACCOUNT',
-        loggedIn
+        account
     }
 });
 

@@ -1,3 +1,5 @@
+@import '../variables';
+
 .cart-item {
     text-align: left;
     font-size: 1rem;
@@ -7,19 +9,18 @@
     margin: 0;
 }
 
-.cart-item .card-header {
+.cart-item .card-body {
     padding: 1rem;
 }
 
-.card-header .d-inline-block h5,
-.card-header .d-inline-block h6 {
+.card-body .d-inline-block h5,
+.card-body .d-inline-block h6 {
     display: inline;
 }
 
 .cart-item img {
     width: 75px;
     height: 75px;
-    vertical-align: -.5rem;
 }
 
 .cart-item aside {
@@ -29,10 +30,12 @@
 
 .item-total {
     display: inline-block;
-    margin-top: 10px;
+    margin-top: 5px;
+    color: $mainConfirm;
+    font-size: .8rem;
 }
 
-.card-header span ~ input {
+.card-body span ~ input {
     width: 4rem;
     background-color: inherit;
     border: none;
@@ -40,11 +43,15 @@
     cursor: pointer;
 }
 
-.card-header .item-total ~ span {
-    margin-left: 0;
+.card-body span ~ br ~ span {
+    font-size: .75rem;
 }
 
-.card-header h5 ~ p {
+.card-body .d-inline-block {
+    vertical-align: 0;
+}
+
+.card-body h5 ~ p {
     font-size: .75rem;
     color: grey;
 }
@@ -54,11 +61,18 @@
     position: absolute;
     right: 20px;
     top: 40px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none; 
+            user-select: none; 
 }
 
 .amount span {
     font-size: 3rem;
     vertical-align: -8px;
+    color: $mainHighlight;
+    cursor: pointer;
 }
 
 input[type=number]::-webkit-inner-spin-button,

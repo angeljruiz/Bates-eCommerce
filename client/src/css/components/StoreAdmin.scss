@@ -1,0 +1,16 @@
+.StoreAdmin {
+
+    > * {
+        padding: 0 1rem;
+    }
+
+    .jumbotron h1 {
+        font-size: 3.5rem;
+    }
+
+    > section {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+}

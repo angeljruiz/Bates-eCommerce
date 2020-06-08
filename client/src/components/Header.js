@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -23,7 +22,7 @@ class Header extends React.Component {
             <header>
                 <nav className='navbar fixed-top'>
                     <ul className='navbar-nav'>
-                        { this.showSidebar && <Sidebar loggedIn={this.props.loggedIn} hide={this.props.showSidebar(false).bind(this)}/>}
+                        { this.showSidebar && <Sidebar account={this.props.account} hide={this.props.showSidebar(false).bind(this)} logout={this.logOut.bind(this)} />}
                         <button onClick={this.props.showSidebar(!this.showSidebar).bind(this)} onMouseDown={ e => e.preventDefault() } className={'navbar-brand main-scheme ' + (this.showSidebar ? 'move-over' : '')}>Be</button>
                         <button 
                             className='nav-link ml-auto mr-3'
@@ -33,8 +32,9 @@ class Header extends React.Component {
                             >
                                 <FontAwesomeIcon icon='shopping-cart' />
                                 { this.props.totalItems > 0 && <span className='ml-2 total-items'>{this.props.totalItems}</span>}
-                                { (this.props.show && this.props.totalItems > 0) && <Cart products={this.props.products} /> }
                         </button>
+                        { this.props.show && <div className='underlay' onClick={this.props.toggleCart(false).bind(this)}/>}
+                        { (this.props.show && this.props.totalItems > 0) && <Cart products={this.props.products} totalItems={this.props.totalItems} hide={this.props.toggleCart(false).bind(this)} /> }
                     </ul>
                 </nav>
             </header>
@@ -45,10 +45,10 @@ class Header extends React.Component {
     }
 }
 
-const mapStateToProps = ({ cart: { show, totalItems, products }, account: {loggedIn}}) => {
+const mapStateToProps = ({ cart: { show, totalItems, products }, account: {account}}) => {
     return {
         show,
-        loggedIn,
+        account,
         totalItems,
         products
     }
@@ -64,9 +64,9 @@ const mapDispatchToProps = dispatch => {
         },
 
         showSidebar: show => {
-            return function(e) {                
+            return function(e) {                                
                 this.showSidebar = show;
-                if (show) dispatch(showCart(false, 1));             
+                if (show) dispatch(showCart(false));             
                 this.forceUpdate();
             }
         }

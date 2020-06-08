@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 import '../css/components/Product.scss';
 
-export default ({product, addProduct, dispatch}) => (
+function Product({product, addProduct, dispatch}) {return(
     <div className='Product'>
         <Link to={`/viewproduct/${product.sku}`} >
             <div className='card mb-3'>
@@ -19,5 +20,12 @@ export default ({product, addProduct, dispatch}) => (
             </div>
         </Link>
     </div>
-)
+)}
+
+Product.propTypes = {
+    product: PropTypes.object,
+    addProduct: PropTypes.func,
+    dispatch: PropTypes.func
+}
  
+export default Product;

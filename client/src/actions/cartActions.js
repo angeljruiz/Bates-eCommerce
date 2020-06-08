@@ -5,11 +5,18 @@ export const showCart = ( (show) => {
     }
 });
 
-export const setProductsCart = (product, amount) => {    
+export const addProductCart = (product, amount) => {    
     let t = { }
     t[product.sku] = {...product, amount}
     return {
-        type: 'ADD_PRODUCTS_CART',
+        type: 'ADD_PRODUCT_CART',
         product: t
+    }
+}
+
+export const removeProduct = (product) => {
+    return { 
+        type: 'REMOVE_PRODUCT',
+        product
     }
 }

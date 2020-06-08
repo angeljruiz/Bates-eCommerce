@@ -36,7 +36,11 @@ module.exports = (app, passport) => {
   });
 
   app.get('/isLogged', (req, res) => {
-    res.send(req.user !== undefined);
+    let u = { auth: res.locals.aauth };
+    Object.keys(req.user || {}).forEach( k => {
+      if( !['id', 'password'].includes(k)) u[k] = req.user[k];
+    });
+    res.send(JSON.stringify(u));
   });
 
 
