@@ -12,9 +12,8 @@ function Sidebar(props) {return(
     <aside className='Sidebar'>
         <hr  />
         <ul className='text-left'>
-            { props.account.auth && <NavLink><li onClick={props.hide} 
+            { props.account.auth && <NavLink to='/admin'><li onClick={props.hide} 
                 className='nav-link'
-                to='/admin'
                 key='admin'
                 >
                     {/* <FontAwesomeIcon icon={faUserLock} size='lg' /> */}
@@ -30,7 +29,8 @@ function Sidebar(props) {return(
                     <p>Admin</p>
             </li></NavLink> }
             <NavLink className='nav-link' to='/'><li onClick={props.hide} ><FontAwesomeIcon icon={faIgloo} size='lg' /><p>Home</p></li></NavLink>
-            { props.account && <a
+            { console.log(props.account)}
+            { props.account.auth && <a
                 className='nav-link'
                 onClick={props.logOut}
                 href={ process.env.REACT_APP_HOSTNAME + '/logout' }
@@ -39,7 +39,7 @@ function Sidebar(props) {return(
                     <FontAwesomeIcon icon='user-circle' size='lg' />
                     <p>Sign out</p>
             </li></a> }
-            { !props.account && <NavLink className='nav-link' activeClassName='active' to='/login' key='login'><li onClick={props.hide} >
+            { !props.account.auth && <NavLink className='nav-link' activeClassName='active' to='/login' key='login'><li onClick={props.hide} >
                 <FontAwesomeIcon icon='sign-in-alt' size='lg' />
                 <p>Sign in</p>
             </li></NavLink> }
