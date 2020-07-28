@@ -1,14 +1,9 @@
-@import '../../vendor/bootstrap.scss';
-@import './css/variables';
+@import "../../vendor/bootstrap.scss";
+@import "./css/variables";
 
 hr {
   border-top: 2px solid $mainHighlight;
   margin: 0 1rem;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
 }
 
 .App {
@@ -17,22 +12,21 @@ html {
   font-size: 1rem;
   white-space: nowrap;
 }
+.brand {
+  flex-grow: 1;
+}
 
 em {
   font-style: normal;
 }
 
-.noscroll {
-  overflow: hidden;
-}
-
 .googleLogin {
-  background-color: #DB4437;
+  background-color: #db4437;
   border: none;
 }
 
 .googleLogin:hover {
-  background-color: darken($color: #DB4437, $amount: 10%);
+  background-color: darken($color: #db4437, $amount: 10%);
 }
 
 .facebookLogin {

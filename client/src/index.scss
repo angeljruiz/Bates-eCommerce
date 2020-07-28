@@ -1,20 +1,16 @@
-@font-face {
-  font-family: 'Montserrat';
-  src: url('./vendor/Montserrat-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+html {
+  position: relative;
+  min-height: 100%;
 }
 
 body {
   margin: 0;
   font-size: 10px;
-  font-family: 'Montserrat', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
-  padding: 70px 0 0 0;
+  padding: 0 0 0 0;
+  height: 100%;
 }
