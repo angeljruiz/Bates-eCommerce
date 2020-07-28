@@ -25,7 +25,7 @@ function Product({ product, addProduct, dispatch }) {
   return (
     <Card>
       <CardActionArea
-        onClick={() => history.push(`/viewproduct/${product.sku}`)}
+      // onClick={() => history.push(`/viewproduct/${product.sku}`)}
       >
         <CardMedia
           className={classes.productImg}

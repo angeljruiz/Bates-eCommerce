@@ -11,13 +11,12 @@ import {
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-  footer: {
+  appBar: {
+    zIndex: 1299,
     position: "absolute",
     bottom: 0,
+    left: 0,
     top: "auto",
-  },
-  toolbar: {
-    justifyContent: "center",
   },
 
   buttonsContainer: {
@@ -33,9 +32,9 @@ const useStyles = makeStyles((theme) => ({
 export default () => {
   const classes = useStyles();
   return (
-    <AppBar position="static" className={classes.footer} component="footer">
-      <Toolbar className={classes.toolbar}>
-        <Typography variant="subtitle2">
+    <AppBar position="static" className={classes.appBar} component="footer">
+      <Toolbar>
+        <Typography>
           <strong>&copy; 2017 RB Implementations</strong>
         </Typography>
         <Box className={classes.buttonsContainer}>

@@ -11,6 +11,7 @@ import {
   Grid,
   Checkbox,
   makeStyles,
+  Paper,
 } from "@material-ui/core";
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -21,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    padding: theme.spacing(2),
   },
   avatar: {
     margin: theme.spacing(1),
@@ -38,8 +40,8 @@ const useStyles = makeStyles((theme) => ({
 export default function LoginDashboard() {
   const classes = useStyles();
   return (
-    <Container component="main" maxWidth="xs">
-      <div className={classes.paper}>
+    <Container maxWidth="xs">
+      <Paper className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -95,7 +97,7 @@ export default function LoginDashboard() {
             </Grid>
           </Grid>
         </form>
-      </div>
+      </Paper>
     </Container>
   );
 }

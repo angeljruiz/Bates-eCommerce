@@ -1,4 +1,4 @@
-const sidebarDefaultState = { show: true };
+const sidebarDefaultState = { show: false };
 
 export default (state = sidebarDefaultState, { type, show }) => {
   switch (type) {

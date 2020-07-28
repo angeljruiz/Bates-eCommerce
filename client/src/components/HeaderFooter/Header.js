@@ -1,26 +1,31 @@
 import React from "react";
-
+import { useSelector, useDispatch } from "react-redux";
 import {
   AppBar,
   Toolbar,
   IconButton,
   Badge,
-  Typography,
+  makeStyles,
 } from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 
 import { showCart } from "../../actions/cartActions";
 import { showSidebar } from "../../actions/sidebarActions";
-import { useSelector, useDispatch } from "react-redux";
+
+const useStyles = makeStyles((theme) => ({
+  appBar: {
+    zIndex: 9999,
+  },
+}));
 
 function Header() {
   const showSB = useSelector((state) => state.sidebar.show);
   const showC = useSelector((state) => state.cart.show);
   const totalItems = useSelector((state) => state.cart.totalItems);
+  const classes = useStyles();
   const dispatch = useDispatch();
   return (
-    <AppBar position="fixed">
+    <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
         <IconButton
           edge="start"
@@ -28,7 +33,7 @@ function Header() {
           onClick={() => dispatch(showSidebar(!showSB))}
           aria-label="menu"
         >
-          <Typography variant="subtitle1">BE</Typography>
+          <p className="brand">BE</p>
         </IconButton>
         <div className="brand" />
         <IconButton

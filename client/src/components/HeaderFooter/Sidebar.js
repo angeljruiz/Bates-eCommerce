@@ -1,98 +1,179 @@
 import React from "react";
-
-import { NavLink, useHistory } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import {
-  Paper,
   List,
   makeStyles,
   ListItem,
+  ListItemText,
+  Hidden,
+  Drawer,
+  useTheme,
   ListItemAvatar,
   Avatar,
-  ListItemText,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
 } from "@material-ui/core";
-
 import HomeIcon from "@material-ui/icons/Home";
 import LockIcon from "@material-ui/icons/Lock";
+import MenuIcon from "@material-ui/icons/Menu";
 import { faUserPlus, faTicketAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const useStyles = makeStyles((theme) => {
-  let bigger = window.innerWidth > theme.breakpoints.values.sm ? true : false;
-  let toolbarHeight =
-    theme.mixins.toolbar[bigger ? "@media (min-width:600px)" : "minHeight"];
-  if (bigger) toolbarHeight = toolbarHeight.minHeight;
-  return {
-    sidebar: {
-      paddingTop: toolbarHeight,
-      paddingBottom: toolbarHeight,
-      marginRight: theme.spacing(1),
-    },
-
-    avatar: {
-      width: 40,
-      height: 40,
-    },
-  };
-});
+import { showSidebar } from "../../actions/sidebarActions";
+import dStyle from "../../style/style";
 
 function ListItemButton(props) {
   return <ListItem button component="button" {...props} />;
 }
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    zIndex: 900,
+  },
+  drawer: {
+    [theme.breakpoints.up("sm")]: {
+      width: dStyle.drawerWidth,
+      flexShrink: 0,
+    },
+  },
+  appBar: {
+    [theme.breakpoints.up("sm")]: {
+      width: `calc(100% - ${dStyle.drawerWidth}px)`,
+      marginLeft: dStyle.drawerWidth,
+    },
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
+    },
+  },
+  toolbar: theme.mixins.toolbar,
+  drawerPaper: {
+    width: dStyle.drawerWidth,
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+}));
+
 function Sidebar() {
+  const classes = useStyles();
+  const theme = useTheme();
   const history = useHistory();
   const show = useSelector((state) => state.sidebar.show);
-  const auth = useSelector((state) => state.account.auth);
-  const classes = useStyles();
+  const dispatch = useDispatch();
 
-  if (!show) return <></>;
+  const handleDrawerToggle = () => {
+    dispatch(showSidebar(!show));
+  };
 
-  return (
-    <Paper className={classes.sidebar} elevation={3}>
+  const followLink = (link) => {
+    dispatch(showSidebar(false));
+    history.push(link);
+  };
+
+  const drawer = (
+    <>
+      <div className={classes.toolbar} />
       <List component="nav">
-        <ListItemButton selected onClick={() => history.push("/")}>
+        <ListItemButton selected onClick={() => followLink("/")}>
           <ListItemAvatar>
-            <Avatar className={classes.avatar}>
+            <Avatar>
               <HomeIcon />
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary="Home" />
         </ListItemButton>
-        <ListItemButton onClick={() => history.push("/storeadmin")}>
+        <ListItemButton onClick={() => followLink("/storeadmin")}>
           <ListItemAvatar>
-            <Avatar className={classes.avatar}>
+            <Avatar>
               <LockIcon />
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary="Admin" />
         </ListItemButton>
-        <ListItemButton onClick={() => history.push("/login")}>
+        <ListItemButton onClick={() => followLink("/login")}>
           <ListItemAvatar>
-            <Avatar className={classes.avatar}>
+            <Avatar>
               <FontAwesomeIcon icon="sign-in-alt" />
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary="Login" />
         </ListItemButton>
-        <ListItemButton onClick={() => history.push("/signup")}>
+        <ListItemButton onClick={() => followLink("/signup")}>
           <ListItemAvatar>
-            <Avatar className={classes.avatar}>
+            <Avatar>
               <FontAwesomeIcon icon={faUserPlus} />
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary="Sign up" />
         </ListItemButton>
-        <ListItemButton onClick={() => history.push("/support")}>
+        <ListItemButton onClick={() => followLink("/support")}>
           <ListItemAvatar>
-            <Avatar className={classes.avatar}>
+            <Avatar>
               <FontAwesomeIcon icon={faTicketAlt} />
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary="Support" />
         </ListItemButton>
       </List>
-    </Paper>
+    </>
+  );
+
+  return (
+    <div className={classes.root}>
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            className={classes.menuButton}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap>
+            Responsive drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <nav className={classes.drawer} aria-label="mailbox folders">
+        <Hidden smUp>
+          <Drawer
+            variant="temporary"
+            anchor={theme.direction === "rtl" ? "right" : "left"}
+            open={show}
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            ModalProps={{
+              keepMounted: true,
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+        <Hidden xsDown>
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+      </nav>
+    </div>
   );
 }
 

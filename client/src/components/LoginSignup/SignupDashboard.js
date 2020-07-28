@@ -10,6 +10,7 @@ import {
   Checkbox,
   Button,
   makeStyles,
+  Paper,
 } from "@material-ui/core";
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -20,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    padding: theme.spacing(2),
   },
   avatar: {
     margin: theme.spacing(1),
@@ -38,8 +40,8 @@ export default function SignupDashboard() {
   const classes = useStyles();
 
   return (
-    <Container component="main" maxWidth="xs">
-      <div className={classes.paper}>
+    <Container maxWidth="xs">
+      <Paper className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -97,7 +99,16 @@ export default function SignupDashboard() {
             <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I accept the terms and conditions."
+                label={
+                  <>
+                    <Typography style={{ display: "inline" }}>
+                      I agree to the
+                    </Typography>
+                    <Button href="#" color="primary">
+                      terms of use.
+                    </Button>
+                  </>
+                }
               />
             </Grid>
           </Grid>
@@ -118,7 +129,7 @@ export default function SignupDashboard() {
             </Grid>
           </Grid>
         </form>
-      </div>
+      </Paper>
     </Container>
   );
 }

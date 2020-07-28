@@ -8,10 +8,6 @@ import { showCart } from "../../actions/cartActions";
 import CartItem from "./CartItem";
 
 const useStyles = makeStyles((theme) => {
-  let bigger = window.innerWidth > theme.breakpoints.values.sm ? true : false;
-  let toolbarHeight =
-    theme.mixins.toolbar[bigger ? "@media (min-width:600px)" : "minHeight"];
-  if (bigger) toolbarHeight = toolbarHeight.minHeight;
   return {
     modal: {
       overflow: "scroll",
@@ -19,9 +15,11 @@ const useStyles = makeStyles((theme) => {
     modalBox: {
       paddingBottom: theme.spacing(2),
       position: "absolute",
-      top: toolbarHeight,
+      top: theme.spacing(2),
       right: 0,
     },
+
+    toolbar: theme.mixins.toolbar,
   };
 });
 
@@ -54,6 +52,7 @@ function Cart() {
         onEscapeKeyDown={hideCart}
       >
         <Box className={classes.modalBox}>
+          <div className={classes.toolbar} />
           {Object.keys(products || {}).map((k, i) => (
             <CartItem sku={products[k].sku} key={i} />
           ))}
