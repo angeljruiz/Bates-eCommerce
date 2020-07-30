@@ -21,3 +21,15 @@ body {
   font-size: "1.25rem";
   margin: 0;
 }
+
+.paypal {
+  &-logo {
+    i:first-child {
+      color: #253b80;
+    }
+
+    i:last-child {
+      color: #179bd7;
+    }
+  }
+}

@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => {
   return {
     toolbar: theme.mixins.toolbar,
     main: {
-      // flex: 1,
+      marginTop: theme.spacing(2),
       [theme.breakpoints.up("sm")]: {
         marginLeft: dStyles.drawerWidth,
       },

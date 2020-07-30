@@ -23,6 +23,7 @@ import { faUserPlus, faTicketAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { showSidebar } from "../../actions/sidebarActions";
+import { showCart } from "../../actions/cartActions";
 import dStyle from "../../style/style";
 
 function ListItemButton(props) {
@@ -63,10 +64,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Sidebar() {
-  const classes = useStyles();
+  const show = useSelector((state) => state.sidebar.show);
+  const cart = useSelector((state) => state.cart.show);
   const theme = useTheme();
   const history = useHistory();
-  const show = useSelector((state) => state.sidebar.show);
+  const classes = useStyles();
   const dispatch = useDispatch();
 
   const handleDrawerToggle = () => {
@@ -77,6 +79,10 @@ function Sidebar() {
     dispatch(showSidebar(false));
     history.push(link);
   };
+
+  if (cart && show) {
+    dispatch(showCart(false));
+  }
 
   const drawer = (
     <>

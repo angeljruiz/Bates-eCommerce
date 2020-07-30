@@ -1,11 +1,11 @@
 import React from "react";
-// import { useHistory } from "react-router-dom";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { Modal, makeStyles, Box, Button } from "@material-ui/core";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 
 import { showCart } from "../../actions/cartActions";
 import CartItem from "./CartItem";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -24,23 +24,28 @@ const useStyles = makeStyles((theme) => {
 });
 
 function Cart() {
-  // let history = useHistory();
-  let classes = useStyles();
-  let { show, products, totalItems } = useSelector(
+  const { show, products, totalItems } = useSelector(
     (state) => state.cart,
     shallowEqual
   );
-  let dispatch = useDispatch();
+  const history = useHistory();
+  const classes = useStyles();
+  const dispatch = useDispatch();
 
   if (!show) return <></>;
+
+  const hideCart = () => {
+    dispatch(showCart(false));
+  };
+
+  const gotoCheckout = () => {
+    dispatch(showCart(false));
+    history.push("/checkout");
+  };
 
   if (totalItems === 0) {
     hideCart();
     return <></>;
-  }
-
-  function hideCart() {
-    dispatch(showCart(false));
   }
 
   return (
@@ -60,6 +65,7 @@ function Cart() {
             variant="contained"
             color="primary"
             startIcon={<ShoppingCartIcon />}
+            onClick={gotoCheckout}
             fullWidth
           >
             Checkout

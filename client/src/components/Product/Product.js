@@ -1,6 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { useHistory } from "react-router-dom";
 
 import {
   Button,
@@ -12,18 +10,29 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
 
-const useStyles = makeStyles({
+import { addProductCart } from "../../actions/cartActions";
+
+const useStyles = makeStyles((theme) => ({
+  card: {
+    margin: theme.spacing(0, 2),
+  },
   productImg: {
     height: "250px",
   },
-});
+}));
 
-function Product({ product, addProduct, dispatch }) {
-  const history = useHistory();
+function Product({ sku }) {
+  const product = useSelector(
+    (state) => state.products.find((p) => p.sku === sku),
+    shallowEqual
+  );
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   return (
-    <Card>
+    <Card className={classes.card}>
       <CardActionArea
       // onClick={() => history.push(`/viewproduct/${product.sku}`)}
       >
@@ -45,7 +54,7 @@ function Product({ product, addProduct, dispatch }) {
         <Button
           color="primary"
           onClick={() => {
-            dispatch(addProduct(product, 1));
+            dispatch(addProductCart(product, 1));
           }}
         >
           Add to cart
@@ -54,11 +63,5 @@ function Product({ product, addProduct, dispatch }) {
     </Card>
   );
 }
-
-Product.propTypes = {
-  product: PropTypes.object,
-  addProduct: PropTypes.func,
-  dispatch: PropTypes.func,
-};
 
 export default Product;

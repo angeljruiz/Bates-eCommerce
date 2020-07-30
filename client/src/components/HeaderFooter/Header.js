@@ -6,11 +6,13 @@ import {
   IconButton,
   Badge,
   makeStyles,
+  withWidth,
 } from "@material-ui/core";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 
 import { showCart } from "../../actions/cartActions";
 import { showSidebar } from "../../actions/sidebarActions";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -18,19 +20,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Header() {
+function Header({ width }) {
   const showSB = useSelector((state) => state.sidebar.show);
   const showC = useSelector((state) => state.cart.show);
   const totalItems = useSelector((state) => state.cart.totalItems);
+  const history = useHistory();
   const classes = useStyles();
   const dispatch = useDispatch();
+
+  const handleBrandClick = () => {
+    if (width === "xs") {
+      dispatch(showSidebar(!showSB));
+    } else {
+      if (showC) dispatch(showCart(false));
+      history.push("/");
+    }
+  };
+
+  const handleCartClick = () => {
+    if (showSB) dispatch(showSidebar(false));
+    dispatch(showCart(!showC));
+  };
+
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
         <IconButton
           edge="start"
           color="inherit"
-          onClick={() => dispatch(showSidebar(!showSB))}
+          onClick={handleBrandClick}
           aria-label="menu"
         >
           <p className="brand">BE</p>
@@ -39,7 +57,7 @@ function Header() {
         <IconButton
           color="inherit"
           edge="end"
-          onClick={() => dispatch(showCart(!showC))}
+          onClick={handleCartClick}
           aria-label="menu"
         >
           <Badge badgeContent={totalItems} color="secondary">
@@ -51,4 +69,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default withWidth()(Header);

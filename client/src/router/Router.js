@@ -27,13 +27,7 @@ function Router(props) {
           />
           <Route path="/admin" exact component={SuperAdmin} />
           <Route path="/storeadmin" exact component={StoreAdmin} />
-          <Route
-            path="/checkout"
-            exact
-            component={Checkout}
-            cart={props.cart}
-            products={props.products}
-          />
+          <Route path="/checkout" exact component={Checkout} />
           <Route path="/login" exact component={LoginDashboard} />
           <Route path="/signup" exact component={SignupDashboard} />
           <Route
