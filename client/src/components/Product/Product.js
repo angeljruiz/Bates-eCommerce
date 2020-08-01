@@ -34,7 +34,8 @@ function Product({ sku }) {
   return (
     <Card className={classes.card}>
       <CardActionArea
-      // onClick={() => history.push(`/viewproduct/${product.sku}`)}
+        disableRipple
+        // onClick={() => history.push(`/viewproduct/${product.sku}`)}
       >
         <CardMedia
           className={classes.productImg}

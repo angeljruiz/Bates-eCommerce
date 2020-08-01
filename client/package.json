@@ -27,7 +27,7 @@
     "sass": "^1.26.5"
   },
   "scripts": {
-    "start": "REACT_APP_HOSTNAME=http://bates-ecommerce.herokuapp.com react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

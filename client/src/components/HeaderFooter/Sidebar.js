@@ -96,14 +96,14 @@ function Sidebar() {
           </ListItemAvatar>
           <ListItemText primary="Home" />
         </ListItemButton>
-        <ListItemButton onClick={() => followLink("/storeadmin")}>
+        {/* <ListItemButton onClick={() => followLink("/storeadmin")}>
           <ListItemAvatar>
             <Avatar>
               <LockIcon />
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary="Admin" />
-        </ListItemButton>
+        </ListItemButton> */}
         <ListItemButton onClick={() => followLink("/login")}>
           <ListItemAvatar>
             <Avatar>
@@ -120,14 +120,14 @@ function Sidebar() {
           </ListItemAvatar>
           <ListItemText primary="Sign up" />
         </ListItemButton>
-        <ListItemButton onClick={() => followLink("/support")}>
+        {/* <ListItemButton onClick={() => followLink("/support")}>
           <ListItemAvatar>
             <Avatar>
               <FontAwesomeIcon icon={faTicketAlt} />
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary="Support" />
-        </ListItemButton>
+        </ListItemButton> */}
       </List>
     </>
   );
