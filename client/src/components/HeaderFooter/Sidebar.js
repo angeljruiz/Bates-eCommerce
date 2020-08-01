@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   List,
@@ -11,15 +11,11 @@ import {
   useTheme,
   ListItemAvatar,
   Avatar,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
-import LockIcon from "@material-ui/icons/Lock";
+// import LockIcon from "@material-ui/icons/Lock";
 import MenuIcon from "@material-ui/icons/Menu";
-import { faUserPlus, faTicketAlt } from "@fortawesome/free-solid-svg-icons";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { showSidebar } from "../../actions/sidebarActions";
@@ -66,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 function Sidebar() {
   const show = useSelector((state) => state.sidebar.show);
   const cart = useSelector((state) => state.cart.show);
+  const location = useLocation();
   const theme = useTheme();
   const history = useHistory();
   const classes = useStyles();
@@ -88,7 +85,10 @@ function Sidebar() {
     <>
       <div className={classes.toolbar} />
       <List component="nav">
-        <ListItemButton selected onClick={() => followLink("/")}>
+        <ListItemButton
+          selected={location.pathname === "/"}
+          onClick={() => followLink("/")}
+        >
           <ListItemAvatar>
             <Avatar>
               <HomeIcon />
@@ -104,7 +104,10 @@ function Sidebar() {
           </ListItemAvatar>
           <ListItemText primary="Admin" />
         </ListItemButton> */}
-        <ListItemButton onClick={() => followLink("/login")}>
+        <ListItemButton
+          selected={location.pathname === "/login"}
+          onClick={() => followLink("/login")}
+        >
           <ListItemAvatar>
             <Avatar>
               <FontAwesomeIcon icon="sign-in-alt" />
@@ -112,7 +115,10 @@ function Sidebar() {
           </ListItemAvatar>
           <ListItemText primary="Login" />
         </ListItemButton>
-        <ListItemButton onClick={() => followLink("/signup")}>
+        <ListItemButton
+          selected={location.pathname === "/signup"}
+          onClick={() => followLink("/signup")}
+        >
           <ListItemAvatar>
             <Avatar>
               <FontAwesomeIcon icon={faUserPlus} />
@@ -134,22 +140,6 @@ function Sidebar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            className={classes.menuButton}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            Responsive drawer
-          </Typography>
-        </Toolbar>
-      </AppBar>
       <nav className={classes.drawer} aria-label="mailbox folders">
         <Hidden smUp>
           <Drawer
