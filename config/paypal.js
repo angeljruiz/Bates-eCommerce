@@ -53,7 +53,7 @@ class Paypal {
     order = new Order(order);
     await order.save();
   }
-  createPayment(cart) {
+  createPayment(cart, host) {
     return new Promise((resolve, reject) => {
       let create_payment_json = {
         intent: "sale",
@@ -61,8 +61,8 @@ class Paypal {
           payment_method: "paypal",
         },
         redirect_urls: {
-          return_url: "http://localhost/execute_payment",
-          cancel_url: "http://localhost/cancel_payment",
+          return_url: `http://${host}/execute_payment`,
+          cancel_url: `http://${host}/cancel_payment`,
         },
         transactions: [
           {

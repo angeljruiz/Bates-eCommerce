@@ -21,6 +21,7 @@ module.exports = (app, passport) => {
   Locker.removeLocks();
   Mall.loadMall(app);
   app.use((req, res, next) => {
+    console.log(req.get("host"));
     res.locals.showTests =
       app.get("env") !== "production" && req.query.test === "1";
     if (!req.session.cart) {
@@ -162,7 +163,7 @@ module.exports = (app, passport) => {
   app.post("/create_payment", async (req, res) => {
     let cart = JSON.parse(req.body.cart);
     let locked = await Locker.lockResources(cart, req.sessionID);
-    let payment = await Paypal.createPayment(cart);
+    let payment = await Paypal.createPayment(cart, req.get("host"));
 
     if (locked) {
       for (let i = 0; i < payment.links.length; i++) {
