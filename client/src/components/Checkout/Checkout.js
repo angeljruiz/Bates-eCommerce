@@ -11,6 +11,7 @@ import PaymentForm from "./PaymentForm";
 import Review from "./Review";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -67,7 +68,9 @@ function getStepContent(step) {
 export default function Checkout() {
   const cart = useSelector((state) => state.cart.products);
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(0);
+  const { id } = useParams();
+  const [activeStep, setActiveStep] = React.useState(id ? steps.length : 0);
+  console.log(activeStep);
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -92,15 +95,6 @@ export default function Checkout() {
     t.shipping = 0;
     document.querySelector("#cart").value = JSON.stringify(t);
     document.querySelector("#paypalForm").submit();
-    // fetch("/create_payment", {
-    //   method: "POST",
-    //   body: JSON.stringify(t),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // }).then((data) => {
-    //   console.log(data);
-    // });
   };
 
   return (
@@ -128,7 +122,7 @@ export default function Checkout() {
                   Thank you for your order.
                 </Typography>
                 <Typography variant="subtitle1">
-                  Your order number is #2001539. We have emailed your order
+                  Your order number is #{id}. We have emailed your order
                   confirmation, and will send you an update when your order has
                   shipped.
                 </Typography>

@@ -163,9 +163,13 @@ module.exports = (app, passport) => {
     let cart = JSON.parse(req.body.cart);
     let locked = await Locker.lockResources(cart, req.sessionID);
     let payment = await Paypal.createPayment(cart);
+
     if (locked) {
       for (let i = 0; i < payment.links.length; i++) {
         if (payment.links[i].rel === "approval_url") {
+          cart.cid = payment.id;
+          cart = new Cart(cart);
+          await cart.save();
           return res.redirect(payment.links[i].href);
         }
       }
@@ -180,16 +184,12 @@ module.exports = (app, passport) => {
   });
 
   app.get("/execute_payment", async (req, res) => {
-    await Paypal.executePayment(
-      req.query.PayerID,
-      req.query.paymentId,
-      req.session.cart
-    );
+    await Paypal.executePayment(req.query.PayerID, req.query.paymentId);
     Locker.removeSessionLocks(req.sessionID);
     req.session.cart = 0;
     pager.update(req, req.session.cart);
     req.flash("thankyou", "Thank you! We'll be shipping your order soon");
-    res.redirect("/thankyou?oid=" + req.query.paymentId);
+    res.redirect("/checkout/" + req.query.paymentId.split("-")[1]);
   });
 
   app.get("/cancel_payment", (req, res) => {

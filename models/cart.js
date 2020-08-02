@@ -1,5 +1,5 @@
-let Persistent = require('../config/persistent.js');
-let Product = require('./product.js');
+let Persistent = require("../config/persistent.js");
+let Product = require("./product.js");
 
 class Cart extends Persistent {
   constructor(input) {
@@ -12,22 +12,23 @@ class Cart extends Persistent {
       this.items = input.items;
       this.cid = input.cid;
     }
-  return this;
+    return this;
   }
 
   static addItem(cart, item, amount) {
     item.quantity = amount;
-    let itemIndex = cart.items.findIndex( i => i.sku === item.sku);
-    if(itemIndex > -1) cart.items[itemIndex].quantity += 1
+    let itemIndex = cart.items.findIndex((i) => i.sku === item.sku);
+    if (itemIndex > -1) cart.items[itemIndex].quantity += 1;
     else cart.items.push(item);
     Cart.getTotal(cart);
   }
 
   static removeItems(cart, items) {
-    items.forEach( item => {
-      let itemIndex = cart.items.findIndex( i => i.sku === item.sku);
-      if(itemIndex > -1) {
-        if(cart.items[itemIndex].quantity - item.quantity <= 0) cart.items = cart.items.filter( i => i.sku !== item.sku)
+    items.forEach((item) => {
+      let itemIndex = cart.items.findIndex((i) => i.sku === item.sku);
+      if (itemIndex > -1) {
+        if (cart.items[itemIndex].quantity - item.quantity <= 0)
+          cart.items = cart.items.filter((i) => i.sku !== item.sku);
         else cart.items[itemIndex].quantity -= item.quantity;
       }
     });
@@ -35,28 +36,39 @@ class Cart extends Persistent {
   }
 
   static getTotal(cart) {
-    let total = cart.items.reduce( (sum, item) => sum + (item.price * item.quantity), 0);
-    cart.totalItems = cart.items.reduce( (sum, item) => sum + item.quantity, 0);
+    let total = cart.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    cart.totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
     cart.subtotal = total.toFixed(2);
     cart.salestax = 0;
-    cart.shipping = cart.subtotal > 0? 6.99 : 0.00;
-    cart.total = (parseFloat(cart.subtotal) + parseFloat(cart.salestax) + cart.shipping).toFixed(2);
+    cart.shipping = cart.subtotal > 0 ? 0 : 0.0;
+    cart.total = (
+      parseFloat(cart.subtotal) +
+      parseFloat(cart.salestax) +
+      cart.shipping
+    ).toFixed(2);
   }
 
   static retrieve(pk) {
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       let t = await super.retrieve(pk);
       t.items = JSON.parse(t.items);
       resolve(t);
     });
   }
 
-  publicKey() { return ['cid', this.cid]; }
-
-  async save(fn) {
-    return await super.save({items:JSON.stringify(this.items), cid: this.cid});
+  publicKey() {
+    return ["cid", this.cid];
   }
 
+  async save() {
+    return await super.save({
+      items: JSON.stringify(this.items),
+      cid: this.cid,
+    });
+  }
 }
 
 module.exports = Cart;

@@ -5,7 +5,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { useSelector, shallowEqual } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 // const addresses = [
 //   "1 Material-UI Drive",
@@ -35,10 +35,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Review() {
   const products = useSelector((state) => state.cart.products, shallowEqual);
+  const { id } = useParams();
   const history = useHistory();
   const classes = useStyles();
 
-  if (Object.keys(products).length === 0) history.push("/");
+  if (Object.keys(products).length === 0 && !id) history.push("/");
 
   return (
     <>

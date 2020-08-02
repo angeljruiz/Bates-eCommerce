@@ -26,7 +26,7 @@ class Paypal {
     return list;
   }
 
-  static async saveOrder(payment, cart) {
+  static async saveOrder(payment) {
     let fn, ln, name;
     let shipping = payment.transactions[0].item_list.shipping_address;
     name = shipping.recipient_name.split(" ");
@@ -51,11 +51,7 @@ class Paypal {
       postal_code: shipping.postal_code,
     };
     order = new Order(order);
-    console.log("saving payment @@@@@@@@@");
-    if (await order.save()) {
-      cart.cid = order.cid;
-      return await cart.save();
-    }
+    await order.save();
   }
   createPayment(cart) {
     return new Promise((resolve, reject) => {
@@ -89,7 +85,9 @@ class Paypal {
       });
     });
   }
-  executePayment(payerId, paymentId, cart) {
+  async executePayment(payerId, paymentId) {
+    let cart = await Cart.retrieve(["cid", paymentId]);
+    Cart.getTotal(cart);
     return new Promise((resolve, reject) => {
       const payment_json = {
         payer_id: payerId,
