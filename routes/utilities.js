@@ -21,7 +21,6 @@ module.exports = (app, passport) => {
   Locker.removeLocks();
   Mall.loadMall(app);
   app.use((req, res, next) => {
-    console.log(req.get("host"));
     res.locals.showTests =
       app.get("env") !== "production" && req.query.test === "1";
     if (!req.session.cart) {
@@ -37,6 +36,10 @@ module.exports = (app, passport) => {
     );
     if (!products) products = [];
     res.send(JSON.stringify(products));
+  });
+
+  app.get("/orders", async (req, res) => {
+    res.send(JSON.stringify(await Order.retrieve()));
   });
 
   app.get("/isLogged", (req, res) => {
@@ -146,18 +149,25 @@ module.exports = (app, passport) => {
     res.redirect("back");
   });
 
-  app.post("/addproduct", async (req, res) => {
-    if (!res.locals.aauth) return res.redirect("back");
+  app.post("/product", async (req, res) => {
+    // if (!res.locals.aauth) return res.redirect("back");
     let c = new Product(req.body);
     await c.save(false, false);
     res.redirect("/admin");
   });
 
-  app.post("/editproduct", async (req, res) => {
-    if (!res.locals.aauth) return res.redirect("back");
+  app.patch("/product", async (req, res) => {
+    // if (!res.locals.aauth) return res.redirect("back");
     let c = new Product(req.body);
     await c.save(false, c.publicKey());
     res.redirect("back");
+  });
+
+  app.delete("/product", async (req, res) => {
+    // if (!res.locals.aauth) return res.redirect("/");
+    let t = new Product({ sku: req.body.sku });
+    await t.delete();
+    res.redirect("/admin");
   });
 
   app.post("/create_payment", async (req, res) => {
@@ -214,13 +224,6 @@ module.exports = (app, passport) => {
       });
     }
   );
-
-  app.get("/deleteproduct=:sku", async (req, res) => {
-    if (!res.locals.aauth) return res.redirect("/");
-    let t = new Product({ sku: req.params.sku });
-    await t.delete();
-    res.redirect("/admin");
-  });
 
   app.post(
     "/login",
