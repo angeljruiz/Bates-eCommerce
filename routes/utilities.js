@@ -30,14 +30,6 @@ module.exports = (app, passport) => {
     next();
   });
 
-  app.get("/storeLanding", async (req, res) => {
-    let products = await Product.customQuery(
-      "SELECT * FROM product ORDER BY quantity DESC"
-    );
-    if (!products) products = [];
-    res.send(JSON.stringify(products));
-  });
-
   app.get("/orders", async (req, res) => {
     res.send(JSON.stringify(await Order.retrieve()));
   });
@@ -149,25 +141,46 @@ module.exports = (app, passport) => {
     res.redirect("back");
   });
 
+  app.get("/product", async (req, res) => {
+    let products = await Product.customQuery(
+      "SELECT * FROM product ORDER BY quantity DESC"
+    );
+    if (!products) products = [];
+    res.json(products);
+  });
+
   app.post("/product", async (req, res) => {
     // if (!res.locals.aauth) return res.redirect("back");
     let c = new Product(req.body);
     await c.save(false, false);
-    res.redirect("/admin");
+    res.send();
   });
 
   app.patch("/product", async (req, res) => {
     // if (!res.locals.aauth) return res.redirect("back");
     let c = new Product(req.body);
     await c.save(false, c.publicKey());
-    res.redirect("back");
+    res.send();
   });
 
-  app.delete("/product", async (req, res) => {
+  app.delete("/product/:id", async (req, res) => {
     // if (!res.locals.aauth) return res.redirect("/");
-    let t = new Product({ sku: req.body.sku });
+    let t = new Product({ sku: req.params.id });
     await t.delete();
-    res.redirect("/admin");
+    res.send();
+  });
+
+  app.get("/product/:id/image", async (req, res) => {
+    let images = await Image.retrieve(
+      [
+        "sku",
+        req.params.id,
+        "ORDER BY num" + (req.query.limit ? ` LIMIT ${req.query.limit}` : ""),
+      ],
+      ["name"]
+    );
+    if (!images) return res.send();
+    res.json(Array.isArray(images) ? images.map((i) => i.name) : images.name);
   });
 
   app.post("/create_payment", async (req, res) => {
