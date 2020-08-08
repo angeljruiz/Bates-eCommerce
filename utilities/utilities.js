@@ -1,7 +1,6 @@
 var path = require("path");
 var fs = require("fs");
 var mw = require("../config/middleware");
-var pager = require("../config/pager");
 
 var User = require("../models/user");
 var Image = require("../models/image");
@@ -26,12 +25,28 @@ module.exports = (app, passport) => {
     if (!req.session.cart) {
       req.session.cart = new Cart();
     }
-    pager.update(req);
+
     next();
   });
 
-  app.get("/orders", async (req, res) => {
+  app.get("/order", async (req, res) => {
     res.send(JSON.stringify(await Order.retrieve()));
+  });
+
+  app.delete("/order", async (req, res) => {
+    if (res.locals.aauth) {
+      let order = new Order({ cid: req.query.cid });
+      await order.delete();
+      res.redirect("/admin");
+    }
+  });
+
+  app.patch("/order", async (req, res) => {
+    if (!res.locals.aauth) return res.redirect("/");
+    let order = await Order.retrieve(["cid", req.query.cid]);
+    order.shipped = req.query.tracking;
+    await order.save(false, order.publicKey());
+    res.send("");
   });
 
   app.get("/isLogged", (req, res) => {
@@ -41,62 +56,6 @@ module.exports = (app, passport) => {
     });
     res.send(JSON.stringify(u));
   });
-
-  app.get("/addtocart", async (req, res) => {
-    if (!req.query.sku || !req.query.amount) return res.redirect("back");
-    let product = await Product.retrieve(
-      ["sku", req.query.sku],
-      ["name", "sku", "price", "description"]
-    );
-    Cart.addItem(req.session.cart, product, parseInt(req.query.amount));
-    res.redirect("/");
-  });
-
-  app.get("/remove/:sku/:amount", async (req, res) => {
-    await Cart.removeItems(req.session.cart, [
-      { sku: req.params.sku, quantity: req.params.amount },
-    ]);
-    req.session.save();
-    Locker.removeIDLock(req.sessionID, req.params.sku);
-    res.redirect("back");
-  });
-
-  app.get("/deleteorder", async (req, res) => {
-    if (res.locals.aauth) {
-      let order = new Order({ cid: req.query.cid });
-      await order.delete();
-      res.redirect("/admin");
-    }
-  });
-
-  app.get("/setshipping", async (req, res) => {
-    if (!res.locals.aauth) return res.redirect("/");
-    let order = await Order.retrieve(["cid", req.query.cid]);
-    order.shipped = req.query.tracking;
-    delete order.cart;
-    await order.save(false, order.publicKey());
-    res.redirect("back");
-  });
-
-  app.post(
-    "/file_upload",
-    upload.single("file"),
-    mw.resizeImages,
-    async (req, res) => {
-      if (!res.locals.aauth || !req.query.sku) return res.redirect("back");
-      fs.readFile(req.file.path, "hex", async function (err, data) {
-        data = "\\x" + data;
-        let image = new Image({
-          sku: req.query.sku,
-          name: req.file.filename,
-          data: data,
-          type: req.file.originalname.split(".")[1].toLowerCase(),
-        });
-        await image.save(["sku", "name", "type", "data"]);
-        res.redirect("back");
-      });
-    }
-  );
 
   app.get("/uploads/:name", async (req, res) => {
     if (!fs.existsSync(req.path)) {
@@ -112,14 +71,6 @@ module.exports = (app, passport) => {
     }
   });
 
-  app.get("/delete_image", async (req, res) => {
-    if (!res.locals.aauth || !req.query.name) return res.redirect("back");
-    let image = new Image({ name: req.query.name });
-    fs.unlink("./uploads/" + req.query.name, () => {});
-    await image.delete();
-    res.redirect("back");
-  });
-
   app.get("/main", async (req, res) => {
     if (!req.query.sku) return res.send("");
     let image = await Image.retrieve(
@@ -128,17 +79,6 @@ module.exports = (app, passport) => {
     );
     if (!image) return res.send("");
     res.redirect("/uploads/" + image.name);
-  });
-
-  app.get("/rename", async (req, res) => {
-    if (!res.locals.aauth) return res.redirect("/");
-    let image = new Image({
-      name: req.query.name,
-      num: req.query.rename,
-      edit: true,
-    });
-    await image.save(["num"], image.publicKey());
-    res.redirect("back");
   });
 
   app.get("/product", async (req, res) => {
@@ -150,24 +90,24 @@ module.exports = (app, passport) => {
   });
 
   app.post("/product", async (req, res) => {
-    // if (!res.locals.aauth) return res.redirect("back");
+    // if (!res.locals.aauth) return res.send('');
     let c = new Product(req.body);
     await c.save(false, false);
-    res.send();
+    res.send("");
   });
 
   app.patch("/product", async (req, res) => {
-    // if (!res.locals.aauth) return res.redirect("back");
+    // if (!res.locals.aauth) return res.send('');
     let c = new Product(req.body);
     await c.save(false, c.publicKey());
-    res.send();
+    res.send("");
   });
 
   app.delete("/product/:id", async (req, res) => {
     // if (!res.locals.aauth) return res.redirect("/");
     let t = new Product({ sku: req.params.id });
     await t.delete();
-    res.send();
+    res.send("");
   });
 
   app.get("/product/:id/image", async (req, res) => {
@@ -177,10 +117,49 @@ module.exports = (app, passport) => {
         req.params.id,
         "ORDER BY num" + (req.query.limit ? ` LIMIT ${req.query.limit}` : ""),
       ],
-      ["name"]
+      ["name", "data"]
     );
-    if (!images) return res.send();
-    res.json(Array.isArray(images) ? images.map((i) => i.name) : images.name);
+    if (!images) return res.json([]);
+    res.json(images);
+  });
+
+  app.post(
+    "/product/:id/image",
+    upload.single("file"),
+    mw.resizeImages,
+    async (req, res) => {
+      if (!res.locals.aauth || !req.query.sku) return res.send("");
+      fs.readFile(req.file.path, "hex", async function (err, data) {
+        data = "\\x" + data;
+        let image = new Image({
+          sku: req.query.sku,
+          name: req.file.filename,
+          data: data,
+          type: req.file.originalname.split(".")[1].toLowerCase(),
+        });
+        await image.save(["sku", "name", "type", "data"]);
+        res.send("");
+      });
+    }
+  );
+
+  app.patch("/product/:id/image/:num", async (req, res) => {
+    if (!res.locals.aauth) return res.redirect("/");
+    let image = new Image({
+      name: req.query.name,
+      num: req.query.rename,
+      edit: true,
+    });
+    await image.save(["num"], image.publicKey());
+    res.send("");
+  });
+
+  app.delete("/product/:id/image/:num", async (req, res) => {
+    if (!res.locals.aauth || !req.query.name) return res.send("");
+    let image = new Image({ name: req.query.name });
+    fs.unlink("./uploads/" + req.query.name, () => {});
+    await image.delete();
+    res.send("");
   });
 
   app.post("/create_payment", async (req, res) => {
@@ -211,7 +190,6 @@ module.exports = (app, passport) => {
     await Paypal.executePayment(req.query.PayerID, req.query.paymentId);
     Locker.removeSessionLocks(req.sessionID);
     req.session.cart = 0;
-    pager.update(req, req.session.cart);
     req.flash("thankyou", "Thank you! We'll be shipping your order soon");
     res.redirect("/checkout/" + req.query.paymentId.split("-")[1]);
   });
@@ -222,7 +200,6 @@ module.exports = (app, passport) => {
 
   app.post(
     "/new",
-    mw.validateInfo,
     passport.authenticate("signup", {
       session: true,
       failureRedirect: "/signup",
@@ -240,7 +217,6 @@ module.exports = (app, passport) => {
 
   app.post(
     "/login",
-    mw.validateInfo,
     passport.authenticate("login", {
       session: true,
       successRedirect: "/",

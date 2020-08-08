@@ -1,5 +1,5 @@
-let Persistent = require('../config/persistent.js');
-let Cart = require('../models/cart.js');
+let Persistent = require("../config/persistent.js");
+let Cart = require("../models/cart.js");
 
 class orders extends Persistent {
   constructor(input) {
@@ -9,9 +9,9 @@ class orders extends Persistent {
       this.ln = input.ln;
       this.date = input.date;
       this.processing = input.processing || true;
-      this.line1 = input.line1 || '';
-      this.city = input.city || '';
-      this.state = input.state || ''
+      this.line1 = input.line1 || "";
+      this.city = input.city || "";
+      this.state = input.state || "";
       this.postal_code = input.postal_code || 0;
       this.shipped = input.shipped || false;
       this.finalized = input.finalized || false;
@@ -23,11 +23,11 @@ class orders extends Persistent {
   }
 
   static retrieve(pk) {
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       let cart;
       let order = await super.retrieve(pk, false);
       if (!order) return resolve(false);
-      if (order.cid) cart = await Cart.retrieve(['cid', order.cid]);
+      if (order.cid) cart = await Cart.retrieve(["cid", order.cid]);
       if (!cart) return resolve(order);
       order.cart = cart;
       Cart.getTotal(order.cart);
@@ -36,13 +36,19 @@ class orders extends Persistent {
   }
 
   async delete() {
-    let cart = new Cart({cid: this.cid});
+    let cart = new Cart({ cid: this.cid });
     await cart.delete();
     return await super.delete();
   }
 
-  publicKey() { return ['cid', this.cid]; }
+  async save(attrs, pk) {
+    delete this.cart;
+    return await super.save(attrs, pk);
+  }
 
+  publicKey() {
+    return ["cid", this.cid];
+  }
 }
 
 module.exports = orders;
