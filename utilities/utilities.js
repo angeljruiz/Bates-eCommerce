@@ -1,4 +1,3 @@
-var path = require("path");
 var fs = require("fs");
 var mw = require("../config/middleware");
 
@@ -7,7 +6,6 @@ var Image = require("../models/image");
 var Order = require("../models/order");
 var Cart = require("../models/cart");
 var Product = require("../models/product");
-var Session = require("../models/session");
 var Locker = require("../scripts/locker");
 
 var Mall = require("../scripts/mall");
@@ -19,15 +17,6 @@ var upload = multer({ dest: "uploads/" });
 module.exports = (app, passport) => {
   Locker.removeLocks();
   Mall.loadMall(app);
-  app.use((req, res, next) => {
-    res.locals.showTests =
-      app.get("env") !== "production" && req.query.test === "1";
-    if (!req.session.cart) {
-      req.session.cart = new Cart();
-    }
-
-    next();
-  });
 
   app.get("/order", async (req, res) => {
     res.send(JSON.stringify(await Order.retrieve()));
@@ -189,7 +178,6 @@ module.exports = (app, passport) => {
   app.get("/execute_payment", async (req, res) => {
     await Paypal.executePayment(req.query.PayerID, req.query.paymentId);
     Locker.removeSessionLocks(req.sessionID);
-    req.session.cart = 0;
     req.flash("thankyou", "Thank you! We'll be shipping your order soon");
     res.redirect("/checkout/" + req.query.paymentId.split("-")[1]);
   });
@@ -201,7 +189,7 @@ module.exports = (app, passport) => {
   app.post(
     "/new",
     passport.authenticate("signup", {
-      session: true,
+      session: false,
       failureRedirect: "/signup",
     }),
     async (req, res) => {
@@ -218,16 +206,14 @@ module.exports = (app, passport) => {
   app.post(
     "/login",
     passport.authenticate("login", {
-      session: true,
+      session: false,
       successRedirect: "/",
       failureRedirect: "/login",
     })
   );
 
   app.get("/logout", (req, res) => {
-    req.session.destroy(function (err) {
-      res.redirect("/");
-    });
+    res.redirect("/");
   });
 
   app.get("/loggedredirect", async (req, res) => {

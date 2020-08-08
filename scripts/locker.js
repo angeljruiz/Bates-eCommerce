@@ -2,7 +2,6 @@
 
 let Lock = require("../models/lock.js");
 let Product = require("../models/product.js");
-let Session = require("../models/session.js");
 
 class Locker {
   constructor() {
@@ -140,9 +139,7 @@ class Locker {
   }
   async removeLocks() {
     let products = [];
-    let locks = await Lock.customQuery(
-      "SELECT * FROM lock as lh LEFT JOIN session as rh on rh.sid = lh.sid"
-    );
+    let locks = [];
     if (!locks) {
       return;
     }

@@ -11,30 +11,11 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
   app.locals.pretty = true;
 }
-
-let session = require("express-session");
 let bp = require("body-parser");
 let passport = require("passport");
 let path = require("path");
-let db = require("./scripts/database");
-let pgSession = require("connect-pg-simple")(session);
-
-app.use(
-  session({
-    store: new pgSession({
-      pool: db.pool,
-    }),
-    secret: "iuhiuhedgriuyHG(*&)",
-    name: "BeCommercecookies",
-    resave: false,
-    httpOnly: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 60 * 60 * 60 * 1000 },
-  })
-);
 
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(bp.urlencoded({ extended: true }));
 app.use(bp.json());
