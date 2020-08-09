@@ -61,7 +61,7 @@ class Paypal {
           payment_method: "paypal",
         },
         redirect_urls: {
-          return_url: `http://${host}/execute_payment`,
+          return_url: `http://${host}/payment`,
           cancel_url: `http://${host}/cancel_payment`,
         },
         transactions: [

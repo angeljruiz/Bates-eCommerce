@@ -24,7 +24,7 @@ module.exports = (app, passport) => {
   Mall.loadMall(app);
 
   app.get("/order", async (req, res) => {
-    res.send(JSON.stringify(await Order.retrieve()));
+    res.json(await Order.retrieve());
   });
 
   app.delete("/order", async (req, res) => {
@@ -132,7 +132,7 @@ module.exports = (app, passport) => {
     }
   );
 
-  app.patch("/product/:id/image/:num", async (req, res) => {
+  app.patch("/product/:id/image/:name", async (req, res) => {
     if (!res.locals.aauth) return res.redirect("/");
     let image = new Image({
       name: req.query.name,
@@ -176,18 +176,13 @@ module.exports = (app, passport) => {
       }
     } else {
       await Cart.removeItems(cart, locked);
-      req.flash(
-        "itemRemoved",
-        "We had to remove some items from your cart because they were sold out"
-      );
-      res.redirect("/cart");
+      res.json(cart);
     }
   });
 
   app.get("/payment", async (req, res) => {
     await Paypal.executePayment(req.query.PayerID, req.query.paymentId);
     Locker.removeSessionLocks(req.sessionID);
-    req.flash("thankyou", "Thank you! We'll be shipping your order soon");
     res.redirect("/checkout/" + req.query.paymentId.split("-")[1]);
   });
 
