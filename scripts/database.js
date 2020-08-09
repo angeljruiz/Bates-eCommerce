@@ -168,6 +168,7 @@ class Database {
       query += pk ? " = (" : " VALUES (";
       query +=
         Database.attributes(input, "", "'", ") ") + Database.publicKey(pk);
+      console.log(query);
       pool.query(query, (err) => {
         if (err) return reject(err);
         else return resolve(true);

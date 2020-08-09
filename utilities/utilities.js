@@ -1,18 +1,23 @@
-var fs = require("fs");
-var mw = require("../config/middleware");
+const AWS = require("aws-sdk");
+const fs = require("fs");
+const mw = require("../config/middleware");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
-var User = require("../models/user");
-var Image = require("../models/image");
-var Order = require("../models/order");
-var Cart = require("../models/cart");
-var Product = require("../models/product");
-var Locker = require("../scripts/locker");
+const User = require("../models/user");
+const Image = require("../models/image");
+const Order = require("../models/order");
+const Cart = require("../models/cart");
+const Product = require("../models/product");
+const Locker = require("../scripts/locker");
 
-var Mall = require("../scripts/mall");
-let Paypal = require("../config/paypal");
+const Mall = require("../scripts/mall");
+const Paypal = require("../config/paypal");
 
-var multer = require("multer");
-var upload = multer({ dest: "uploads/" });
+const s3 = new AWS.S3({
+  accessKeyId: process.env.BUCKET_ID,
+  secretAccessKey: process.env.BUCKET_SECRET,
+});
 
 module.exports = (app, passport) => {
   Locker.removeLocks();
@@ -46,36 +51,19 @@ module.exports = (app, passport) => {
     res.send(JSON.stringify(u));
   });
 
-  app.get("/uploads/:name", async (req, res) => {
-    if (!fs.existsSync(req.path)) {
-      let image = await Image.retrieve(
-        ["name", req.params.name],
-        ["data", "type"]
-      );
-      fs.writeFile("." + req.path, image.data, (err) => {
-        if (err) throw err;
-      });
-      res.type(image.type);
-      res.send(image.data);
-    }
-  });
-
-  app.get("/main", async (req, res) => {
-    if (!req.query.sku) return res.send("");
-    let image = await Image.retrieve(
-      ["sku", req.query.sku, "ORDER BY num LIMIT 1"],
-      ["name"]
-    );
-    if (!image) return res.send("");
-    res.redirect("/uploads/" + image.name);
-  });
-
   app.get("/product", async (req, res) => {
+    let images = [];
     let products = await Product.customQuery(
       "SELECT * FROM product ORDER BY quantity DESC"
     );
-    if (!products) products = [];
-    res.json(products);
+    products.forEach(async (product) => {
+      images.push(Image.retrieve(["sku", product.sku]));
+    });
+    Promise.all(images).then((imgs) => {
+      products.map((product, i) => (product.images = imgs[i]));
+      if (!products) products = [];
+      res.json(products);
+    });
   });
 
   app.post("/product", async (req, res) => {
@@ -117,17 +105,29 @@ module.exports = (app, passport) => {
     upload.single("file"),
     mw.resizeImages,
     async (req, res) => {
-      if (!res.locals.aauth || !req.query.sku) return res.send("");
-      fs.readFile(req.file.path, "hex", async function (err, data) {
-        data = "\\x" + data;
-        let image = new Image({
-          sku: req.query.sku,
-          name: req.file.filename,
-          data: data,
-          type: req.file.originalname.split(".")[1].toLowerCase(),
+      // if (!res.locals.aauth) return res.send("");
+      const type = (req.file.originalname.split(".")[1] || "").toLowerCase();
+      fs.readFile(req.file.path, async function (err, data) {
+        const params = {
+          Bucket: process.env.BUCKET_NAME,
+          Key: `${req.file.filename}${type ? "." : ""}${type}`,
+          Body: data,
+          ACL: "public-read",
+        };
+
+        s3.upload(params, async function (err, data) {
+          if (err) {
+            throw err;
+          }
+          let image = new Image({
+            sku: req.params.id,
+            name: `${req.file.filename}${type ? "." : ""}${type}`,
+            url: data.Location,
+            type,
+          });
+          await image.save(["sku", "name", "type", "url"]);
+          res.json(image);
         });
-        await image.save(["sku", "name", "type", "data"]);
-        res.send("");
       });
     }
   );
@@ -143,15 +143,24 @@ module.exports = (app, passport) => {
     res.send("");
   });
 
-  app.delete("/product/:id/image/:num", async (req, res) => {
-    if (!res.locals.aauth || !req.query.name) return res.send("");
-    let image = new Image({ name: req.query.name });
-    fs.unlink("./uploads/" + req.query.name, () => {});
-    await image.delete();
-    res.send("");
+  app.delete("/product/:id/image/:name", async (req, res) => {
+    // if (!res.locals.aauth || !req.params.name) return res.send("");
+    let image = new Image({ name: req.params.name });
+    const params = {
+      Bucket: process.env.BUCKET_NAME,
+      Key: req.params.name,
+    };
+    s3.deleteObject(params, async function (err, data) {
+      if (err) {
+        console.log(err);
+        return res.send(false);
+      }
+      await image.delete();
+      res.send(true);
+    });
   });
 
-  app.post("/create_payment", async (req, res) => {
+  app.post("/payment", async (req, res) => {
     let cart = JSON.parse(req.body.cart);
     let locked = await Locker.lockResources(cart, req.sessionID);
     let payment = await Paypal.createPayment(cart, req.get("host"));
@@ -175,19 +184,15 @@ module.exports = (app, passport) => {
     }
   });
 
-  app.get("/execute_payment", async (req, res) => {
+  app.get("/payment", async (req, res) => {
     await Paypal.executePayment(req.query.PayerID, req.query.paymentId);
     Locker.removeSessionLocks(req.sessionID);
     req.flash("thankyou", "Thank you! We'll be shipping your order soon");
     res.redirect("/checkout/" + req.query.paymentId.split("-")[1]);
   });
 
-  app.get("/cancel_payment", (req, res) => {
-    res.redirect("/cart");
-  });
-
-  app.post(
-    "/new",
+  app.put(
+    "/user",
     passport.authenticate("signup", {
       session: false,
       failureRedirect: "/signup",
@@ -212,11 +217,11 @@ module.exports = (app, passport) => {
     })
   );
 
-  app.get("/logout", (req, res) => {
+  app.post("/logout", (req, res) => {
     res.redirect("/");
   });
 
-  app.get("/loggedredirect", async (req, res) => {
+  app.post("/loggedredirect", async (req, res) => {
     res.redirect("/");
   });
 };
