@@ -24,7 +24,9 @@ module.exports = (app, passport) => {
   Mall.loadMall(app);
 
   app.get("/order", async (req, res) => {
-    res.json(await Order.retrieve());
+    res.json(
+      await Order.customQuery("SELECT * FROM public.orders order by date desc")
+    );
   });
 
   app.delete("/order", async (req, res) => {
@@ -186,7 +188,7 @@ module.exports = (app, passport) => {
     res.redirect("/checkout/" + req.query.paymentId.split("-")[1]);
   });
 
-  app.put(
+  app.post(
     "/user",
     passport.authenticate("signup", {
       session: false,
