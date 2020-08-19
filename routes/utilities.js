@@ -3,6 +3,7 @@ const fs = require("fs");
 const mw = require("../config/middleware");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 const Image = require("../models/image");
@@ -43,14 +44,6 @@ module.exports = (app, passport) => {
     order.shipped = req.query.tracking;
     await order.save(false, order.publicKey());
     res.send("");
-  });
-
-  app.get("/isLogged", (req, res) => {
-    let u = { auth: res.locals.aauth };
-    Object.keys(req.user || {}).forEach((k) => {
-      if (!["id", "password"].includes(k)) u[k] = req.user[k];
-    });
-    res.send(JSON.stringify(u));
   });
 
   app.get("/product", async (req, res) => {
@@ -189,19 +182,28 @@ module.exports = (app, passport) => {
   });
 
   app.post(
-    "/user",
+    "/signup",
     passport.authenticate("signup", {
       session: false,
       failureRedirect: "/signup",
     }),
     async (req, res) => {
       let user = await User.retrieve(["id", req.user.id], false);
-      req.login(user, (err) => {
-        if (err) {
-          console.log(err);
-        }
-        res.redirect("/");
+      const body = { email: user.email };
+      const token = jwt.sign({ user: body }, "justatemp");
+      res.json({ token });
+    }
+  );
+
+  app.get(
+    "/account",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+      let u = {};
+      Object.keys(req.user || {}).forEach((k) => {
+        if (!["id", "password"].includes(k)) u[k] = req.user[k];
       });
+      res.json(u);
     }
   );
 
@@ -209,9 +211,13 @@ module.exports = (app, passport) => {
     "/login",
     passport.authenticate("login", {
       session: false,
-      successRedirect: "/",
-      failureRedirect: "/login",
-    })
+    }),
+    async (req, res) => {
+      let user = await User.retrieve(["id", req.user.id], false);
+      const body = { email: user.email };
+      const token = jwt.sign({ user: body }, "justatemp");
+      res.json({ token });
+    }
   );
 
   app.post("/logout", (req, res) => {
