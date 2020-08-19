@@ -197,7 +197,7 @@ module.exports = (app, passport) => {
 
   app.get(
     "/account",
-    passport.authenticate("jwt", { session: false }),
+    passport.authenticate(["jwt", "bearer"], { session: false }),
     (req, res) => {
       let u = {};
       Object.keys(req.user || {}).forEach((k) => {
@@ -206,6 +206,15 @@ module.exports = (app, passport) => {
       res.json(u);
     }
   );
+
+  app.post("/oauth", async (req, res) => {
+    let user = await User.retrieve(["id", req.body.id], false);
+    if (user || !req.body.username || !req.body.id || !req.body.email)
+      return res.send("not saved");
+    let newUser = new User(req.body);
+    newUser.save();
+    res.send("saved");
+  });
 
   app.post(
     "/login",

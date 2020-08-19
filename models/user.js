@@ -10,11 +10,12 @@ class users extends Persistent {
       this.email = input.email || 0;
       this.password = input.password || 0;
       this.id = input.id || -1;
+    } else {
+      this.username = 0;
+      this.email = 0;
+      this.password = 0;
+      this.id = -1;
     }
-    this.username = 0;
-    this.email = 0;
-    this.password = 0;
-    this.id = -1;
     return this;
   }
   generateHash(password) {

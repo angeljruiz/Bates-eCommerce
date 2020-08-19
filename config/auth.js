@@ -5,11 +5,20 @@ let passport = require("passport");
 
 var LocalStrategy = require("passport-local").Strategy;
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
+var BearerStrategy = require("passport-http-bearer").Strategy;
 var FacebookStrategy = require("passport-facebook").Strategy;
 var User = require("../models/user");
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
+
+passport.use(
+  "bearer",
+  new BearerStrategy(async function (token, done) {
+    let user = await User.retrieve(["id", token], false);
+    done(false, user);
+  })
+);
 
 passport.use(
   new JWTstrategy(
@@ -92,7 +101,7 @@ passport.use(
       callbackURL: "/auth/facebook/redirect",
       profileFields: ["id", "emails", "name"],
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (_, __, profile, done) => {
       let user = await User.retrieve(["id", profile.id], ["id"]);
       if (user) {
         return done(null, user);
@@ -110,7 +119,7 @@ passport.use(
   "login",
   new LocalStrategy(
     { passReqToCallback: true, usernameField: "email" },
-    async (req, username, password, done) => {
+    async (_, username, password, done) => {
       let user = await User.retrieve(["username", username], false);
       if (!user || !user.validPassword(password)) {
         return done(null, false);
@@ -133,7 +142,7 @@ router.get(
   "/google/redirect",
   passport.authenticate("google", {
     failureRedirect: "/login",
-    successRedirect: "/loggedredirect",
+    successRedirect: "/",
   })
 );
 
@@ -141,7 +150,7 @@ router.get(
   "/facebook/redirect",
   passport.authenticate("facebook", {
     failureRedirect: "/login",
-    successRedirect: "/loggedredirect",
+    successRedirect: "/",
   })
 );
 
