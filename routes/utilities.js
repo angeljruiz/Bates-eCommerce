@@ -177,11 +177,12 @@ module.exports = (app, passport) => {
   });
 
   app.get("/sections", async (req, res) => {
-    res.json(
-      await Section.customQuery(
-        "SELECT * FROM public.section where store = '1'"
-      )
+    let sections = await Section.customQuery(
+      "SELECT * FROM public.section where store = '1'"
     );
+    if (!sections) sections = [];
+    if (!Array.isArray(sections)) sections = [sections];
+    res.json(sections);
   });
 
   app.post("/sections", (req, res) => {
@@ -189,7 +190,7 @@ module.exports = (app, passport) => {
 
     let section = new Section(req.body);
     section.store = 1;
-    section.save();
+    section.save(["name", "num", "store"]);
     res.send("ok");
   });
 
