@@ -6,6 +6,7 @@ const upload = multer({ dest: "uploads/" });
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
+const Section = require("../models/section");
 const Image = require("../models/image");
 const Order = require("../models/order");
 const Cart = require("../models/cart");
@@ -173,6 +174,41 @@ module.exports = (app, passport) => {
       await Cart.removeItems(cart, locked);
       res.json(cart);
     }
+  });
+
+  app.get("/sections", async (req, res) => {
+    res.json(
+      await Section.customQuery(
+        "SELECT * FROM public.section where store = '1'"
+      )
+    );
+  });
+
+  app.post("/sections", (req, res) => {
+    if (!req.body.name || !req.body.num) return res.send("error");
+
+    let section = new Section(req.body);
+    section.store = 1;
+    section.save();
+    res.send("ok");
+  });
+
+  app.patch("/sections", (req, res) => {
+    if (!req.body.name || !req.body.num || !req.body.id)
+      return res.send("error");
+
+    let section = new Section(req.body);
+    section.store = 1;
+    section.save(false, section.publicKey());
+    res.send("ok");
+  });
+
+  app.delete("/sections/:id", async (req, res) => {
+    if (!req.params.id) return res.send("error");
+
+    let section = await Section.retrieve(["id", req.params.id]);
+    section.delete();
+    res.send("ok");
   });
 
   app.get("/payment", async (req, res) => {

@@ -18,16 +18,6 @@ class Locker {
       });
     });
   }
-  async removeSessionLocks(sid) {
-    let locks = await Lock.retrieve(["sid", sid], false);
-    if (Array.isArray(locks)) {
-      locks.forEach((lock) => {
-        lock.delete();
-      });
-    } else if (locks) {
-      locks.delete();
-    }
-  }
   removeIDLock(sid, sku) {
     return new Promise(async (resolve, reject) => {
       let lock = await Lock.retrieve(["sid", sid, " AND SKU = " + sku], false);
