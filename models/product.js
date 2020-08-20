@@ -9,7 +9,6 @@ class product extends Persistent {
       this.price = input.price || 0;
       this.description = input.description || "";
       this.quantity = input.quantity || 0;
-      this.type = input.type || "";
       this.store = input.store || 1;
       this.section = input.section || -1;
     } else {
@@ -18,7 +17,6 @@ class product extends Persistent {
       this.price = 0;
       this.description = "";
       this.quantity = 0;
-      this.type = "";
       this.store = 1;
       this.section = -1;
     }

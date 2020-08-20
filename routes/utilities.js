@@ -96,37 +96,32 @@ module.exports = (app, passport) => {
     res.json(images);
   });
 
-  app.post(
-    "/product/:id/image",
-    upload.single("file"),
-    mw.resizeImages,
-    async (req, res) => {
-      // if (!res.locals.aauth) return res.send("");
-      const type = (req.file.originalname.split(".")[1] || "").toLowerCase();
-      fs.readFile(req.file.path, async function (err, data) {
-        const params = {
-          Bucket: process.env.BUCKET_NAME,
-          Key: `${req.file.filename}${type ? "." : ""}${type}`,
-          Body: data,
-          ACL: "public-read",
-        };
+  app.post("/product/:id/image", upload.single("file"), async (req, res) => {
+    // if (!res.locals.aauth) return res.send("");
+    const type = (req.file.originalname.split(".")[1] || "").toLowerCase();
+    fs.readFile(req.file.path, async function (err, data) {
+      const params = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: `${req.file.filename}${type ? "." : ""}${type}`,
+        Body: data,
+        ACL: "public-read",
+      };
 
-        s3.upload(params, async function (err, data) {
-          if (err) {
-            throw err;
-          }
-          let image = new Image({
-            sku: req.params.id,
-            name: `${req.file.filename}${type ? "." : ""}${type}`,
-            url: data.Location,
-            type,
-          });
-          await image.save(["sku", "name", "type", "url"]);
-          res.json(image);
+      s3.upload(params, async function (err, data) {
+        if (err) {
+          throw err;
+        }
+        let image = new Image({
+          sku: req.params.id,
+          name: `${req.file.filename}${type ? "." : ""}${type}`,
+          url: data.Location,
+          type,
         });
+        await image.save(["sku", "name", "type", "url"]);
+        res.json(image);
       });
-    }
-  );
+    });
+  });
 
   app.patch("/product/:id/image/:name", async (req, res) => {
     if (!res.locals.aauth) return res.redirect("/");

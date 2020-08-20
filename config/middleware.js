@@ -23,7 +23,7 @@ module.exports = {
       .toFormat("jpeg")
       .jpeg()
       .toFile(`uploads/${req.file.filename + "r"}`);
-    fs.unlink(req.file.path, () => {});
+    fs.unlink(req.file.path);
     req.file.path += "r";
     req.file.filename += "r";
 
