@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node ./app.js",
-    "heroku-postbuild": "mkdir client && cd client && printenv REACT_APP_STRIPE_SECRET > .env && git clone https://github.com/angeljruiz/Bates-eCommerce-Client.git . && npm install && npm run build"
+    "heroku-postbuild": "mkdir client && cd client && git clone https://github.com/angeljruiz/Bates-eCommerce-Client.git . && npm install && npm run build"
   },
   "repository": {
     "type": "git",
