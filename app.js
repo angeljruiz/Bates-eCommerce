@@ -6,6 +6,7 @@ const app = express().use("*", cors());
 const bp = require("body-parser");
 const passport = require("passport");
 const path = require("path");
+const Payment = require("./config/payment");
 const UserRoutes = require("./routes/user");
 const port = 80;
 
@@ -26,6 +27,7 @@ app.use(bp.json());
 app.use(cors());
 
 app.use("/auth", Auth);
+app.use("/payment", Payment);
 app.use("/user", passport.authenticate("jwt", { session: false }), UserRoutes);
 
 app.use("/media", express.static("media"));

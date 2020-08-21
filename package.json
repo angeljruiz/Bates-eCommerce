@@ -38,7 +38,8 @@
     "passport-local": "^1.0.0",
     "paypal-rest-sdk": "^1.8.1",
     "pg": "^7.18.2",
-    "sharp": "^0.25.2"
+    "sharp": "^0.25.2",
+    "stripe": "^8.89.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
