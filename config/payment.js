@@ -1,14 +1,13 @@
 const express = require("express");
 
 const router = express.Router();
-
-const stripe = require("stripe")("sk_test_4eC39HqLyjWDarjtT1zdp7dc");
+const stripe = require("stripe")(process.env.REACT_APP_STRIPE_SECRET);
 
 router.post("/", async (req, res) => {
+  let amount = req.body.reduce((sum, item) => sum + Number(item.price), 0);
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: 199,
+    amount,
     currency: "usd",
-    // Verify your integration in this guide by including this parameter
     metadata: { integration_check: "accept_a_payment" },
   });
   res.send(paymentIntent.client_secret);

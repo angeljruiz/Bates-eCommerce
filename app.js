@@ -6,7 +6,6 @@ const app = express().use("*", cors());
 const bp = require("body-parser");
 const passport = require("passport");
 const path = require("path");
-const Payment = require("./config/payment");
 const UserRoutes = require("./routes/user");
 const port = 80;
 
@@ -15,9 +14,9 @@ if (process.env.NODE_ENV !== "production") {
   var morgan = require("morgan");
 
   app.use(morgan("dev"));
-  app.locals.pretty = true;
 }
 
+const Payment = require("./config/payment");
 const Auth = require("./config/auth");
 
 app.use(passport.initialize());
