@@ -1,7 +1,7 @@
 const express = require("express");
 
 const router = express.Router();
-const stripe = require("stripe")(process.env.REACT_APP_STRIPE_SECRET);
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 router.post("/", async (req, res) => {
   let amount = req.body.reduce((sum, item) => sum + Number(item.price), 0);
