@@ -3,11 +3,6 @@
 const express = require("express");
 const cors = require("cors");
 const app = express().use("*", cors());
-const bp = require("body-parser");
-const passport = require("passport");
-const path = require("path");
-const UserRoutes = require("./routes/user");
-const port = 80;
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -16,24 +11,31 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-const Payment = require("./config/payment");
+const passport = require("passport");
+const bp = require("body-parser");
+const path = require("path");
+
 const Auth = require("./config/auth");
+const Utilities = require("./routes/utilities");
+const UserRoutes = require("./routes/user");
+const Payment = require("./config/payment");
+const Mall = require("./scripts/mall");
+const port = 80;
 
 app.use(passport.initialize());
-
 app.use(bp.urlencoded({ extended: true }));
 app.use(bp.json());
-app.use(cors());
 
-app.use("/auth", Auth);
+app.use(Utilities);
+app.use(Auth);
 app.use("/payment", Payment);
 app.use("/user", passport.authenticate("jwt", { session: false }), UserRoutes);
 
-require("./routes/utilities")(app, passport);
-
-app.use(express.static(path.join(__dirname, "client", "build")));
-app.use((_, res) => {
-  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+Mall.loadMall(app).then(() => {
+  app.use(express.static(path.join(__dirname, "client", "build")));
+  app.use((_, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  });
 });
 
 app.listen(process.env.PORT || port, () => {
