@@ -13,4 +13,16 @@ router.post("/", async (req, res) => {
   res.send(paymentIntent.client_secret);
 });
 
+// router.post("/payment", async (req, res) => {
+//   let cart = JSON.parse(req.body.cart);
+//   let locked = await Locker.lockResources(cart, req.sessionID);
+
+//   if (locked) {
+//     cart.id = payment.id;
+//     await cart.save();
+//   } else {
+//     res.json(cart);
+//   }
+// });
+
 module.exports = router;

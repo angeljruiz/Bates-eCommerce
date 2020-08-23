@@ -8,17 +8,22 @@ const Locker = require("../scripts/locker");
 
 Locker.removeLocks();
 
-router.post("/payment", async (req, res) => {
-  let cart = JSON.parse(req.body.cart);
-  let locked = await Locker.lockResources(cart, req.sessionID);
-
-  if (locked) {
-    cart.id = payment.id;
-    await cart.save();
-  } else {
-    res.json(cart);
+function authorize(roles = []) {
+  if (typeof roles === "string") {
+    roles = [roles];
   }
-});
+
+  return [
+    passport.authenticate(["jwt", "bearer"], { session: false }),
+
+    (req, res, next) => {
+      if (roles.length && !roles.includes(req.user.role)) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      next();
+    },
+  ];
+}
 
 router.get(
   "/account",

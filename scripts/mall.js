@@ -21,10 +21,10 @@ class Mall {
   }
   loadMall(app) {
     return new Promise(async (resolve) => {
-      let stores = await Store.retrieve(false, false);
-      if (!stores) return;
-      if (!Array.isArray(stores)) stores = [stores];
-      stores.forEach((store) => {
+      this.stores = await Store.retrieve(false, false);
+      if (!this.stores) return;
+      if (!Array.isArray(this.stores)) this.stores = [this.stores];
+      this.stores.forEach((store) => {
         app.use(`/${store.url}`, this.createStore(store));
       });
       resolve();
@@ -49,23 +49,13 @@ class Mall {
 
     store.post("/order", async (req, res) => {
       let order = new Order(req.body);
-      await order.save([
-        "fn",
-        "ln",
-        "date",
-        "postal_code",
-        "line1",
-        "line2",
-        "city",
-        "state",
-        "cart",
-        "id",
-      ]);
+      order.store = id;
+      await order.save();
       res.json(order);
     });
 
-    store.delete("/order", async (req, res) => {
-      let order = new Order({ id: req.query.id });
+    store.delete("/order/:id", async (req, res) => {
+      let order = new Order({ id: req.params.id });
       await order.delete();
       res.send("ok");
     });
@@ -94,7 +84,7 @@ class Mall {
 
     store.post("/product", async (req, res) => {
       let c = new Product(req.body);
-      c.store = 1;
+      c.store = id;
       await c.save([
         "name",
         "sku",
@@ -189,35 +179,35 @@ class Mall {
       });
     });
 
-    store.get("/sections", async (req, res) => {
+    store.get("/section", async (req, res) => {
       let sections = await Section.customQuery(
-        "SELECT * FROM public.section where store = '1'"
+        `SELECT * FROM public.section where store = '${id}'`
       );
       if (!sections) sections = [];
       if (!Array.isArray(sections)) sections = [sections];
       res.json(sections);
     });
 
-    store.post("/sections", (req, res) => {
+    store.post("/section", (req, res) => {
       if (!req.body.name || !req.body.num) return res.send("error");
 
       let section = new Section(req.body);
-      section.store = 1;
+      section.store = id;
       section.save(["name", "num", "store"]);
       res.send("ok");
     });
 
-    store.patch("/sections", (req, res) => {
+    store.patch("/section", (req, res) => {
       if (!req.body.name || !req.body.num || !req.body.id)
         return res.send("error");
 
       let section = new Section(req.body);
-      section.store = 1;
+      section.store = id;
       section.save(false, section.publicKey());
       res.send("ok");
     });
 
-    store.delete("/sections/:id", async (req, res) => {
+    store.delete("/section/:id", async (req, res) => {
       if (!req.params.id) return res.send("error");
 
       let section = await Section.retrieve(["id", req.params.id]);

@@ -19,7 +19,6 @@ passport.deserializeUser(async (id, done) => {
 });
 
 passport.use(
-  "bearer",
   new BearerStrategy(async function (token, done) {
     let user = await User.retrieve(["id", token], false);
     done(false, user);
