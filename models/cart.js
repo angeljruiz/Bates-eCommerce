@@ -17,7 +17,7 @@ class Cart extends Persistent {
 
   static addItem(cart, item, amount) {
     item.quantity = amount;
-    let itemIndex = cart.items.findIndex((i) => i.sku === item.sku);
+    let itemIndex = cart.items.findIndex((i) => i.id === item.id);
     if (itemIndex > -1) cart.items[itemIndex].quantity += 1;
     else cart.items.push(item);
     Cart.getTotal(cart);
@@ -25,10 +25,10 @@ class Cart extends Persistent {
 
   static removeItems(cart, items) {
     items.forEach((item) => {
-      let itemIndex = cart.items.findIndex((i) => i.sku === item.sku);
+      let itemIndex = cart.items.findIndex((i) => i.id === item.id);
       if (itemIndex > -1) {
         if (cart.items[itemIndex].quantity - item.quantity <= 0)
-          cart.items = cart.items.filter((i) => i.sku !== item.sku);
+          cart.items = cart.items.filter((i) => i.id !== item.id);
         else cart.items[itemIndex].quantity -= item.quantity;
       }
     });

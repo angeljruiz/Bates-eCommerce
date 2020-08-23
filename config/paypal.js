@@ -16,7 +16,7 @@ class Paypal {
     cart.items.forEach((item) => {
       let t = {};
       t.name = item.name;
-      t.sku = item.sku;
+      t.id = item.id;
       t.price = String(item.price);
       t.quantity = item.quantity;
       t.currency = "USD";

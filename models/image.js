@@ -7,13 +7,13 @@ class image extends Persistent {
     super();
     if (input) {
       this.url = input.url || null;
-      this.sku = input.sku || -1;
+      this.id = input.id || -1;
       this.name = input.name || null;
       this.num = input.num || null;
       this.type = input.type || null;
       this.url = input.url || null;
     } else {
-      this.url = this.sku = this.num = this.name = this.type = -1;
+      this.url = this.id = this.num = this.name = this.type = -1;
     }
     return this;
   }

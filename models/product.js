@@ -4,7 +4,8 @@ class product extends Persistent {
   constructor(input) {
     super();
     if (input) {
-      this.sku = input.sku || -1;
+      this.id = input.id || -1;
+      this.sku = input.sku || "";
       this.name = input.name || "";
       this.price = input.price || 0;
       this.description = input.description || "";
@@ -12,7 +13,8 @@ class product extends Persistent {
       this.store = input.store || 1;
       this.section = input.section || -1;
     } else {
-      this.sku = -1;
+      this.id = -1;
+      this.sku = "";
       this.name = "";
       this.price = 0;
       this.description = "";
@@ -23,7 +25,7 @@ class product extends Persistent {
   }
 
   publicKey() {
-    return ["sku", this.sku];
+    return ["id", this.id];
   }
 }
 

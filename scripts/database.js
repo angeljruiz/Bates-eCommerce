@@ -51,7 +51,7 @@ class Database {
     let t = [];
     let keys = model.variables();
     if (!attrs) attrs = Object.keys(new model());
-    if (control) t.push("sku");
+    if (control) t.push("id");
     attrs.forEach((item) => {
       if (keys.includes(item) == control) t.push(item);
     });
@@ -117,36 +117,40 @@ class Database {
   }
   async getData(model, attrs, pk) {
     return new Promise((resolve, reject) => {
-      let c = new model();
-      let d = [];
-      let keys = Object.keys(c);
-      let query;
-      query =
-        "SELECT " +
-        Database.attributes(attrs, "", "", " FROM ") +
-        Database.className(model);
-      query += Database.join(attrs, pk, model);
-      query += Database.publicKey(pk);
-      if (model.name != "users") console.log(query);
-      pool.query(query, (err, res) => {
-        if (err) return reject(err);
-        let rtr = function (item) {
-          c[item] = res.rows[0][item];
-        };
-        if (res.rows.length == 1) {
-          if (attrs == "all") keys.forEach(rtr);
-          else attrs.forEach(rtr);
-        } else if (res.rows.length > 1) {
-          res.rows.forEach((item, index) => {
-            d.push(new model());
-            keys.forEach((key) => {
-              d[index][key] = res.rows[index][key];
+      try {
+        let c = new model();
+        let d = [];
+        let keys = Object.keys(c);
+        let query;
+        query =
+          "SELECT " +
+          Database.attributes(attrs, "", "", " FROM ") +
+          Database.className(model);
+        query += Database.join(attrs, pk, model);
+        query += Database.publicKey(pk);
+        if (model.name != "users") console.log(query);
+        pool.query(query, (err, res) => {
+          if (err) return reject(err);
+          let rtr = function (item) {
+            c[item] = res.rows[0][item];
+          };
+          if (res.rows.length == 1) {
+            if (attrs == "all") keys.forEach(rtr);
+            else attrs.forEach(rtr);
+          } else if (res.rows.length > 1) {
+            res.rows.forEach((item, index) => {
+              d.push(new model());
+              keys.forEach((key) => {
+                d[index][key] = res.rows[index][key];
+              });
             });
-          });
-        } else return resolve(false);
-        if (res.rows.length == 1) resolve(c);
-        else if (res.rows.length >= 1) resolve(d);
-      });
+          } else return resolve(false);
+          if (res.rows.length == 1) resolve(c);
+          else if (res.rows.length >= 1) resolve(d);
+        });
+      } catch (e) {
+        reject(e);
+      }
     });
   }
   saveData(model, attrs, pk, input) {

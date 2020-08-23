@@ -29,10 +29,6 @@ app.use("/auth", Auth);
 app.use("/payment", Payment);
 app.use("/user", passport.authenticate("jwt", { session: false }), UserRoutes);
 
-app.use("/media", express.static("media"));
-app.use("/uploads", express.static("uploads"));
-app.use("/vendor", express.static("vendor"));
-
 require("./routes/utilities")(app, passport);
 
 app.use(express.static(path.join(__dirname, "client", "build")));

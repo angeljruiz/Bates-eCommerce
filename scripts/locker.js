@@ -11,20 +11,20 @@ class Locker {
     return new Promise((resolve, reject) => {
       let products = [];
       cart.forEach((item) => {
-        products.push(Product.retrieve(["sku", item.sku], ["quantity", "sku"]));
+        products.push(Product.retrieve(["id", item.id], ["quantity", "id"]));
       });
       Promise.all(products).then((results) => {
         resolve(results);
       });
     });
   }
-  removeIDLock(sid, sku) {
+  removeIDLock(sid, id) {
     return new Promise(async (resolve, reject) => {
-      let lock = await Lock.retrieve(["sid", sid, " AND SKU = " + sku], false);
+      let lock = await Lock.retrieve(["sid", sid, " AND id = " + id], false);
       if (!lock) return resolve();
-      let product = await Product.retrieve(["SKU", sku], ["quantity"]);
+      let product = await Product.retrieve(["id", id], ["quantity"]);
       let newProduct = new Product({
-        sku: sku,
+        id: id,
         quantity: parseInt(product.quantity) + parseInt(lock.amount),
       });
       await newProduct.save(["quantity"], newProduct.publicKey());
@@ -46,14 +46,14 @@ class Locker {
         if (
           !cart.items
             .map((cartItem) => {
-              return cartItem.sku;
+              return cartItem.id;
             })
-            .includes(lock.sku)
+            .includes(lock.id)
         ) {
-          Product.retrieve(["sku", lock.sku], ["quantity"]).then(
+          Product.retrieve(["id", lock.id], ["quantity"]).then(
             async (product) => {
               let newProduct = new Product({
-                sku: lock.sku,
+                id: lock.id,
                 quantity: parseInt(product.quantity) + parseInt(lock.amount),
               });
               await newProduct.save(["quantity"], newProduct.publicKey());
@@ -68,9 +68,9 @@ class Locker {
         let item = cart.items[index];
         lockIndex = locks
           .map((lock) => {
-            return lock.sku;
+            return lock.id;
           })
-          .indexOf(item.sku);
+          .indexOf(item.id);
         lockAmount = lockIndex != -1 ? locks[lockIndex].amount : 0;
         currentResource = resources[index];
         if (currentResource.quantity >= item.quantity - lockAmount) {
@@ -81,7 +81,7 @@ class Locker {
                 amount: item.quantity,
               });
               let newProduct = new Product({
-                sku: item.sku,
+                id: item.id,
                 quantity:
                   parseInt(currentResource.quantity) -
                   (item.quantity + lockAmount),
@@ -92,11 +92,11 @@ class Locker {
           } else {
             let newLock = new Lock({
               sid: sid,
-              sku: item.sku,
+              id: item.id,
               amount: item.quantity,
             });
             let newProduct = new Product({
-              sku: item.sku,
+              id: item.id,
               quantity: parseInt(currentResource.quantity) - item.quantity,
             });
             lockProducts.push(newLock);
@@ -104,7 +104,7 @@ class Locker {
           }
         } else {
           items.push({
-            sku: item.sku,
+            id: item.id,
             quantity: Math.abs(
               parseInt(currentResource.quantity) - item.quantity + lockAmount
             ),
@@ -116,7 +116,7 @@ class Locker {
         lockProducts.forEach((item) => {
           if (item.constructor.name === "lock")
             item.save(
-              item.lid !== -1 ? ["lid", "amount"] : ["sid", "sku", "amount"],
+              item.lid !== -1 ? ["lid", "amount"] : ["sid", "id", "amount"],
               item.lid !== -1 ? item.publicKey() : false
             );
           else item.save(["quantity"], item.publicKey());
@@ -135,7 +135,7 @@ class Locker {
     }
     if (!Array.isArray(locks)) locks = [locks];
     locks.forEach((lock) => {
-      products.push(Product.retrieve(["sku", lock.sku], false));
+      products.push(Product.retrieve(["id", lock.id], false));
     });
     Promise.all(products).then((results) => {
       results.forEach(async (item, index) => {

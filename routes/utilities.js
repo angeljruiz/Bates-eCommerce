@@ -64,7 +64,7 @@ module.exports = (app, passport) => {
       "SELECT * FROM product ORDER BY quantity DESC"
     );
     products.forEach(async (product) => {
-      images.push(Image.retrieve(["sku", product.sku]));
+      images.push(Image.retrieve(["id", product.id]));
     });
     Promise.all(images).then((imgs) => {
       products.map((product, i) => (product.images = imgs[i]));
@@ -75,18 +75,28 @@ module.exports = (app, passport) => {
 
   app.post("/product", async (req, res) => {
     let c = new Product(req.body);
-    await c.save(false, false);
+    c.store = 1;
+    await c.save([
+      "name",
+      "sku",
+      "price",
+      "quantity",
+      "description",
+      "section",
+      "store",
+    ]);
     res.send("");
   });
 
   app.patch("/product", async (req, res) => {
     let c = new Product(req.body);
-    await c.save(false, c.publicKey());
-    res.send("");
+    c.save(false, c.publicKey())
+      .then(() => res.send("ok"))
+      .catch((e) => res.status(400).send(e));
   });
 
   app.delete("/product/:id", async (req, res) => {
-    let t = new Product({ sku: req.params.id });
+    let t = new Product({ id: req.params.id });
     await t.delete();
     res.send("");
   });
@@ -94,7 +104,7 @@ module.exports = (app, passport) => {
   app.get("/product/:id/image", async (req, res) => {
     let images = await Image.retrieve(
       [
-        "sku",
+        "id",
         req.params.id,
         "ORDER BY num" + (req.query.limit ? ` LIMIT ${req.query.limit}` : ""),
       ],
@@ -119,12 +129,12 @@ module.exports = (app, passport) => {
           throw err;
         }
         let image = new Image({
-          sku: req.params.id,
+          id: req.params.id,
           name: `${req.file.filename}${type ? "." : ""}${type}`,
           url: data.Location,
           type,
         });
-        await image.save(["sku", "name", "type", "url"]);
+        await image.save(["id", "name", "type", "url"]);
         res.json(image);
       });
     });
@@ -215,6 +225,15 @@ module.exports = (app, passport) => {
       res.json(u);
     }
   );
+
+  app.post("/oauth", async (req, res) => {
+    let user = await User.retrieve(["id", req.body.id], false);
+    if (user || !req.body.username || !req.body.id || !req.body.email)
+      return res.send("not saved");
+    let newUser = new User(req.body);
+    newUser.save();
+    res.send("saved");
+  });
 
   app.post(
     "/login",

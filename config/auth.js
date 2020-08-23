@@ -35,13 +35,6 @@ passport.use(
     },
     (token, done) => {
       try {
-        console.log(token.user);
-        // let user = await User.retrieve(["id", token.user.id], false);
-        // if (!user) {
-        //   let newUser = new User(req.body);
-        //   newUser.save();
-
-        // }
         return done(null, token.user);
       } catch (error) {
         done(error);
