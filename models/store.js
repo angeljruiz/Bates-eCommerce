@@ -8,8 +8,8 @@ class store extends Persistent {
       this.name = input.name || "";
       this.url = input.url || "";
       this.paid = input.paid || -1;
-      this.price = input.price || -1;
-    } else this.id = this.name = this.url = this.paid = this.price = -1;
+      this.owner = input.owner || -1;
+    } else this.id = this.name = this.url = this.paid = this.owner = -1;
   }
 }
 

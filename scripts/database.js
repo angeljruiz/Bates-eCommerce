@@ -95,6 +95,7 @@ class Database {
       let c = new model();
       let d = [];
       let keys = Object.keys(c);
+      console.log(input);
       pool.query(input, (err, res) => {
         if (err) return reject(err);
         let rtr = function (item) {

@@ -12,13 +12,14 @@ class image extends Persistent {
       this.num = input.num || null;
       this.type = input.type || null;
       this.url = input.url || null;
+      this.product = input.product || -1;
     } else {
-      this.url = this.id = this.num = this.name = this.type = -1;
+      this.url = this.id = this.num = this.name = this.type = this.product = -1;
     }
     return this;
   }
   publicKey() {
-    return ["name", this.name];
+    return ["id", this.id];
   }
 }
 

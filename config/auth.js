@@ -1,13 +1,14 @@
-let express = require("express");
-let router = express.Router();
+const express = require("express");
+const router = express.Router();
 
-let passport = require("passport");
+const passport = require("passport");
 
-var LocalStrategy = require("passport-local").Strategy;
-var BearerStrategy = require("passport-http-bearer").Strategy;
-var User = require("../models/user");
+const LocalStrategy = require("passport-local").Strategy;
+const BearerStrategy = require("passport-http-bearer").Strategy;
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
+const User = require("../models/user");
+const Stripe = require("../scripts/stripe");
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -32,9 +33,9 @@ passport.use(
 
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     },
-    (token, done) => {
+    async (token, done) => {
       try {
-        return done(null, token.user);
+        return done(null, await User.find(["email", token.user.email]));
       } catch (error) {
         done(error);
       }
@@ -50,14 +51,18 @@ passport.use(
       usernameField: "email",
     },
     async (req, username, password, done) => {
+      let stripe = await Stripe.createExpressAccount();
       let user = await User.retrieve(["username", username], ["id"]);
       if (user) {
         return done(null, false);
       }
       var newUser = new User();
+      console.log(stripe);
       newUser.username = username;
       newUser.email = req.body.email;
       newUser.id = Math.random().toString(10).substring(9);
+      newUser.role = "admin";
+      newUser.stripe = stripe.id;
       newUser.generateHash(password);
       if (await newUser.save()) {
         return done(null, newUser);

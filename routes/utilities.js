@@ -5,6 +5,10 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 const Locker = require("../scripts/locker");
+const Store = require("../models/store");
+const Section = require("../models/section");
+const Mall = require("../scripts/mall");
+const Stripe = require("../scripts/stripe");
 
 Locker.removeLocks();
 
@@ -29,11 +33,15 @@ router.get(
   "/account",
   passport.authenticate(["jwt", "bearer"], { session: false }),
   (req, res) => {
-    let u = {};
-    Object.keys(req.user || {}).forEach((k) => {
-      if (!["id", "password"].includes(k)) u[k] = req.user[k];
+    Store.retrieve(["owner", req.user.id]).then(async (store) => {
+      let stripe = await Stripe.retrieve(req.user.stripe);
+      console.log(stripe);
+      let u = { url: store.url, onboard: stripe.charges_enabled };
+      Object.keys(req.user || {}).forEach((k) => {
+        if (!["password"].includes(k)) u[k] = req.user[k];
+      });
+      res.json(u);
     });
-    res.json(u);
   }
 );
 
@@ -42,6 +50,7 @@ router.post("/oauth", async (req, res) => {
   if (user || !req.body.username || !req.body.id || !req.body.email)
     return res.send("not saved");
   let newUser = new User(req.body);
+  newUser.role = "admin";
   newUser.save();
   res.send("saved");
 });
@@ -53,8 +62,12 @@ router.post(
   }),
   async (req, res) => {
     let user = await User.retrieve(["id", req.user.id], false);
-    const body = { email: user.email };
-    const token = jwt.sign({ user: body }, "justatemp");
+    const token = jwt.sign(
+      {
+        user: { email: user.email, id: req.user.id, role: user.role },
+      },
+      "justatemp"
+    );
     res.json({ token });
   }
 );
@@ -63,13 +76,29 @@ router.post(
   "/signup",
   passport.authenticate("signup", {
     session: false,
-    failureRedirect: "/signup",
   }),
   async (req, res) => {
-    let user = await User.retrieve(["id", req.user.id], false);
-    const body = { email: user.email };
-    const token = jwt.sign({ user: body }, "justatemp");
-    res.json({ token });
+    User.retrieve(["id", req.user.id], false).then(async (user) => {
+      const token = jwt.sign(
+        {
+          user: { email: user.email, id: req.user.id, role: req.user.role },
+        },
+        "justatemp"
+      );
+      let store = new Store({
+        name: req.body.storeName,
+        url: req.body.storeUrl,
+        owner: req.user.id,
+      });
+      await store.save(["name", "url", "owner"]);
+      Store.retrieve(["url", req.body.storeUrl]).then(async (s) => {
+        let section = new Section({ name: "Featured", num: 1, store: s.id });
+        await section.save(["name", "num", "store"]);
+        Mall.loadMall().then(() => {
+          res.json({ token });
+        });
+      });
+    });
   }
 );
 

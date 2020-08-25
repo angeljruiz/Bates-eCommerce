@@ -11,12 +11,14 @@ class users extends Persistent {
       this.password = input.password || 0;
       this.id = input.id || -1;
       this.role = input.role || "";
+      this.stripe = input.stripe || "";
     } else {
       this.username = 0;
       this.email = 0;
       this.password = 0;
       this.id = -1;
       this.role = "";
+      this.stripe = "";
     }
     return this;
   }
@@ -25,6 +27,15 @@ class users extends Persistent {
   }
   validPassword(password) {
     return bcrypt.compareSync(password, this.password);
+  }
+
+  static async find(pk) {
+    let user = await users.retrieve(pk);
+    let t = {};
+    Object.keys(user).map((k) => {
+      if (!["password"].includes(k)) t[k] = user[k];
+    });
+    return t;
   }
 }
 
