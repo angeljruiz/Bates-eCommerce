@@ -34,12 +34,14 @@
     "passport-local": "^1.0.0",
     "paypal-rest-sdk": "^1.8.1",
     "pg": "^7.18.2",
+    "sequelize": "^6.3.4",
     "sharp": "^0.25.2",
     "stripe": "^8.89.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4",
+    "dotenv": "^8.2.0",
     "morgan": "^1.10.0",
-    "dotenv": "^8.2.0"
+    "nodemon": "^2.0.4",
+    "sequelize-cli": "^6.2.0"
   }
 }

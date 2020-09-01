@@ -8,7 +8,6 @@ router.post("/", async (req, res) => {
   const paymentIntent = await stripe.paymentIntents.create({
     amount,
     currency: "usd",
-    metadata: { integration_check: "accept_a_payment" },
   });
   res.send(paymentIntent.client_secret);
 });

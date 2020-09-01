@@ -46,6 +46,20 @@ class Mall {
       });
     });
 
+    store.post("/payment", async (req, res) => {
+      let amount = req.body.reduce((sum, item) => sum + Number(item.price), 0);
+      const paymentIntent = await Stripe.paymentIntents.create({
+        payment_method_types: ["card"],
+        amount,
+        currency: "usd",
+        application_fee_amount: amount * 0.1,
+        transfer_data: {
+          destination: "{{CONNECTED_STRIPE_ACCOUNT_ID}}",
+        },
+      });
+      res.send(paymentIntent.client_secret);
+    });
+
     store.get(
       "/onboard",
       passport.authenticate(["jwt", "bearer"], { session: false }),

@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
-const User = require("../models/user");
+const User = require("../models/userb");
 const Locker = require("../scripts/locker");
 const Store = require("../models/store");
 const Section = require("../models/section");
@@ -35,7 +35,6 @@ router.get(
   (req, res) => {
     Store.retrieve(["owner", req.user.id]).then(async (store) => {
       let stripe = await Stripe.retrieve(req.user.stripe);
-      console.log(stripe);
       let u = { url: store.url, onboard: stripe.charges_enabled };
       Object.keys(req.user || {}).forEach((k) => {
         if (!["password"].includes(k)) u[k] = req.user[k];

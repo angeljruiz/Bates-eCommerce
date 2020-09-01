@@ -7,7 +7,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const BearerStrategy = require("passport-http-bearer").Strategy;
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-const User = require("../models/user");
+const User = require("../models/userb");
 const Stripe = require("../scripts/stripe");
 
 passport.serializeUser((user, done) => {
