@@ -108,10 +108,10 @@ class Mall {
         if (!products) products = [];
         if (!Array.isArray(products)) products = [products];
         products.forEach(async (product) => {
-          images.push(Image.retrieve(["id", product.id]));
+          images.push(Image.retrieve(["product", product.id]));
         });
         Promise.all(images).then((imgs) => {
-          products.map((product, i) => (product.images = imgs[i]));
+          products.map((product, i) => product.images = imgs[i]);
           res.json(products);
         });
       })
