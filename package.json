@@ -35,7 +35,7 @@
     "paypal-rest-sdk": "^1.8.1",
     "pg": "^7.18.2",
     "sequelize": "^6.3.4",
-    "sharp": "^0.25.2",
+    "sharp": "^0.30.5",
     "stripe": "^8.89.0"
   },
   "devDependencies": {
